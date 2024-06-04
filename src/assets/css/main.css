@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+    --sidebar-width:300px
+}
+*{
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+button{
+    text-decoration: none;
+}
+::-webkit-scrollbar{
+    @apply bg-secondary w-2
+}
+
+::-webkit-scrollbar-thumb{
+    @apply bg-primary bg-opacity-80 w-2 rounded-md
+}
