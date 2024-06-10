@@ -8,7 +8,7 @@ export default {
             name:'dashboard',
             //meta:{ rolsAllow: ['admin', 'tech'] },
             //beforeEnter: [ rolGuard ],
-            component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/ticket/views/DashboardView.vue"),
+            component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/cases/views/DashboardView.vue"),
         },
         {
             path:'pendientes',
@@ -21,17 +21,17 @@ export default {
                 { 
                     path: "asignados/:type?", 
                     name:"assigned",
-                    component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/ticket/pages/AssignmentView.vue"),
+                    component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/cases/pages/AssignmentView.vue"),
                     props:true,
                 },
                 { 
                     path: "no-asignados/:type?", 
                     name:"unAssigned",
-                    component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/ticket/pages/AssignmentView.vue"),
+                    component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/cases/pages/AssignmentView.vue"),
                     props:true,
                 },
             ],
-            component:() => import(/* webpackChunkName: "tech pending tickets view "*/"@/modules/ticket/views/PendingView.vue"),
+            component:() => import(/* webpackChunkName: "tech pending tickets view "*/"@/modules/cases/views/PendingView.vue"),
         },
         // colocar ruta para el cliente y el admin compartidas
         { 

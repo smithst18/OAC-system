@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import SidebarDropdown from '@/components/sidebar/DropDown.vue';
+  import SidebarLink from '@/components/sidebar/LinkVue.vue';
   import userCard from '../commons/userCard.vue';
   const emits = defineEmits<{
     (event:'OnToggleSidebar',is_spanded:boolean ):void
@@ -8,18 +9,11 @@
 
   const is_spanded = ref(false);
 
-  const ticketLinks = [
-    { to: 'dashboard'    , name:'Inicio',       icon:'home'   },
-    { to: 'pending'      , name:'Gestion',      icon:'fact_check'   },
-  ];
-  const mailLinks = [
-    { to: 'imbox'    , name:'Inbox'       ,      icon:'inbox'         },
-    { to: 'favorite'      , name:'Favoritos'   ,      icon:'star'          },
-    { to: 'sended'      , name:'Enviados'    ,      icon:'send'          },
-    { to: 'clip'      , name:'Borradores'  ,      icon:'description'   },
-    { to: 'spam'      , name:'spam'        ,      icon:'info'          },
-    { to: 'deleted'      , name:'Papelera'    ,      icon:'delete'        },
-  ];
+  const HomeLink = { 
+    to: 'dashboard', 
+    name:'Inicio',       
+    icon:'home'   
+  };
 
   const adminLinks = [
     { to: 'signin'    ,     name:'Registro'    ,      icon:'person_add'         },
@@ -50,9 +44,8 @@
 
     <!--menu options-->
     <div class="menu max-h-[65%]  overflow-y-auto" :class="{'px-[1rem]':is_spanded}">
-      <SidebarDropdown title="Tickets" icon="local_activity" :links="ticketLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
-      <SidebarDropdown title="Mail" icon="mail" :links="mailLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
-      <SidebarDropdown title="Gestion" icon="manage_accounts" :links="adminLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
+      <SidebarLink title="Inicio" icon="Home" :is_spanded="is_spanded" :link="HomeLink"/>
+      <SidebarDropdown title="Gestion" icon="manage_accounts" :is_dropdown="true" :links="adminLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
       <!--<SidebarDropdown title="Gestion" icon="manage_accounts" :options="[]" :is_spanded="is_spanded" @in-focus="spandDropdown"/> -->
     </div>
     <!--user config-->
