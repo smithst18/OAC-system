@@ -5,11 +5,11 @@ import { ref } from 'vue';
 </script>
 
 <template>
-  <div class="bg-white w-full h-[8%] rounded-md flex items-center px-5 text-gray-400 capitalize">
+  <div class="w-full h-full flex items-center px-5 capitalize">
     <p class="text-xl">{{ time }}  |  {{ date }}</p>
     <div class="ml-auto flex">
-      <p class="mr-5"> icon1 </p>
-      <p>icon 2</p>
+      <p class="material-symbols-outlined mr-3 text-lg cursor-pointer">settings</p>
+      <p class="material-symbols-outlined mr-3 text-lg cursor-pointer">logout</p>
     </div>
   </div>
 </template>

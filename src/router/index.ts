@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ticketsRoutes from "@/modules/ticket/router"
+import casesRoutes from "@/modules/cases/router"
 import mailRoutes from "@/modules/mail/router"
 import managementRoutes from "@/modules/users/router"
 import LoginView from '@/views/LoginView.vue';
@@ -17,11 +17,11 @@ const router = createRouter({
       name:"home",
       //beforeEnter: [ isAuthGuard ],
       component: () => import(/* webpackChunkName: "Vista principal donde se cargan las rutas"*/"@/views/HomeView.vue"),
-      redirect: { name:"tickets" },
+      redirect: { name:"Cases" },
       children:[
-        { path: "tickets", ...ticketsRoutes },
+        { path: "casos", ...casesRoutes },
         { path: "mail", ...mailRoutes },
-        { path: "gestion", ...managementRoutes },
+        { path: "configuracion", ...managementRoutes },
         //{ path: "mail", ...chatRoutes },
       ]
     },

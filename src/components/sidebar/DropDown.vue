@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-  import { onMounted, ref, computed } from 'vue';
-  import type { TicketLink } from '@/interfaces/sidebarInterface';
+  import { ref, computed } from 'vue';
+  import type { Link } from '@/interfaces/sidebarInterface';
   import { useRoute } from 'vue-router';
   const route = useRoute();
 
@@ -13,7 +13,7 @@
   const props = defineProps<{
     icon: string,
     title: string,
-    links: Array<TicketLink>,
+    links: Array<Link>,
     is_spanded: boolean
   }>();
   

@@ -11,7 +11,7 @@ export default {
             component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/users/views/SignIn.vue"),
         },
         {
-            path:'Gestion',
+            path:'gestion',
             name:'management',
             //meta:{ rolsAllow: ['admin', 'tech'] },
             //beforeEnter: [ rolGuard ],
