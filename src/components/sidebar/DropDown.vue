@@ -41,7 +41,7 @@
           <router-link
             :to="{ name:link.to }"
             v-slot="{ isActive }">
-            <div class="flex items-center rounded-md my-2 mx-5 px-2 hover:text-white hover:bg-secondary" :class="{'text-white bg-secondary ': isActive}">
+            <div class="flex items-center rounded-md my-2 mx-5 px-6 hover:text-white hover:bg-secondary" :class="{'text-white bg-secondary ': isActive}">
               <p class="material-symbols-outlined mr-3 text-lg">{{ link.icon }}</p>
               <p> {{ link.name }} </p>
               <!-- <p class="ml-auto text-xs"> 2 </p> -->

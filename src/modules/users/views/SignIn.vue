@@ -73,7 +73,7 @@
 
 <style scoped lang='scss'>
     input {
-      @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary-light border-gray-300
+      @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
     }
     label{
         @apply absolute duration-300 top-3 -z-1 text-gray-500

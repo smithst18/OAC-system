@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-    import { defineAsyncComponent, onMounted, computed, ref } from 'vue';
+    import { defineAsyncComponent, onMounted, ref } from 'vue';
     import { useDataTable } from "@/composables/useDataTble";
     const ManagUserCard = defineAsyncComponent(() => import('@/modules/users/components/ManagUserCard.vue'));
     const PaginationBar = defineAsyncComponent(() => import('@/components/table/PaginationBar.vue'));

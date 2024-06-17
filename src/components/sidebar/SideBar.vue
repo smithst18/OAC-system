@@ -11,13 +11,18 @@
 
   const HomeLink = { 
     to: 'dashboard', 
-    name:'Inicio',       
+    name:'inicio',       
     icon:'home'   
+  };
+  const CasesLink = { 
+    to: 'list', 
+    name:'casos',       
+    icon:'plagiarism'   
   };
 
   const adminLinks = [
-    { to: 'signin'    ,     name:'Registro'    ,      icon:'person_add'         },
-    { to: 'management'      , name:'Gestion'   ,      icon:'manage_accounts'          },
+    { to: 'signin'    ,     name:'registro'    ,      icon:'person_add'         },
+    { to: 'management'      , name:'gestion'   ,      icon:'manage_accounts'          },
   ];
 
 
@@ -45,6 +50,7 @@
     <!--menu options-->
     <div class="menu max-h-[65%]  overflow-y-auto" :class="{'px-[1rem]':is_spanded}">
       <SidebarLink title="Inicio" icon="Home" :is_spanded="is_spanded" :link="HomeLink"/>
+      <SidebarLink title="Casos" icon="plagiarism" :is_spanded="is_spanded" :link="CasesLink"/>
       <SidebarDropdown title="Gestion" icon="manage_accounts" :is_dropdown="true" :links="adminLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
       <!--<SidebarDropdown title="Gestion" icon="manage_accounts" :options="[]" :is_spanded="is_spanded" @in-focus="spandDropdown"/> -->
     </div>

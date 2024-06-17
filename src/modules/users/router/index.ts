@@ -8,7 +8,7 @@ export default {
             name:'signin',
             //meta:{ rolsAllow: ['admin', 'tech'] },
             //beforeEnter: [ rolGuard ],
-            component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/users/views/SignIn.vue"),
+            component: () =>  import(/* webpackChunkName: "tech principal view "*/"@/modules/users/views/SignIn.vue"),
         },
         {
             path:'gestion',
@@ -19,7 +19,7 @@ export default {
                 { 
                     path: "clientes/:type?", 
                     name:"clients",
-                    component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/users/pages/ManagementPage.vue"),
+                    component: () =>  import (/* webpackChunkName: "tech principal view "*/"@/modules/users/components/ManagementTable.vue"),
                     props:true,
                 },
                 // { 
@@ -29,7 +29,7 @@ export default {
                 //     props:true,
                 // },
             ],
-            component:() => import(/* webpackChunkName: "tech principal view "*/"@/modules/users/views/Management.vue"),
+            component: () =>  import (/* webpackChunkName: "tech principal view "*/"@/modules/users/views/ManagementView.vue"),
         },
         { 
             path: '/:pathMatch(.*)*', 

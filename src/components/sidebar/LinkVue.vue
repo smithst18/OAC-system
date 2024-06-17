@@ -3,8 +3,6 @@
   import { computed } from 'vue';
 
   const props = defineProps<{
-    icon: string,
-    title: string,
     link: Link,
     is_spanded: boolean
   }>();
@@ -23,8 +21,8 @@
       :to="rout"
       v-slot="{ isActive }">
       <div class="menu-item" :class="{ 'text-white bg-secondary': isActive }">
-        <span class="material-symbols-sharp">{{ props.icon }}</span>
-        <span class="menu-text">{{ props.title }}</span>
+        <span class="material-symbols-sharp">{{ props.link.icon }}</span>
+        <span class="menu-text">{{ props.link.name }}</span>
       </div> 
     </router-link>
   </div>
