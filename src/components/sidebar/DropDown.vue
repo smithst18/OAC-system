@@ -3,19 +3,20 @@
   import type { Link } from '@/interfaces/sidebarInterface';
   import { useRoute } from 'vue-router';
   const route = useRoute();
-
-  //this property allows the navbar father element change is own color when the main rout is active
-  const isActive = computed(() =>{
-    let rut = route.path.split('/');
-    return rut[1] == props.title.toLowerCase() ? true : false
-  })
-
   const props = defineProps<{
     icon: string,
     title: string,
     links: Array<Link>,
     is_spanded: boolean
   }>();
+
+  //this property allows the navbar father element change is own color when the main rout is active
+  const isActive = computed(() =>{
+    let rut = route.path.split('/');
+    // console.log(rut);
+    return rut[1] == props.title.toLowerCase() ? true : false
+  })
+
   
   const emit = defineEmits<{
       (event:'inFocus'):void,

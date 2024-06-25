@@ -1,36 +1,21 @@
 <script setup lang='ts'>
-    import { defineAsyncComponent, onMounted } from 'vue';
-    import { useRouter } from 'vue-router';
-    const NavbarComponent = defineAsyncComponent(() => import('@/components/navbar/NavBar.vue'));
-    const SearchingBar = defineAsyncComponent(() => import('@/components/commons/SearchBar.vue'));
-    const AddButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
-    const router = useRouter();
+  import { defineAsyncComponent } from 'vue';
+  import { useRouter } from 'vue-router';
 
-    onMounted(() => {
-        // a tener en cuenta de esta manera no tenemos los params en tiempo real IMPORTANTE
-        router.push({ name: 'clients', params: { type: 'usuario' } });
-    });
+  const ManagementTable = defineAsyncComponent(() => import("@/modules/users/components/ManagementTable.vue"));
+  const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
 </script>
 
 <template>
-    <div class="w-full h-full">
-        <div class="h-1/5 pt-8">
-            <h1 class="text-2xl font-bold h-2/4">Equipo</h1>
-            <div class="h-2/4">
-                <NavbarComponent class="pl-5 border-b-2 h-full" :routParams="[{ title:'users', name:'clients', notifications:0, type:'usuario' }]">
-                    <template v-slot:extra-element>
-                        <div class="flex items-center">
-                            <SearchingBar class="mr-5"/>
-                            <AddButton :full-size="false" title="Añadir" icon="person_add" @click="$router.push({name:'signin'})"/>
-                        </div>
-                    </template>
-                </NavbarComponent>
-            </div>
-        </div>
-        <div class="h-3/4 mt-5">
-            <router-view/>
-        </div>
+  <div class="w-full h-full">
+    <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
+      <InfoBar class="text-gray-400"/>
     </div>
+    <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
+    <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5">
+      <ManagementTable/>
+    </div>
+  </div>
 </template>
 
 <style scoped lang='scss'>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { defineAsyncComponent } from "vue";
   import { type NumericArrayProp } from '@/interfaces/chartInterfaces';
-  const InforBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
+  const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const Doughnut = defineAsyncComponent(() => import("@/components/charts/DoughnutChart.vue"));
   const BarChart = defineAsyncComponent(() => import("@/components/charts/barChart.vue"));
 </script>
@@ -9,7 +9,7 @@
 <template>
     <div class="w-full h-full">
       <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
-        <InforBar class="text-gray-400"/>
+        <InfoBar class="text-gray-400"/>
       </div>
       <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
       <div class="bg-white shadow-md  rounded-2xl w-full h-[30%] py-5 px-5 flex">

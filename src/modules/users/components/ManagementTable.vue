@@ -250,7 +250,7 @@
     } = useDataTable(users,10);
     // const results =  computed(() => 40 /** tama;o dela rray de data */);
     const prueba = () => {
-        alert('hola mundo desde el usuario selccionado')
+        alert('hola mundo desde el usuario seleccionado')
     }
     const showModal = ref(false)
     onMounted(() => getDataPagination(actualPage.value));
@@ -301,7 +301,7 @@
             </div>
             
         </div>
-        <div class="h-[15%] w-full border">
+        <div class="h-[15%] w-full bg-primary-light bg-opacity-80">
             <PaginationBar 
                 class="w-full h-full border px-2"
                 :pages="pages" 
