@@ -1,8 +1,10 @@
 <script setup lang="ts">
-  import { defineAsyncComponent } from "vue";
+  import { defineAsyncComponent, ref } from "vue";
 
   const InforBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const DataTable = defineAsyncComponent(() => import("@/components/table/DataTable.vue"));
+  const CaseDiary = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
+  const showModal = ref(false)
   const data = [
         {
             icono: "ruta/al/icono",
@@ -245,8 +247,9 @@
         'titulo 4',
         'titulo 5',
   ]
-  const on_picked_element = () => {
-    console.log('hola');
+  const on_picked_element = (elm:string) => {
+    console.log(elm);
+    showModal.value = true;
   }
 </script>
 
@@ -262,8 +265,24 @@
         </h1>
 
         <div class="w-full h-[80%]">
-            <DataTable :titles="titles" :data="data" :elements-per-page="5" :on-picked-element="on_picked_element"/>
+            <DataTable :titles="titles" :data="data" :elements-per-page="5" @picked-element="on_picked_element"/>
         </div>
+
+        <!-- mODAL FOR USER UPDATES -->
+        <Teleport to="body">
+            <!-- use the modal component, pass in the prop -->
+            <CaseDiary :show-modal="showModal" @close-modal="showModal = false">
+                <template #header>
+                    <h3>AQUI EL NUMERO DEL CASO</h3>
+                </template>
+                <template #body>
+                    <h3>AQUI VA LA INFO DEL CASO</h3>
+                </template>
+                <template #footer>
+                    <h3>aQUI VAN LAS ANOTACIONES DIARIAS </h3>
+                </template>
+            </CaseDiary>
+        </Teleport>
     </div>
 </template>
 

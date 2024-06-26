@@ -57,7 +57,8 @@ const emit = defineEmits<{
                     <tbody class="">
                         <tr v-for="(elm) in paginatedData" :key="elm">
                             <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
-                                v-for="(property, propertyName, index) in elm" :key="index">
+                                v-for="(property, propertyName, index) in elm" :key="index" 
+                                @click="emit('pickedElement',elm.rol)">
                                 <p class="p-8">
                                     {{ property }}
                                 </p>

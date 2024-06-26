@@ -83,7 +83,6 @@ aside{
     opacity: 0;
     z-index: -999;
     transition: 0.2s ease-out;
-    cursor: auto;
   }
   .menu::-webkit-scrollbar{
     display: none; 

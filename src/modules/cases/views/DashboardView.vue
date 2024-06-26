@@ -20,8 +20,8 @@
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos tempore beatae hic, ducimus ex, ea quas dolore impedit doloribus voluptates, ipsa velit doloremque necessitatibus labore sint nam eveniet ut optio! Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quidem nulla, adipisci illum debitis labore, at tempore reiciendis dolores laborum iste ea dolor harum mollitia inventore recusandae error, nesciunt tempora.
         </div>
       </div>
-      <div class="w-full mt-10 mb-10 h-[40%] flex justify-between">
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5 ">
+      <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
+        <div class="bg-white rounded-2xl shadow-md py-5 px-5">
           <BarChart title="Casos Cerrados" :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as NumericArrayProp"/>
         </div>
         <div class="bg-white rounded-2xl shadow-md py-5 px-5">
