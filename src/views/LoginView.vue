@@ -1,4 +1,18 @@
 <script setup lang="ts">
+  import { logInService } from '@/services/userServices';
+  import { reactive } from 'vue';
+
+  const formData = reactive({});
+
+  const sendForm = async () =>{
+    const user = {
+      ci:'',
+      password:'',
+    }
+
+    console.log(await logInService(user));
+  }
+
 </script>
 
 <template>
@@ -32,8 +46,9 @@
         </div>
 
         <button 
-        type="submit"
-        class="px-6 py-2 w-full text-white text-base bg-primary rounded-md hover:bg-opacity-80 focus:ring-2 focus:ring-primary transition delay-75 duration-75 ease-in-out mt-auto ">
+        type="button"
+        class="px-6 py-2 w-full text-white text-base bg-primary rounded-md hover:bg-opacity-80 focus:ring-2 focus:ring-primary transition delay-75 duration-75 ease-in-out mt-auto "
+        @click="sendForm">
           Iniciar Sesion
         </button>
         <button 
