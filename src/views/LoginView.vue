@@ -1,16 +1,28 @@
 <script setup lang="ts">
-  import { logInService } from '@/services/userServices';
-  import { reactive } from 'vue';
+  import { defineAsyncComponent, reactive, ref } from 'vue';
+  import { useMainStore } from '@/stores/mainStore';
+  import { useRouter } from 'vue-router';
+  const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
+  const SubmitButton =  defineAsyncComponent(()=> import('@/components/commons/MainButton.vue'));
+  const mainStore = useMainStore();
+  const router = useRouter();
+  const error = ref(false);
+  const apiServerError = ref(false);
 
-  const formData = reactive({});
+  const formData = reactive({
+    ci:'',
+    password:'',
+  });
 
-  const sendForm = async () =>{
-    const user = {
-      ci:'',
-      password:'',
+  const onSubmit = async () =>{
+    const resp = await mainStore.logIn(formData);
+    if(resp === '200')  router.push({ name:'home' });
+    else if(resp === "400") error.value = true;
+    else if(resp === "500") apiServerError.value = true;
+    else{
+      error.value = false;
+      apiServerError.value = false;
     }
-
-    console.log(await logInService(user));
   }
 
 </script>
@@ -23,7 +35,9 @@
         <span class="text-5xl">Bienvenido</span>
       </p>
       <!-- fORMULARIO -->
-      <form  id="form" class="w-full h-[70%] mt-20 p-10 bg-white flex flex-col">
+      <form  id="form" class="w-full h-[70%] mt-20 p-10 bg-white flex flex-col"
+      @keypress.enter="onSubmit"
+      @submit.prevent="onSubmit">
         <p class="text-center text-2xl text-primary my-8">Inicia sesión en tu cuenta </p>
         <div class="relative z-0 w-full mb-10">
           <input
@@ -31,6 +45,10 @@
           name="userName"
           required
           placeholder=" "
+          autocomplete="userName"
+          oninvalid="this.setCustomValidity('Porfavor introduce la cedula')" 
+          oninput="setCustomValidity('')"
+          v-model="formData.ci"
           />
           <label for="name" class="absolute duration-300 top-3 -z-1 origin-0 text-primary text-base">Usuario</label>
         </div>
@@ -41,16 +59,18 @@
           name="password"
           required
           placeholder=" "
+          autocomplete="current-password"
+          oninvalid="this.setCustomValidity('Ingrese su contraseña')" 
+          oninput="setCustomValidity('')"
+          v-model="formData.password"
           />
           <label for="name" class="absolute duration-300 top-3 -z-1 origin-0 text-primary text-base">Contraseña</label>
         </div>
-
-        <button 
-        type="button"
-        class="px-6 py-2 w-full text-white text-base bg-primary rounded-md hover:bg-opacity-80 focus:ring-2 focus:ring-primary transition delay-75 duration-75 ease-in-out mt-auto "
-        @click="sendForm">
-          Iniciar Sesion
-        </button>
+        <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="error">Usuario o contraseña invalidos</span>
+        <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="apiServerError">Error en la Conexion con Servidor</span>
+        <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit"> 
+          <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/><!-- this fix center the spinner with the text in parent component-->
+        </SubmitButton>
         <button 
         type="button"
         class=" text-primary text-base mt-5">

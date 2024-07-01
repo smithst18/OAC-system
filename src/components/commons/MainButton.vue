@@ -12,7 +12,10 @@
             <span class="material-symbols-outlined text-xl mr-2" v-if="icon">
                 {{ props.icon }}
             </span>
-            
-            <span class="m-auto">{{ props.title }}</span>
+            <div class="flex w-full justify-center items-center text-center">
+              <span class="">{{ props.title }}</span>
+            </div>
+            <slot class="">
+            </slot>
     </button>
 </template>

@@ -1,6 +1,14 @@
-import { AxiosInstance } from "@/api/axios"
+import  AxiosInstance  from "@/api/axios"
+// import { type AxiosResponse, type AxiosError } from "axios";
 
 export const logInService = async ( form: object ) =>{
-  const data = await AxiosInstance.get('/user/login');
-  return data;
+  try{
+
+    const response = await AxiosInstance.post('/user/login',form);
+    return response.data;
+
+  }catch(e){
+    return e
+    
+  }
 }

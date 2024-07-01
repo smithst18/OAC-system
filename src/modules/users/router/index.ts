@@ -1,7 +1,6 @@
 
 export default {
-    name:"gestion",
-    path:'gestion',
+    name:"managment",
     redirect: { name:"signin" },
     children:[
         {
