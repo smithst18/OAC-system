@@ -7,3 +7,13 @@ export interface User{
   phoneNumber?:string,
   updatedAt?:string
 }
+
+export interface signUpUser{
+  name:string,
+  ci:string,
+  rol:string,
+  password:string,
+  repassword:string,
+  birdDate:string,
+  phoneNumber:string,
+}

@@ -12,3 +12,14 @@ export const logInService = async ( form: object ) =>{
     
   }
 }
+
+export const signUpService = async ( form: object ) =>{
+  try{
+
+    const response = await AxiosInstance.post('/user/signup',form);
+    return response.data;
+
+  }catch(e){
+    return e
+  }
+}

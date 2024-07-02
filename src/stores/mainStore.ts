@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { logInService } from "@/services/userServices";
+import { logInService,signUpService } from "@/services/userServices";
 import { useCookies } from "vue3-cookies";
 import type {  User } from '@/interfaces/userInterfaces';
 import { useRouter } from 'vue-router';
@@ -22,10 +22,10 @@ export const useMainStore = defineStore('main', () => {
   // =======================================> ACTIONS
   const logIn = async ( form : object ) => {
 
-    const response = await logInService(form);
-    if(response.token) {
+    const data = await logInService(form);
+    if(data.token) {
       //save the token in the cookies for the axios interceptor
-      cookies.set('token', response.token, 60*60*12);
+      cookies.set('token', data.token, 60*60*12);
       //send the request again with the token in the header
       const payload = await logInService(form);
       // we get the payload of the user information and save it in the cookies for use it lately
@@ -36,7 +36,7 @@ export const useMainStore = defineStore('main', () => {
       return '200'
     }
     //goint this bloq if user error
-    else if(response.response) {
+    else if(data.response) {
       //set spinner in loggin vue  to false
       requestIsLoading.value = false;
       return '400';
@@ -58,6 +58,23 @@ export const useMainStore = defineStore('main', () => {
     router.push({ name:'login' });
   }
 
+  const signUp = async (form:object) =>{
+
+    const data = await signUpService(form);
+    console.log(data)
+    if(data.savedUser) return "200";
+    else if(data.response){ 
+      requestIsLoading.value = false
+      return "403"
+    }
+    else{
+      requestIsLoading.value = false
+      return "500";
+    };
+
+  }
+
+
   // autoinvoqued functions 
   //this function have to validate if the token exp is valid then it would save the cookies data in the state of the store 
 
@@ -70,5 +87,5 @@ export const useMainStore = defineStore('main', () => {
     }
   })();
   
-  return { logedUser,isLoged,requestIsLoading, logIn,logOut }
+  return { logedUser,isLoged,requestIsLoading, logIn,logOut,signUp }
 })

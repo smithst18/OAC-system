@@ -1,78 +1,179 @@
 <script setup lang='ts'>
-    import { defineAsyncComponent } from 'vue';
-    const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  import { defineAsyncComponent } from 'vue';
+  import * as yup from 'yup';
+  import { useForm } from 'vee-validate';   
+  import { useMainStore } from '@/stores/mainStore';
+  import { useToast } from '@/composables/useToast';
+  const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
+  const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+  const mainStore = useMainStore();
+  const { successToast, errorToast } = useToast();
+  const { values, errors, defineField, handleSubmit } = useForm({
+    validationSchema: yup.object({
+      name: yup
+      .string().required('Nombre es requerido').trim(),
+
+      ci: yup
+      .string().required('Cedula es requerida'),
+      
+      password: yup
+      .string().required('Contraseña es requerida').min(6,'Minimo 6 caracteres'),
+
+      repassword: yup
+      .string()
+      .required('repetir Contraseña es requerido')
+      .min(6,'Minimo 6 caracteres')
+      .oneOf([yup.ref('password')],'deben coincidir'),
+
+      birthDate: yup
+      .string()
+      .required('Fecha requerida')
+      .trim(),
+
+      phoneNumber: yup
+      .string()
+      .trim(),
+
+      rol: yup
+      .string()
+      .default('')
+      .required('Seleccione un rol')
+      .trim()
+    }),
+  });
+
+  const [name,nameAttrs] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
+  const [ci,ciAttrs] = defineField('ci')
+  const [password,passwordAttrs] = defineField('password')
+  const [repassword,repasswordAttrs] = defineField('repassword')
+  const [birthDate,birthDateAttrs] = defineField('birthDate')
+  const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber')
+  const [rol,rolAttrs] = defineField('rol')
+
+  const onSubmit = handleSubmit(async (values) => {
+    const resp = await mainStore.signUp(values);
+    if(resp === '200') successToast('Usuario creado correctamente');
+    else if (resp === '403') errorToast('El usuario ya Existe');
+    else errorToast('Server Error')
+  });
 
 </script>
 
 <template>
     <div class="w-full h-full flex items-center justify-center">
-        <div class="w-3/4 p-5 rounded-md shadow-md bg-white">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary">Nuevo usuario</h1>
-            <form action="" class="p-5 grid grid-cols-2 gap-x-9 w-full">
+        <div class="w-[70%] p-5 rounded-md shadow-md bg-white">
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Nuevo usuario</h1>
+            <form class="p-5 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
                 <div class="relative z-0 w-full mb-10">
-                    <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                  <input
+                      required
+                      type="text"
+                      name="name"
+                      placeholder=""
+                      autocomplete="name"
+                      v-model="name" 
+                      v-bind="nameAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.name"/>
+                    <label for="name" class="origin-0">Nombre Completo</label>
                 </div>
                 <div class="relative z-0 w-full mb-10">
                     <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                      required
+                      type="text"
+                      name="ci"
+                      placeholder=""
+                      autocomplete="off"
+                      v-model="ci" 
+                      v-bind="ciAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.ci"/>
+                    <label for="ci" class="origin-0">Cedula</label>
                 </div>
                 <div class="relative z-0 w-full mb-10">
                     <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                      required
+                      type="password"
+                      name="password"
+                      placeholder=""
+                      autocomplete="new-password"
+                      v-model="password" 
+                      v-bind="passwordAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.password"/>
+                    <label for="password" class="origin-0">Contraseña</label>
                 </div>
                 <div class="relative z-0 w-full mb-10">
                     <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                      required
+                      type="password"
+                      name="repassword"
+                      placeholder=""
+                      autocomplete="new-password"
+                      v-model="repassword" 
+                      v-bind="repasswordAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.repassword"/>
+                    <label for="repassword" class="origin-0">Repetir contraseña</label>
                 </div>
                 <div class="relative z-0 w-full mb-10">
                     <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                      required
+                      type="date"
+                      name="birthDate"
+                      placeholder=""
+                      autocomplete="bday"
+                      v-model="birthDate" 
+                      v-bind="birthDateAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.birthDate"/>
+                    <label for="birthDate" class="origin-0">Fecha de Nacimiento</label>
                 </div>
                 <div class="relative z-0 w-full mb-10">
                     <input
-                        type="text"
-                        name="title"
-                        required
-                        placeholder=""
+                      required
+                      type="text"
+                      name="phoneNumber"
+                      placeholder=""
+                      autocomplete="tel"
+                      v-model="phoneNumber" 
+                      v-bind="phoneNumberAttrs"
                     />
-                    <label for="name" class="origin-0">Problema</label>
+                    <ErrorMessage :err="errors.phoneNumber"/>
+                    <label for="phoneNumber" class="origin-0">Telefono</label>
+                </div>  
+                <div class="relative z-0 w-full mb-10 text-gray-500">
+                  <select 
+                    required
+                    name="rol"
+                    v-model="rol" 
+                    v-bind="rolAttrs">
+                    <option disabled value="" selected>Selecionar permisos</option>
+                    <option  value="admin">
+                      Administrador
+                    </option>
+                    <option  value="auditor">
+                      Auditor
+                    </option>
+                    <option  value="normal">
+                      User
+                    </option>
+                  </select>
+                  <label for="rol" class="origin-0">Permisos</label>
+                  <ErrorMessage :err="errors.rol"/>
                 </div>
-            </form>
-            <div class="w-[96%] mx-auto">
-                <submitButton :full-size="true" title="Agregar" class="text-center mb-5"/>
-            </div>
+                <submitButton :full-size="true" title="Agregar" class="col-span-2 text-center my-5">
+                  <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
+                </submitButton>
+            </Form>
+
         </div>
     </div>
 </template>
 
 <style scoped lang='scss'>
-    input {
+    input,select {
       @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
     }
     label{

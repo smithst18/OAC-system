@@ -69,7 +69,8 @@ aside{
   background-image: url("../../assets/imgs/fondosidebar.svg");
   background-repeat: no-repeat;
   background-size: cover;
-  @apply flex flex-col relative p-[1rem] text-secondary;//aca se controla el color de texto base de toda la barra
+  opacity: 0.8;
+  @apply flex flex-col relative p-[1rem] text-secondary ;//aca se controla el color de texto base de toda la barra
   width: calc(4rem + 30px);
   transition: 0.3s ease-out;
   
