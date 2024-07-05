@@ -1,8 +1,9 @@
 import { computed, ref } from "vue";
 
-export const useDataTable = (data: any[], elementsPerPage: number) => {
+export const useDataTable = (data: any[], elementsPerPage: number,TotalPages:number) => {
+
   const paginatedData = ref<any[]>([]);
-  const pages = computed(() => Math.ceil(data.length / elementsPerPage));
+  const pages = ref(TotalPages);
   const actualPage = ref(1);
 
   const visiblePages = computed(() => {

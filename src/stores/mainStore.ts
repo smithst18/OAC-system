@@ -50,18 +50,13 @@ export const useMainStore = defineStore('main', () => {
   }
 
   const logOut = () => {
-
-    isLoged.value = false;
-    logedUser.value = {};
-    cookies.remove('user')
-    cookies.remove('token');
+    $reset();
     router.push({ name:'login' });
   }
 
   const signUp = async (form:object) =>{
 
     const data = await signUpService(form);
-    console.log(data)
     if(data.savedUser) return "200";
     else if(data.response){ 
       requestIsLoading.value = false
@@ -77,6 +72,17 @@ export const useMainStore = defineStore('main', () => {
 
   // autoinvoqued functions 
   //this function have to validate if the token exp is valid then it would save the cookies data in the state of the store 
+  //fuction for reset the store
+  const  $reset = () => {
+    isLoged.value = false;
+    logedUser.value = {
+      name:'',
+      ci:'',
+      rol:'',
+    };
+    cookies.remove('user')
+    cookies.remove('token');
+  }
 
   (function () {
     const user = cookies.get('user');
@@ -87,5 +93,13 @@ export const useMainStore = defineStore('main', () => {
     }
   })();
   
-  return { logedUser,isLoged,requestIsLoading, logIn,logOut,signUp }
+  return { 
+    logedUser,
+    isLoged,
+    requestIsLoading, 
+    logIn,
+    logOut,
+    signUp, 
+    $reset 
+  }
 })

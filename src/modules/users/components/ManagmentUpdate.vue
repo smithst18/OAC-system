@@ -1,15 +1,21 @@
-<script setup lang='ts'>
-  import { defineAsyncComponent } from 'vue';
+<script setup lang="ts">
+  import type { User } from '@/interfaces/userInterfaces';
+  import { defineAsyncComponent, ref, onUpdated } from 'vue';
   import * as yup from 'yup';
-  import { useForm } from 'vee-validate';   
+  import { useForm } from 'vee-validate';  
   import { useMainStore } from '@/stores/mainStore';
-  import { useToast } from '@/composables/useToast';
-  const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
-  const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  import MainSpinner from '@/components/commons/MainSpinner.vue';
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
-  const mainStore = useMainStore();
-  const { successToast, errorToast } = useToast();
-  const { values, errors, defineField, handleSubmit } = useForm({
+  const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  const UpdateUserModal = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
+  const props =  defineProps<{
+    showModal:boolean,
+    userToupdate:User,
+  }>();
+  const emit = defineEmits<{
+    (event: "close-modal"): void;
+  }>();
+  const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       name: yup
       .string().required('Nombre es requerido').trim(),
@@ -18,17 +24,18 @@
       .string().required('Cedula es requerida'),
       
       password: yup
-      .string().required('Contraseña es requerida').min(6,'Minimo 6 caracteres'),
+      .string()
+      .trim()
+      .min(6,'Minimo 6 caracteres'),
 
       repassword: yup
       .string()
-      .required('repetir Contraseña es requerido')
+      .trim()
       .min(6,'Minimo 6 caracteres')
       .oneOf([yup.ref('password')],'deben coincidir'),
 
       birthDate: yup
       .string()
-      .required('Fecha requerida')
       .trim(),
 
       phoneNumber: yup
@@ -42,29 +49,41 @@
       .trim()
     }),
   });
-
+  const mainStore = useMainStore();
   const [name,nameAttrs] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
-  const [ci,ciAttrs] = defineField('ci')
-  const [password,passwordAttrs] = defineField('password')
-  const [repassword,repasswordAttrs] = defineField('repassword')
-  const [birthDate,birthDateAttrs] = defineField('birthDate')
-  const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber')
-  const [rol,rolAttrs] = defineField('rol')
+  const [ci,ciAttrs] = defineField('ci');
+  const [password,passwordAttrs] = defineField('password');
+  const [repassword,repasswordAttrs] = defineField('repassword');
+  const [birthDate,birthDateAttrs] = defineField('birthDate');
+  const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber');
+  const [rol,rolAttrs] = defineField('rol');
+  const modification_Confirm = ref(false);
 
-  const onSubmit = handleSubmit(async (values) => {
-    const resp = await mainStore.signUp(values);
-    if(resp === '200') successToast('Usuario creado correctamente');
-    else if (resp === '403') errorToast('El usuario ya Existe');
-    else errorToast('Server Error')
+  const toggleModal = () => {
+    emit('close-modal');
+    modification_Confirm.value = false; 
+    resetForm();
+  }
+
+  const updateUser = handleSubmit(async (values) => {
+    modification_Confirm.value = false;
+    console.log('formulario enviado')
   });
 
+  onUpdated(() =>{
+    resetForm({values:props.userToupdate})
+  })
 </script>
 
 <template>
-    <div class="w-full h-full flex items-center justify-center">
-        <div class="w-[70%] p-5 rounded-md shadow-md bg-white">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Nuevo usuario</h1>
-            <form class="p-5 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
+  <Teleport to="body">
+    <!-- use the modal component, pass in the prop -->
+    <UpdateUserModal :show-modal="showModal" @close-modal="toggleModal">
+        <template #header>
+            <h3>Modificar Usuario</h3>
+        </template>
+        <template #body>
+          <form class="p-5 grid grid-cols-2 gap-x-9 w-full" id="updateForm" novalidate @submit="updateUser">
                 <div class="relative z-0 w-full mb-10">
                   <input
                       required
@@ -163,16 +182,30 @@
                   <label for="rol" class="origin-0">Permisos</label>
                   <ErrorMessage :err="errors.rol"/>
                 </div>
-                <submitButton :full-size="true" title="Agregar" class="col-span-2 text-center my-5">
-                  <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
-                </submitButton>
             </Form>
-        </div>
-    </div>
-</template>
+        </template>
+        <template #footer>
+          <p class="text-red-500 flex-grow-1 text-center" v-if="modification_Confirm">ESTAS SEGURO DE MODIFICAR ESTE USUARIO ?</p>
+          <div class="flex justify-around mt-10">
+            <Button title="Modificar" class="bg-green-500 hover:bg-green-400 focus:bg-green-400 active:bg-green-400 focus:ring-green-400" :full-size="false" @click="modification_Confirm = true" v-if="!modification_Confirm">
+            </Button>
 
-<style scoped lang='scss'>
-    input,select {
+            <!--Main buttons update user-->
+            <Button  title="Guardar"  type="submit" form="updateForm" class="bg-green-500 hover:bg-green-400 focus:bg-green-400 active:bg-green-400 focus:ring-green-400" :full-size="false" v-if="modification_Confirm">
+              <MainSpinner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
+            </Button>
+            
+            <Button title="Cancelar" class="bg-red-600 hover:bg-red-400 focus:bg-red-400 active:bg-red-400 focus:ring-red-400" :full-size="false" @click="toggleModal">
+            </Button>
+            
+          </div>
+        </template>
+    </UpdateUserModal>
+  </Teleport>
+</template>
+ 
+<style scoped lang="scss">
+input,select {
       @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
     }
     label{

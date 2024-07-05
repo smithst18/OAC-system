@@ -1,6 +1,7 @@
 <script setup lang='ts'>
     const props = defineProps<{
         is_spanded:boolean,
+        icon?:string,
     }>();
     // const emits = defineEmits<{
     //     (event:'onChangeSize', value: string):void,

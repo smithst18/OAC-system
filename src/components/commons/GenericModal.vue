@@ -6,9 +6,10 @@
 
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-show="props.showModal">
+    <div class="modal-mask" v-show="props.showModal" @click="$emit('close-modal')">
       <div class="modal-wrapper">
-        <div class="modal-container bg-white">
+        <!-- this here allow to close modal when is clicked outside modal container-->
+        <div class="modal-container bg-white"  @click.stop>
           <!-- header modal  -->
           <div class="modal-header flex items-center">
             <slot name="header">

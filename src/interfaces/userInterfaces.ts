@@ -4,7 +4,7 @@ export interface User{
   rol:string,
   birdDate?:string,
   createdAt?:string,
-  phoneNumber?:string,
+  phoneNumber:string,
   updatedAt?:string
 }
 

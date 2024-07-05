@@ -23,3 +23,15 @@ export const signUpService = async ( form: object ) =>{
     return e
   }
 }
+
+
+export const userListService = async (page:String) =>{
+  try{
+
+    const response = await AxiosInstance.get(`/user/getusers/${page}`);
+    return response.data;
+
+  }catch(e){
+    return e
+  }
+}

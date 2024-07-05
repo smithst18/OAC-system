@@ -1,9 +1,25 @@
 <script setup lang='ts'>
-  import { defineAsyncComponent } from 'vue';
-  import { useRouter } from 'vue-router';
-
+  import { defineAsyncComponent,onMounted, ref } from 'vue';
+  import { useUserStore } from "@/modules/users/store/userStore";
+  import type { User } from '@/interfaces/userInterfaces';
   const ManagementTable = defineAsyncComponent(() => import("@/modules/users/components/ManagementTable.vue"));
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
+  const SearchBar =  defineAsyncComponent(() => import("@/components/commons/SearchBar.vue"));
+  const userStore = useUserStore()
+
+  const searchData = (data:string) => {
+    console.log(data)
+  }
+  const data = ref<User[]>([]);
+  const perpage = ref(0);
+  const pages = ref(0);
+
+  onMounted(async () => {
+    await userStore.setUserList();
+    data.value =  userStore.getUserList;
+    perpage.value = userStore.getPerPages;
+    pages.value = userStore.getTotalPages;
+  }); 
 </script>
 
 <template>
@@ -11,9 +27,12 @@
     <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
       <InfoBar class="text-gray-400"/>
     </div>
-    <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
+    <div class="flex items-center">
+      <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
+      <SearchBar class="w-[20%] h-[5%] ml-auto" @on-search-data="searchData"/>
+    </div>
     <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5">
-      <ManagementTable/>
+      <ManagementTable :data="data as [User]" :perpage="perpage" :pages="pages" />
     </div>
   </div>
 </template>
