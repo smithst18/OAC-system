@@ -1,25 +1,42 @@
 <script setup lang="ts">
-    import { ref} from 'vue';
-    const emit = defineEmits<{
-        ( event:'onSearchData', value:string ): void,
-    }>();
+  import { ref} from 'vue';
+  const emit = defineEmits<{
+      ( event:'onSearchData', value:string ): void,
+  }>();
+  const dataToFind = ref<string>("");
+  const input = ref<any>(undefined)
+  const VFocus = {
+    mounted: (el:HTMLElement) => el.focus(),
 
-    const dataToFind = ref('');
+  }
 
+  const clearDataToFind = () =>{
+    dataToFind.value = "";
+    input.value.focus();
+  }
 </script>
 
 <template>
     <div>
-        <div class="flex bg-white rounded-md p-1">
+        <div class="flex items-center bg-white rounded-md p-2">
+          <div class="flex items-center w-[80%]">
             <input 
+                v-focus
+                ref="input"
                 type="text" 
                 placeholder="buscar" 
-                class="bg-transparent placeholder-third-light-400 text-slate-700 ml-3 focus:outline-none" 
+                class="focus:border-b-2 focus:border-b-primary-light border-opacity-65 p-1 bg-transparent placeholder-third-light-400 text-slate-700 ml-1 focus:outline-none" 
                 v-model="dataToFind"
                 @keypress.enter="emit('onSearchData', dataToFind)">
-                <span class="w-6 h-6 flex ml-auto mr-3 cursor-pointer hover:opacity-70 material-symbols-outlined text-primary font-black" @click="$emit('onSearchData',dataToFind)">
-                  search
-                </span> 
+            <span class="text-sm flex cursor-pointer hover:opacity-70 material-symbols-outlined text-red-400 font-black" 
+            @click="clearDataToFind"
+            v-if="dataToFind != ''">
+              close
+            </span> 
+          </div>
+          <span class="w-6 h-6 flex ml-auto cursor-pointer hover:opacity-70 material-symbols-outlined text-primary font-black" @click="$emit('onSearchData',dataToFind)">
+            search
+          </span> 
         </div>
     </div>
 </template>

@@ -106,7 +106,7 @@
             />
         </div>
 
-        <!-- mODAL FOR USER UPDATES -->
+        <!-- component with mODAL FOR USER UPDATES -->
         <UpdateUserComponent :show-modal="showModal" :userToupdate="user"  @close-modal="showModal = false"/>
     </div>
 </template>

@@ -5,9 +5,12 @@
   import { useForm } from 'vee-validate';  
   import { useMainStore } from '@/stores/mainStore';
   import MainSpinner from '@/components/commons/MainSpinner.vue';
+  import { useUserStore } from '../store/userStore';
+  import { useToast } from '@/composables/useToast';
+  import { useModal } from '@/composables/useModal';
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
-  const UpdateUserModal = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
+  const GenericModal = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
   const props =  defineProps<{
     showModal:boolean,
     userToupdate:User,
@@ -49,7 +52,10 @@
       .trim()
     }),
   });
+  const showModal2 = ref(false);
   const mainStore = useMainStore();
+  const userStore = useUserStore();
+  const Toast = useToast();
   const [name,nameAttrs] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
   const [ci,ciAttrs] = defineField('ci');
   const [password,passwordAttrs] = defineField('password');
@@ -59,26 +65,52 @@
   const [rol,rolAttrs] = defineField('rol');
   const modification_Confirm = ref(false);
 
-  const toggleModal = () => {
+  const toggleModal1 = () => {
     emit('close-modal');
     modification_Confirm.value = false; 
     resetForm();
   }
+  const toggleModal2 = () => {
+    showModal2.value = !showModal2.value ;
+  }
 
   const updateUser = handleSubmit(async (values) => {
+    
     modification_Confirm.value = false;
-    console.log('formulario enviado')
+    let update =  {
+      _id:props.userToupdate._id,
+      ...values
+    };
+    
+    const response = await userStore.updateUser(update);
+    if(response == '200'){
+      Toast.successToast("Usuario actualizado Correctamente")
+    }else{
+      Toast.errorToast("Error al actualizar Cedula debe ser unica ")
+    }
+
   });
 
+  const unactivateUser = async () => {
+    const response = await userStore.deleteUser(props.userToupdate._id);
+    if(response == '200'){
+      Toast.successToast("Usuario BORRADO Correctamente");
+      toggleModal2();
+      toggleModal1();
+    }else{
+      Toast.errorToast("No se pudo borrar el usuario");
+    }
+  }
+
   onUpdated(() =>{
-    resetForm({values:props.userToupdate})
+    resetForm({values:props.userToupdate});
   })
 </script>
 
 <template>
   <Teleport to="body">
     <!-- use the modal component, pass in the prop -->
-    <UpdateUserModal :show-modal="showModal" @close-modal="toggleModal">
+    <GenericModal :show-modal="props.showModal" @close-modal="toggleModal1">
         <template #header>
             <h3>Modificar Usuario</h3>
         </template>
@@ -182,6 +214,14 @@
                   <label for="rol" class="origin-0">Permisos</label>
                   <ErrorMessage :err="errors.rol"/>
                 </div>
+                <!--delete user button-->
+                <div class="w-full mb-10 border-b-red-300 border-0 border-b-2">
+                  <p class="flex items-center justify-center text-red-400 text-line cursor-pointer hover:text-red-300 w-full h-full" @click="toggleModal2"> 
+                    Borrar usuario
+                    <span class="material-symbols-outlined text-red-500 ml-3 text-base">
+                      delete
+                    </span></p>
+                </div> 
             </Form>
         </template>
         <template #footer>
@@ -195,12 +235,28 @@
               <MainSpinner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
             </Button>
             
-            <Button title="Cancelar" class="bg-red-600 hover:bg-red-400 focus:bg-red-400 active:bg-red-400 focus:ring-red-400" :full-size="false" @click="toggleModal">
+            <Button title="Cancelar" class="bg-red-600 hover:bg-red-400 focus:bg-red-400 active:bg-red-400 focus:ring-red-400" :full-size="false" @click="toggleModal1">
             </Button>
             
           </div>
         </template>
-    </UpdateUserModal>
+    </GenericModal>
+    <GenericModal :show-modal="showModal2" @close-modal="toggleModal2">
+      <template #header> <p class="text-red-500 text-center w-full">Eliminar Usuario permanentemente ? </p></template>
+      <template #body> 
+        <div class="my-20">
+          <p class=" text-base">Este usuario sera eliminado de manera permanente del sistema </p>
+          <div class="flex justify-around my-10">
+            <Button title="Aceptar" :full-size="false" class="bg-green-600 hover:bg-green-400 focus:bg-green-400 active:bg-green-400 focus:ring-green-400" @click="unactivateUser">
+  
+            </Button>
+            <Button title="Cancelar" :full-size="false" class="bg-red-600 hover:bg-red-400 focus:bg-red-400 active:bg-red-400 focus:ring-red-400" @click="toggleModal2">
+            </Button>
+          </div>
+        </div>
+      </template>
+      <template #footer> <p class="text-xs text-center">Esta decision es permanente !</p></template>
+    </GenericModal>
   </Teleport>
 </template>
  

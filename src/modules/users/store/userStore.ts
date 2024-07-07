@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { userListService } from '@/services/userServices';
-import type { boolean } from 'yup';
+import { updateUserService, userListService, deleteUserService } from '@/services/userServices';
 
 export const useUserStore = defineStore('user', () => {
 
@@ -23,6 +22,46 @@ export const useUserStore = defineStore('user', () => {
       }else  return "500";
   }
 
+  const updateUser = async (userId:object) => {
+
+    const data  = await updateUserService(userId);
+    if(data.updatedUser) {
+      setUserList()
+      return '200'
+    }
+    //goint this bloq if user error
+    else if(data.response) {
+      
+      return '403';
+    }
+    //goint this bloq if server error
+    else {
+      
+      return "500";
+    }
+    
+  }
+
+  const deleteUser = async (userId:string) => {
+
+    const data  = await deleteUserService(userId);
+    if(data.deletedUser) {
+      setUserList();
+      return '200';
+    }
+    //goint this bloq if user error
+    else if(data.response) {
+      
+      return '403';
+    }
+    //goint this bloq if server error
+    else {
+      
+      return "500";
+    }
+    
+  }
+
   const NextPage = () => {
     page.value = page.value + 1;
 
@@ -40,6 +79,8 @@ export const useUserStore = defineStore('user', () => {
     totalPages,
     perPage,
     setUserList,
+    updateUser,
+    deleteUser,
     NextPage,
     PrevPage,
     getUserList: computed(() => userActualList.value),
