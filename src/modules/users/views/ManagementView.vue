@@ -22,10 +22,10 @@
     }
   })
   onMounted(async () => {
+    pages.value = userStore.getTotalPages;
     await userStore.setUserList();
     data.value =  userStore.getUserList;
     perpage.value = userStore.getPerPages;
-    pages.value = userStore.getTotalPages;
   }); 
 </script>
 
