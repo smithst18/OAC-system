@@ -265,7 +265,7 @@
         </h1>
 
         <div class="w-full h-[80%]">
-            <DataTable :titles="titles" :data="data" :elements-per-page="5" @picked-element="on_picked_element"/>
+            <DataTable :titles="titles" :data="data" :elements-per-page="5" :total-pages="5" @picked-element="on_picked_element"/>
         </div>
 
         <!-- mODAL FOR USER UPDATES -->

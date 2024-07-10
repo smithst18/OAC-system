@@ -12,7 +12,7 @@
     let user = reactive({} as User);
     const userStore = useUserStore();
     const props = defineProps<{
-      data:[User],
+      data:any,
       perpage:number,
       pages:number
     }>();

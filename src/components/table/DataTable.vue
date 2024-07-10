@@ -8,6 +8,7 @@ const props =  defineProps<{
     titles: Array <string>,
     data:Array<object>,
     elementsPerPage:number
+    totalPages:number,
 }>();
 const emit = defineEmits<{
   (event: "pickedElement", id: string): void;
@@ -21,7 +22,11 @@ const emit = defineEmits<{
         getDataPagination,
         getPreviusPage,
         getNextPage
-    } = useDataTable(props.data,props.elementsPerPage); 
+    } = useDataTable(
+      props.data,
+      props.elementsPerPage,
+      props.totalPages
+    ); 
 
     //propiedad computed para los resultados
     const results =  computed(() => props.data.length );

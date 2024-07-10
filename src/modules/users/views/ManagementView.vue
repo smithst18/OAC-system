@@ -22,10 +22,7 @@
     }
   })
   onMounted(async () => {
-    pages.value = userStore.getTotalPages;
-    await userStore.setUserList();
-    data.value =  userStore.getUserList;
-    perpage.value = userStore.getPerPages;
+    const resp = await userStore.setUserList();
   }); 
 </script>
 
@@ -39,7 +36,7 @@
       <SearchBar class="w-[20%] h-[5%] ml-auto" @on-search-data="searchData"/>
     </div>
     <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5">
-      <ManagementTable :data="data as [User]" :perpage="perpage" :pages="pages" />
+      <ManagementTable :data="userStore.getUserList" :perpage="userStore.getPerPages" :pages="userStore.getTotalPages" />
     </div>
   </div>
 </template>
