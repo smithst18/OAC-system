@@ -4,14 +4,14 @@
   import { useToast } from '@/composables/useToast';
   import { ref, defineAsyncComponent, onMounted, watch } from 'vue';
   import * as yup from 'yup';
-  import { useForm,  } from 'vee-validate';
+  import { useForm, useResetForm,  } from 'vee-validate';
   import { getCategoriesService } from "@/services/categoriesServices"; 
   import { getsubcategoriesService } from "@/services/subcategories"; 
   import type { category } from "@/interfaces/categoryInterface";
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
-  const { values, errors, defineField, handleSubmit } = useForm({
+  const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
@@ -59,9 +59,14 @@
   watch(
     () => values.categoriaId,
     async (categoriaId) => {
-      const { subcaterogiesByCategory } = await getsubcategoriesService(categoriaId);
-      if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
-      else console.log("error seteando sub categoria revizar respuesta")
+      if(categoriaId && categoriesList.value.length > 0){
+        const { subcaterogiesByCategory } = await getsubcategoriesService(categoriaId);
+        if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
+        else{
+          console.log("error seteando sub categoria revizar respuesta")
+          mainStore.changeRequestStatus(false)
+        }
+      }
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -72,7 +77,10 @@
     console.log(formulary);
     const resp = await caseStore.saveCase(formulary);
 
-    if(resp == '200') toast.successToast("Caso guardado de manera correcta");
+    if(resp == '200') {
+      toast.successToast("Caso guardado de manera correcta");
+      resetForm()
+    }
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
     else toast.errorToast("Error de servidor");
   });

@@ -12,7 +12,9 @@ export const useCaseStore = defineStore('case', () => {
 
     const data = await saveCaseService(form);
 
-    if(data.savedCase) return "200";
+    if(data.savedCase){
+      return "200";
+    }
     else if(data.response){ 
       mainStore.changeRequestStatus(false)
       return "403"
