@@ -17,6 +17,13 @@ export default {
             // beforeEnter: [ rolGuard ],
             component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/ListCases.vue"),
         },
+        {
+            path:'agregar',
+            name:'add-case',
+            // meta:{ rolsAllow: ['admin', 'tech'] },
+            // beforeEnter: [ rolGuard ],
+            component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/AddCases.vue"),
+        },
         { 
             path: '/:pathMatch(.*)*', 
             redirect:{ name:"dashboard" }

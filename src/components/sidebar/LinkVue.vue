@@ -22,7 +22,7 @@
       v-slot="{ isActive }">
       <div class="menu-item" :class="{ 'text-white bg-secondary': isActive }">
         <span class="material-symbols-sharp">{{ props.link.icon }}</span>
-        <span class="menu-text">{{ props.link.name }}</span>
+        <span class="menu-text capitalize">{{ props.link.name }}</span>
       </div> 
     </router-link>
   </div>

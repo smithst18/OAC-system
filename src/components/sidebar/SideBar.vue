@@ -9,17 +9,17 @@
 
   const is_spanded = ref(false);
 
-  const HomeLink = { 
-    to: 'dashboard', 
-    name:'inicio',       
-    icon:'home'   
-  };
-  const CasesLink = { 
-    to: 'list', 
-    name:'casos',       
-    icon:'plagiarism'   
-  };
+  // const HomeLink = { 
+  //   to: 'dashboard', 
+  //   name:'inicio',       
+  //   icon:'home'   
+  // };
 
+  const CasesLinks = [
+    { to: 'dashboard'    ,     name:'inicio'    ,      icon:'home'         },
+    { to: 'add-case'    ,     name:'añadir'    ,      icon:'post_add'         },
+    { to: 'list'      , name:'casos'   ,      icon:'description'          },
+  ];
   const adminLinks = [
     { to: 'signin'    ,     name:'registro'    ,      icon:'person_add'         },
     { to: 'management'      , name:'gestion'   ,      icon:'manage_accounts'          },
@@ -49,10 +49,19 @@
 
     <!--menu options-->
     <div class="menu max-h-[65%]  overflow-y-auto" :class="{'px-[1rem]':is_spanded}">
-      <SidebarLink title="Inicio" icon="Home" :is_spanded="is_spanded" :link="HomeLink"/>
-      <SidebarLink title="Casos" icon="plagiarism" :is_spanded="is_spanded" :link="CasesLink"/>
-      <SidebarDropdown title="Gestion" icon="manage_accounts" :is_dropdown="true" :links="adminLinks" :is_spanded="is_spanded" @in-focus="spandDropdown"/>
-      <!--<SidebarDropdown title="Gestion" icon="manage_accounts" :options="[]" :is_spanded="is_spanded" @in-focus="spandDropdown"/> -->
+      <!-- <SidebarLink title="Inicio" icon="Home" :is_spanded="is_spanded" :link="HomeLink"/> -->
+      <SidebarDropdown 
+        title="Casos" 
+        icon="plagiarism" 
+        :links="CasesLinks" 
+        :is_spanded="is_spanded" 
+        @in-focus="spandDropdown"/>
+      <SidebarDropdown 
+        title="Gestion" 
+        icon="manage_accounts" 
+        :links="adminLinks" 
+        :is_spanded="is_spanded" 
+        @in-focus="spandDropdown"/>
     </div>
     <!--user config-->
     <div class="mt-auto mb-5">

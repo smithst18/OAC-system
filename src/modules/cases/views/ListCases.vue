@@ -1,10 +1,11 @@
 <script setup lang="ts">
   import { defineAsyncComponent, ref } from "vue";
-
+  import { useRouter } from 'vue-router';
   const InforBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const DataTable = defineAsyncComponent(() => import("@/components/table/DataTable.vue"));
   const CaseDiary = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
-  const showModal = ref(false)
+  const showModal = ref(false);
+  const router = useRouter();
   const data = [
         {
             icono: "ruta/al/icono",
@@ -265,7 +266,13 @@
         </h1>
 
         <div class="w-full h-[80%]">
-            <DataTable :titles="titles" :data="data" :elements-per-page="5" :total-pages="5" @picked-element="on_picked_element"/>
+            <DataTable 
+            :titles="titles" 
+            :data="data" 
+            :elements-per-page="5" 
+            :total-pages="5" 
+            @picked-element="on_picked_element"
+            @button-action="router.push({ name:'add-case' });"/>
         </div>
 
         <!-- mODAL FOR USER UPDATES -->

@@ -17,8 +17,8 @@
 </script>
 
 <template>
-    <div>
-        <div class="flex items-center bg-white rounded-md p-2">
+    <div class="border-2 border-primary opacity-80  bg-third rounded-2xl px-3">
+        <div class="flex items-center rounded-md p-2">
           <div class="flex items-center w-[80%]">
             <input 
                 v-focus
@@ -34,7 +34,7 @@
               close
             </span> 
           </div>
-          <span class="w-6 h-6 flex ml-auto cursor-pointer hover:opacity-70 material-symbols-outlined text-primary font-black" @click="$emit('onSearchData',dataToFind)">
+          <span class="w-6 h-6 ml-auto pl-2 cursor-pointer hover:opacity-70 material-symbols-outlined text-primary font-black" @click="$emit('onSearchData',dataToFind)">
             search
           </span> 
         </div>

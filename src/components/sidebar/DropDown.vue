@@ -30,7 +30,7 @@
   <div @click="emit('inFocus')" class="pb-2 cursor-pointer">
     <div class="menu-item" @click="toggleList" :class="{'text-white bg-secondary': isActive}"> <!--:class="{'bg-primary text-secondary': list_is_spanded}"-->
       <span class="material-symbols-sharp">{{ props.icon }}</span>
-      <span class="menu-text">{{ props.title }}</span>
+      <span class="menu-text capitalize">{{ props.title }}</span>
       <span 
         class="ml-auto material-symbols-outlined desplegable-icon transition duration-900 ease-out"
         :class="{'toggle-wrap-icon': list_is_spanded}"

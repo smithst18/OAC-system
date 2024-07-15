@@ -2,8 +2,8 @@
 import SearchingBar from "@/components/commons/SearchBar.vue";
 import PaginationBar from "@/components/table/PaginationBar.vue"
 import { useDataTable } from "@/composables/useDataTble"; 
-import { computed, onMounted } from "vue";
-
+import { computed, onMounted, defineAsyncComponent } from "vue";
+const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 const props =  defineProps<{
     titles: Array <string>,
     data:Array<object>,
@@ -12,6 +12,7 @@ const props =  defineProps<{
 }>();
 const emit = defineEmits<{
   (event: "pickedElement", id: string): void;
+  (event: "buttonAction"): void;
 }>();
 
     const { 
@@ -34,7 +35,6 @@ const emit = defineEmits<{
     const searchData = (event:string) => { 
         console.log(event);
     }
-
     onMounted(() => getDataPagination(actualPage.value));
 </script>
 
@@ -42,8 +42,14 @@ const emit = defineEmits<{
     <div class="w-full h-full">
         <div class="w-full h-full hidden md:block">
             <!-- head of the table-->
-            <div class="flex my-4">
-                <SearchingBar @on-search-data="searchData($event)" class="flex ml-auto border-2 border-primary opacity-80  bg-third rounded-2xl px-3"/>
+            <div class="flex items-center justify-end my-4">
+              <Button 
+              :full-size="false" 
+              icon="Add" 
+              title="" 
+              @doSomething="$emit('buttonAction')"
+              class=" mr-5"></Button>
+              <SearchingBar @on-search-data="searchData($event)" class=""/>
             </div>
             <!-- body for the table -->
             <div class="w-full h-[70%] overflow-auto">

@@ -11,6 +11,7 @@ export const useMainStore = defineStore('main', () => {
   const { cookies } = useCookies();
   const isLoged = ref<boolean>(false);
   const logedUser = ref<User | any>({
+    id:'',
     name:'',
     ci:'',
     rol:'',
@@ -69,6 +70,9 @@ export const useMainStore = defineStore('main', () => {
 
   }
 
+  const changeRequestStatus  = (value:boolean) => {
+    requestIsLoading.value = value;
+  } 
 
   // autoinvoqued functions 
   //this function have to validate if the token exp is valid then it would save the cookies data in the state of the store 
@@ -100,6 +104,7 @@ export const useMainStore = defineStore('main', () => {
     logIn,
     logOut,
     signUp, 
-    $reset 
+    $reset,
+    changeRequestStatus
   }
 })
