@@ -1,16 +1,24 @@
 <script setup lang="ts">
+  import { useRoute } from 'vue-router';
   import { useMainStore } from '@/stores/mainStore';
   import { useCaseStore } from "@/modules/cases/store/caseStore";
   import { useToast } from '@/composables/useToast';
-  import { ref, defineAsyncComponent, onMounted, watch } from 'vue';
+  import { ref, defineAsyncComponent, onMounted, watch, computed, onUnmounted } from 'vue';
   import * as yup from 'yup';
-  import { useForm, useResetForm,  } from 'vee-validate';
+  import { useForm } from 'vee-validate';
   import { getCategoriesService } from "@/services/categoriesServices"; 
   import { getsubcategoriesService } from "@/services/subcategories"; 
   import type { category } from "@/interfaces/categoryInterface";
+  import type { Case } from '@/interfaces/caseInterface';
+
+  const props = defineProps<{
+    caseById: Case
+  }>();
+
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       remitente: yup.string().required('remitente es requerido').trim(),
@@ -31,9 +39,15 @@
       prioridad: yup .string().required('prioridad es requerido').trim(),
     }),
   });
+  
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
   const toast = useToast();
+  const rout =  useRoute();
+  const caseId = computed(() => rout.params.id.toString());
+  const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5));
+  const categoriesList = ref<category[]>([]);
+  const subCategoriesList = ref<category[]>([]);
   
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
@@ -51,11 +65,15 @@
   const [categoriaId,categoriaAttrs] = defineField('categoriaId');
   const [subCategoriaId,subCategoriaAttrs] = defineField('subCategoriaId');
   const [prioridad,prioridadAttrs] = defineField('prioridad');
+  const [viaResolucion,viaResolucionAttrs] = defineField('viaResolucion');
+  const [analistaId,analistaIdAttrs] = defineField('analistaId');
 
-  const categoriesList = ref<category[]>([]);
-  const subCategoriesList = ref<category[]>([]);
+  const [status,statusAttrs] = defineField('status');
+  const [enteRedireccionado,enteRedireccionadoAttrs] = defineField('enteRedireccionado');
+  const [createdAt,createdAtAttrs] = defineField('createdAt');
+  const [updatedAt,updatedAtAttrs] = defineField('updatedAt');
 
-  //watcher para setear las sub categorias
+  //watcher para setear las sub categorias.
   watch(
     () => values.categoriaId,
     async (categoriaId) => {
@@ -68,36 +86,150 @@
         }
       }
   });
-
+  
   const onSubmit = handleSubmit(async (values) => {
     let formulary = {
+      id:caseId.value,
       ...values,
-      analistaId: mainStore.logedUser.id,
     } 
     console.log(formulary);
-    const resp = await caseStore.saveCase(formulary);
+    const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
       toast.successToast("Caso guardado de manera correcta");
-      resetForm()
     }
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
     else toast.errorToast("Error de servidor");
   });
 
   onMounted(async() =>{
+    resetForm({values:props.caseById});
     const { categories } = await getCategoriesService();
+
     if(categories){
       categoriesList.value = categories;
     }else console.log("Error recibiendo la data revizar respuesta");
-  })
+  });
+
+  onUnmounted(() => {
+    caseStore.$reset();
+  }); 
 </script>
 
 <template>
   <div class="w-full h-full flex items-center justify-center">
-        <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar un Nuevo caso</h1>
+        <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto" v-if="props.caseById">
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseIdShort }} </h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
+
+              <!--FECHA ULTIMA ACTUALIZACION-->
+              <div class="relative z-0 w-full mb-10">
+                <input
+                  required
+                  type="text"
+                  name="createdAt"
+                  placeholder=""
+                  autocomplete="createdAt"
+                  v-model="createdAt" 
+                  v-bind="createdAtAttrs"
+                  readonly
+                />
+                <ErrorMessage :err="errors.createdAt"/>
+                <label for="createdAt" class="origin-0">Fecha de apertura</label>
+              </div>
+              <!--FECHA APERTURA-->
+              <div class="relative z-0 w-full mb-10">
+                <input
+                  required
+                  type="text"
+                  name="updatedAt"
+                  placeholder=""
+                  autocomplete="updatedAt"
+                  v-model="updatedAt" 
+                  v-bind="updatedAtAttrs"
+                  readonly
+                />
+                <ErrorMessage :err="errors.updatedAt"/>
+                <label for="createdAt" class="origin-0">Fecha de Ultima actualizacion</label>
+              </div>
+
+              <!--ENTE REDIRECIONADO-->
+              <div class="relative z-0 w-full mb-10 capitalize">
+                <input
+                  required
+                  type="text"
+                  name="enteRedireccionado"
+                  placeholder=""
+                  autocomplete="enteRedireccionado"
+                  v-model="enteRedireccionado" 
+                  v-bind="enteRedireccionadoAttrs"
+                />
+                <ErrorMessage :err="errors.enteRedireccionado"/>
+                <label for="enteRedireccionado" class="origin-0">Ente Redireccionado / N folio</label>
+              </div>
+
+              <!--VIA DE RESOLUTION-->
+              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+                <select 
+                class="capitalize"
+                  required
+                  name="viaResolucion"
+                  v-model="viaResolucion" 
+                  v-bind="viaResolucionAttrs"
+                  >
+                  <option disabled value="" selected>seleccionar via de resolucion</option>
+                  <option value="administrativa">administrativa</option>
+                  <option value="Servicio desconcentrado fondo negro primero">Servicio desconcentrado fondo negro primero</option>
+                  <option value="remitido">remitido</option>
+                  <option value="recursos propios">recursos propios</option>
+                  <option value="denuncia">denuncia</option>
+                </select>
+                <label for="viaResolucion" class="origin-0">via de resolucion</label>
+                <ErrorMessage :err="errors.viaResolucion"/>
+              </div>
+
+              <!--ANALISTA-->
+              <div class="relative z-0 w-full mb-10">
+                <input
+                  required
+                  type="text"
+                  name="analistaId"
+                  placeholder=""
+                  autocomplete="analistaId"
+                  v-model="analistaId" 
+                  v-bind="analistaIdAttrs"
+                  readonly
+                  class="capitalize"
+                />
+                <ErrorMessage :err="errors.analistaId"/>
+                <label for="analistaId" class="origin-0">Analista encargado</label>
+              </div>
+
+              <!--Status-->          
+              <div class="relative z-0 w-full mb-10 capitalize" 
+                :class="{
+                  'text-red-500': status === 'en proceso',
+                  'text-green-500': status === 'cerrado'
+                }">
+                <select 
+                class="capitalize"
+                  required
+                  name="status"
+                  v-model="status" 
+                  v-bind="statusAttrs"
+                  >
+                  <option disabled value="" selected>seleccionar status</option>
+                  <option  value="en proceso" class="text-red-500">
+                    En proceso
+                  </option>
+                  <option  value="cerrado" class="text-green-500">
+                    Cerrado
+                  </option>
+                </select>
+                <label for="status" class="origin-0">Estatus</label>
+                <ErrorMessage :err="errors.status"/>
+              </div>
+
               <!--REMITENTE-->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
@@ -150,13 +282,14 @@
                   autocomplete="nombreSolicitante"
                   v-model="nombreSolicitante" 
                   v-bind="nombreSolicitanteAttrs"
+                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.nombreSolicitante"/>
                 <label for="nombreSolicitante" class="origin-0">Nombre completo del solicitante</label>
               </div>
 
               <!-- CEDULA SOLICITANTE-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -171,7 +304,7 @@
               </div>
 
               <!-- NOMBRE COMPLETO BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -180,13 +313,14 @@
                   autocomplete="nombreBeneficiario"
                   v-model="nombreBeneficiario" 
                   v-bind="nombreBeneficiarioAttrs"
+                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.nombreBeneficiario"/>
                 <label for="nombreBeneficiario" class="origin-0">Nombre completo del Beneficiario</label>
               </div>
 
               <!-- CEDULA BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -201,7 +335,7 @@
               </div>
 
               <!-- TELEFONO BENEFICIARIO -->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -310,7 +444,7 @@
               </div>
 
               <!--MUNICIPIOS-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -319,6 +453,7 @@
                   autocomplete="municipio"
                   v-model="municipio" 
                   v-bind="municipioAttrs"
+                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.municipio"/>
                 <label for="municipio" class="origin-0">municipio</label>
@@ -326,7 +461,7 @@
 
               <!--PARROQUIAS-->
               
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -335,13 +470,14 @@
                   autocomplete="parroquia"
                   v-model="parroquia" 
                   v-bind="parroquiaAttrs"
+                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.parroquia"/>
                 <label for="parroquia" class="origin-0">parroquia</label>
               </div>
 
               <!--SECTOR-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -350,6 +486,7 @@
                   autocomplete="sector"
                   v-model="sector" 
                   v-bind="sectorAttrs"
+                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.sector"/>
                 <label for="sector" class="origin-0">sector</label>
@@ -395,9 +532,7 @@
                 <label for="categoria" class="origin-0">categoria</label>
                 <ErrorMessage :err="errors.categoriaId"/>
               </div>
-              <!-- <div v-for="category in categoriesList" :key="category._id">
 
-              </div> -->
               <!--SUBCATEGORIA -->
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.categoriaId && subCategoriesList.length > 0">
                 <select 
@@ -440,27 +575,7 @@
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
 
-              <!--VIA DE RESOLUTION-->
-              <!-- <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="viaResolucion"
-                  v-model="viaResolucion" 
-                  v-bind="viaResolucionAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar via de resolucion</option>
-                  <option value="administrativa">administrativa</option>
-                  <option value="Servicio desconcentrado fondo negro primero">Servicio desconcentrado fondo negro primero</option>
-                  <option value="remitido">remitido</option>
-                  <option value="recursos propios">recursos propios</option>
-                  <option value="denuncia">denuncia</option>
-                </select>
-                <label for="viaResolucion" class="origin-0">via de resolucion</label>
-                <ErrorMessage :err="errors.viaResolucion"/>
-              </div> -->
-
-              <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto">
+              <submitButton :full-size="true" title="Guardar" class="col-span-3 text-center my-5 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </submitButton>
             </Form>

@@ -18,7 +18,6 @@ export const useUserStore = defineStore('user', () => {
         page.value = paginatedData.paginator.currentPage;
         totalPages.value = paginatedData.paginator.totalPages;
         perPage.value = paginatedData.paginator.perPage;
-        console.log(paginatedData);
         return "200"
       }else  return "500";
   }
@@ -64,14 +63,19 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const NextPage = () => {
-    console.log(page.value)
     page.value = page.value + 1;
 
   }
 
   const PrevPage = () => {
-    console.log(page.value)
     page.value = page.value - 1;
+  }
+
+  const $reset = () => {
+    userActualList.value = [];//lista de usuarios
+    page.value = 0;// pagina en la que comienza la pagination
+    totalPages.value = 0;//numero de paginas 
+    perPage.value = 0
   }
   // =======================> GETTERS
 
@@ -86,6 +90,7 @@ export const useUserStore = defineStore('user', () => {
     deleteUser,
     NextPage,
     PrevPage,
+    $reset,
     getUserList: computed(() => userActualList.value),
     getPerPages:computed(() => perPage.value),
     getTotalPages: computed(() => totalPages.value)

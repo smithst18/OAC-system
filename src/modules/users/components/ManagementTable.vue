@@ -88,7 +88,7 @@
         </div>
         <!-- LOOP FOR USERS DATA-->
         <div class="w-full h-[70%] overflow-y-auto scrollbar-hidden"> 
-            <div v-for="elm in userStore.getUserList" :key="elm['_id']">
+            <div v-for="elm in userStore.getUserList" :key="elm['_id']" v-if="userStore.getUserList.length >= 1">
                 <ManagUserCard :rol="elm['rol']" :name="elm['name']"  :phoneNumber="elm['phoneNumber']" class="hover:bg-primary-light hover:bg-opacity-10 hover:cursor-pointer" @click="handleUserUpdate(elm)"/>
             </div>
             

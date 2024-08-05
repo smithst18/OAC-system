@@ -1,20 +1,28 @@
 <script setup lang="ts">
+  import { computed, defineProps } from "vue";
   import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
   import { Bar } from 'vue-chartjs';
-  import { type NumericArrayProp } from '@/interfaces/chartInterfaces';
+
   type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
 
   const props = defineProps<{
-    title:String,
-    data:NumericArrayProp
+    title: String,
+    data: Array<number>,
+    labels: Array<string>
   }>();
-  
+
+  const totalValue = computed(() => {
+    return props.data.reduce((acumulador, valorActual) => {
+      return acumulador + valorActual;
+    }, 0);
+  });
+
   const datas = {
-    labels:["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+    labels: props.labels,
     datasets: [
       {
         label: 'Casos por mes',
-        data: props.data as (number | [number, number] | null)[], //However, Chart.js expects the data property in the datasets object to be an array of numbers, arrays of two numbers (representing x and y coordinates), or null values. to fixed this error we use  "as (number | [number, number] | null)[]," in the expected array data
+        data: props.data,
         backgroundColor: (ctx: any) => {
           const canvas = ctx.chart.ctx;
           const gradient = canvas.createLinearGradient(0, 0, 0, canvas.canvas.height); // Adjust for vertical gradient
@@ -29,25 +37,23 @@
         borderRadius: 20,
       }
     ]
-  }
+  };
 
-  const options : DeepPartial<typeof Bar['options']> = {
+  const options: DeepPartial<typeof Bar['options']> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display:false
+        display: false
       },
       title: {
         display: true,
-        text: props.title,
+        text: `${props.title}, total: ${totalValue.value}`,
         padding: {
           top: 10,
           bottom: 30
         },
-        
       },
-      
     },
     scales: {
       x: {
@@ -69,9 +75,9 @@
         }
       }
     }
-  }
+  };
 
-  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 </script>
 
 <template>
@@ -79,7 +85,7 @@
     <Bar :data="datas" :options="options"/>
   </div>
 </template>
- 
+
 <style scoped lang="scss">
 
 </style>

@@ -1,16 +1,23 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
   import { Doughnut } from 'vue-chartjs';
+
+  const props = defineProps<{
+    title:String,
+    data: Array<number>
+    labels: Array<string>
+  }>();
 
   // Define el tipo DeepPartial
   type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
 
   const data = {
-    labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+    labels: props.labels,
     datasets: [
       {
         backgroundColor: ['#0071BC', '#662D91', '#29ABE2', '#1B1464'],
-        data: [40, 40, 40, 40]
+        data: props.data
       }
     ]
   };

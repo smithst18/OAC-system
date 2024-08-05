@@ -1,9 +1,25 @@
 <script setup lang="ts">
-  import { defineAsyncComponent } from "vue";
-  import { type NumericArrayProp } from '@/interfaces/chartInterfaces';
+  import { defineAsyncComponent, onMounted, onUnmounted, ref } from "vue";
+  import { useCaseStore } from "../store/caseStore";
+  import { useToast } from "@/composables/useToast";
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const Doughnut = defineAsyncComponent(() => import("@/components/charts/DoughnutChart.vue"));
   const BarChart = defineAsyncComponent(() => import("@/components/charts/barChart.vue"));
+  const UserBar = defineAsyncComponent(() => import("@/components/commons/UserBar.vue"));
+  const caseStore = useCaseStore();
+  const toast = useToast()
+
+  onMounted( async () => {
+    const resp = await caseStore.setGeneralStatistics();
+    if(resp == "200"){
+      toast.successToast("Estadisticas cargadas");
+    }else if(resp == "403") toast.errorToast("Error cargando data")
+    else toast.errorToast("Server ERROR");
+  });
+//as NumericArrayProp
+  onUnmounted(() => {
+    caseStore.$reset()
+  });
 </script>
 
 <template>
@@ -11,24 +27,36 @@
       <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
         <InfoBar class="text-gray-400"/>
       </div>
-      <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
-      <div class="bg-white shadow-md  rounded-2xl w-full h-[30%] py-5 px-5 flex">
-        <div class="w-[30%] h-full mr-5">
-          <Doughnut/>
+      <UserBar/>
+
+      <div class=" w-full h-[30%] flex justify-around items-center border bg-white shadow-md  rounded-2xl px-5 py-5">
+
+        <div class="w-[40%] h-full mr-10">
+          <Doughnut title="Cantidad de casos por categoria" :data="caseStore.getQuantityPerCategory.counts" :labels="caseStore.getQuantityPerCategory.labels" v-if="caseStore.getQuantityPerCategory.counts.length > 0"/>
         </div>
-        <div class="w-[70%] h-full py-1 text-gray-500">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos tempore beatae hic, ducimus ex, ea quas dolore impedit doloribus voluptates, ipsa velit doloremque necessitatibus labore sint nam eveniet ut optio! Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem quidem nulla, adipisci illum debitis labore, at tempore reiciendis dolores laborum iste ea dolor harum mollitia inventore recusandae error, nesciunt tempora.
+
+        <div class="w-[40%] h-full py-1 text-gray-500 text-sm">
+          Las siguientes gráficas entregan valores al dia mes y año  {{ new Date().toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit'}) }}.
+
+          <span>Entregando un total de : <span class="font-bold text-green-500" v-if="caseStore.getTotalCases > 0">{{ caseStore.getTotalCases }}</span>  casos totales, a la fecha en curso del dia de hoy</span>
         </div>
+
       </div>
+
       <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5">
-          <BarChart title="Casos Cerrados" :data="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as NumericArrayProp"/>
+        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+          <BarChart title="Casos Cerrados" :labels="caseStore.getClosedCasesChart.labels" :data="caseStore.getClosedCasesChart.counts" v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
+          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5">
-          <BarChart title="Casos Abiertos" :data="[85, 25, 10, 100, 53, 40, 71, 12, 95, 52, 11, 12] as NumericArrayProp"/>
+
+        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+          <BarChart title="Casos Abiertos" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
+          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
         </div>
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5">
-          <BarChart title="Casos Pendientes" :data="[12,11,10,9,8,7,6,5,4,3,2,1] as NumericArrayProp"/>
+
+        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+          <BarChart title="Casos En Proceso" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
+          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
         </div>
       </div>
     </div>

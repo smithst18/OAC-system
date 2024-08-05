@@ -7,7 +7,7 @@
   import MainSpinner from '@/components/commons/MainSpinner.vue';
   import { useUserStore } from '../store/userStore';
   import { useToast } from '@/composables/useToast';
-  import { useModal } from '@/composables/useModal';
+
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const GenericModal = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
@@ -18,6 +18,7 @@
   const emit = defineEmits<{
     (event: "close-modal"): void;
   }>();
+  
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       name: yup

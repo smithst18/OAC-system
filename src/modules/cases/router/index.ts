@@ -18,6 +18,14 @@ export default {
             component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/ListCases.vue"),
         },
         {
+          path:'editar/:id',
+          name:'update-case',
+          // meta:{ rolsAllow: ['admin', 'tech'] },
+          // beforeEnter: [ rolGuard ],
+          component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/UpdateCase.vue"),
+        },
+        {
+          
             path:'agregar',
             name:'add-case',
             // meta:{ rolsAllow: ['admin', 'tech'] },

@@ -3,26 +3,30 @@ import SearchingBar from "@/components/commons/SearchBar.vue";
 import PaginationBar from "@/components/table/PaginationBar.vue"
 import { useDataTable } from "@/composables/useDataTble"; 
 import { computed, onMounted, defineAsyncComponent } from "vue";
+import { useCaseStore } from "@/modules/cases/store/caseStore";
+import type { Case } from "@/interfaces/caseInterface";
+const caseStore = useCaseStore();
 const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 const props =  defineProps<{
     titles: Array <string>,
-    data:Array<object>,
+    data:Array<Case>,
     elementsPerPage:number
     totalPages:number,
 }>();
 const emit = defineEmits<{
   (event: "pickedElement", id: string): void;
   (event: "buttonAction"): void;
+  (event: "getPreviusPage"): void;
+  (event: "getNextPage"): void;
 }>();
 
     const { 
-        paginatedData,
         pages,
         actualPage,
         visiblePages,
         getDataPagination,
+        getNextPage,
         getPreviusPage,
-        getNextPage
     } = useDataTable(
       props.data,
       props.elementsPerPage,
@@ -34,6 +38,24 @@ const emit = defineEmits<{
     //componente barra de busqueda retorna mediante un evento  el string a buscar
     const searchData = (event:string) => { 
         console.log(event);
+    }
+
+    const nextPage = () =>{
+      //desde estas funciones se valida si el total de paginas el posible incrementar o decrementar y en dado caso se llama a la function de composable get next page luego se modifica la pagina en el store y luego se setea la nueva lista de users en el store para que asi se modifique la tabla 
+      if(caseStore.page <= caseStore.totalPages ){
+        getNextPage();
+        caseStore.NextPage();
+        caseStore.setCaseList();
+      }
+      
+    }
+
+    const prevPage = () =>{
+      if(caseStore.totalPages > 1){
+        getPreviusPage();
+        caseStore.PrevPage();
+        caseStore.setCaseList();
+      }
     }
     onMounted(() => getDataPagination(actualPage.value));
 </script>
@@ -66,12 +88,15 @@ const emit = defineEmits<{
                     </thead>
 
                     <tbody class="">
-                        <tr v-for="(elm) in paginatedData" :key="elm">
+                        <tr v-for="(elm) in data" :key="elm._id">
                             <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
                                 v-for="(property, propertyName, index) in elm" :key="index" 
-                                @click="emit('pickedElement',elm.rol)">
-                                <p class="p-8">
+                                @click="emit('pickedElement',elm._id)">
+                                <p class="p-8" v-if="propertyName !== '_id'">
                                     {{ property }}
+                                </p>
+                                <p class="p-8" v-if="propertyName == '_id'">
+                                    {{ property.substring(property.length - 5) }}
                                 </p>
                             </td>
                         </tr>
@@ -86,8 +111,8 @@ const emit = defineEmits<{
                     :elementsPerPage="props.elementsPerPage"
                     :results="results"
                     @dataPagination="getDataPagination"
-                    @prevPage="getPreviusPage"
-                    @nextPage="getNextPage"
+                    @prevPage="prevPage"
+                    @nextPage="nextPage"
                 />
             </div>
         </div>

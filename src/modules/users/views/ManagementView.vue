@@ -1,21 +1,25 @@
 <script setup lang='ts'>
-  import { defineAsyncComponent,onMounted, ref, watch } from 'vue';
+  import { defineAsyncComponent,onMounted, onUnmounted, ref, watch } from 'vue';
   import { useUserStore } from "@/modules/users/store/userStore";
   const ManagementTable = defineAsyncComponent(() => import("@/modules/users/components/ManagementTable.vue"));
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const SearchBar =  defineAsyncComponent(() => import("@/components/commons/SearchBar.vue"));
-  const userStore = useUserStore()
+  const UserBar = defineAsyncComponent(() => import("@/components/commons/UserBar.vue"));
+  const userStore = useUserStore();
   const dataToSearch = ref("");
+
   const searchData = (data:string) => {
     dataToSearch.value = data;
   }
+
   watch( dataToSearch, async (newData, oldData) =>{
     if(dataToSearch.value === ""){
       console.log("no se ha buscado nada");
     }else{
       console.log("buscando valores");
     }
-  })
+  });
+
   onMounted(async () => {
     try{
       const resp = await userStore.setUserList();
@@ -24,6 +28,9 @@
       console.log(e);
     }
   }); 
+  onUnmounted(() => {
+    userStore.$reset();
+  });
 </script>
 
 <template>
@@ -32,7 +39,7 @@
       <InfoBar class="text-gray-400"/>
     </div>
     <div class="flex items-center">
-      <h1 class="text-3xl text-white uppercase my-10">Hola, Keyla Goncalves</h1>
+      <UserBar/>
       <SearchBar class="w-[20%] h-[5%] ml-auto" @on-search-data="searchData"/>
     </div>
     <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5" v-if="userStore.getTotalPages != 0">
