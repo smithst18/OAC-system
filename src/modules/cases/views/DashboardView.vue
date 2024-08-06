@@ -33,6 +33,7 @@
 
         <div class="w-[40%] h-full mr-10">
           <Doughnut title="Cantidad de casos por categoria" :data="caseStore.getQuantityPerCategory.counts" :labels="caseStore.getQuantityPerCategory.labels" v-if="caseStore.getQuantityPerCategory.counts.length > 0"/>
+          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
         </div>
 
         <div class="w-[40%] h-full py-1 text-gray-500 text-sm">
