@@ -13,10 +13,10 @@ export const saveCaseService = async ( form : object ) =>{
 }
 
 
-export const getCasesService = async ( page : String ) =>{
+export const getCasesService = async ( page : String, search? : string ) =>{
   try{
-
-    const response = await AxiosInstance.get(`/cases/getcases/${page}`);
+    
+    const response = await AxiosInstance.get(`/cases/getcases/${page}/${search}`);
     return response.data;
 
   }catch(e){

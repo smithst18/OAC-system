@@ -37,6 +37,9 @@
       categoriaId: yup .string().required('categoria es requerido').trim(),
       subCategoriaId: yup .string().trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
+      viaResolucion: yup .string().trim(),
+      status: yup .string().required('prioridad es status').trim(),
+      enteRedireccionado: yup .string().trim(),
     }),
   });
   
@@ -45,7 +48,7 @@
   const toast = useToast();
   const rout =  useRoute();
   const caseId = computed(() => rout.params.id.toString());
-  const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5));
+  // const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5));
   const categoriesList = ref<category[]>([]);
   const subCategoriesList = ref<category[]>([]);
   
@@ -92,7 +95,6 @@
       id:caseId.value,
       ...values,
     } 
-    console.log(formulary);
     const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
@@ -103,12 +105,21 @@
   });
 
   onMounted(async() =>{
-    resetForm({values:props.caseById});
+    //seteamos el form con los valores del caso
+    resetForm({values:{
+      ...props.caseById,
+    } ,});
+    //si la subcategoria existe en el caso seteamos la lista de subcategorias
+    if(props.caseById.subCategoriaId){
+      const { subcaterogiesByCategory } = await getsubcategoriesService(props.caseById.categoriaId);
+      if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
+    }
+    //esto es para setear la lista de categorias
     const { categories } = await getCategoriesService();
 
     if(categories){
       categoriesList.value = categories;
-    }else console.log("Error recibiendo la data revizar respuesta");
+    }else console.log("Error recibiendo la data de las categorias revizar respuesta");
   });
 
   onUnmounted(() => {
@@ -119,7 +130,7 @@
 <template>
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto" v-if="props.caseById">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseIdShort }} </h1>
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseId }} </h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
 
               <!--FECHA ULTIMA ACTUALIZACION-->

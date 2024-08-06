@@ -8,7 +8,7 @@
 
   const caseStore = useCaseStore();
   const router = useRouter();
- 
+  const toSearchData = ref('');
   const titles : Array < string > = [
     "id",
     "remitente",  
@@ -22,6 +22,10 @@
     router.push({name:"update-case", params:{ id:elm }});
   }
 
+  const SearchData = async (search: string) => {
+    if(search.length >= 5) caseStore.setCaseList(search);
+    else caseStore.setCaseList();
+  }
   onMounted(async () => {
     try{
       const resp = await caseStore.setCaseList();
@@ -54,7 +58,8 @@
             :elements-per-page="caseStore.getPerPages" 
             :total-pages="caseStore.getTotalPages" 
             @picked-element="on_picked_element"
-            @button-action="router.push({ name:'add-case' });"/>
+            @button-action="router.push({ name:'add-case' })"
+            @search-data="SearchData($event)"/>
         </div>
     </div>
 </template>

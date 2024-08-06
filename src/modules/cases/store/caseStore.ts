@@ -61,9 +61,9 @@ export const useCaseStore = defineStore('case', () => {
   });
   // =======================> SETTERS
 
-  const setCaseList = async () => {
+  const setCaseList = async (search?:string) => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
-    const { paginatedData } = await getCasesService(page.value.toString());
+    const { paginatedData } = await getCasesService(page.value.toString(),search);
     if(paginatedData && paginatedData.paginator && paginatedData.cases.length > 0){
       
       caseActualList.value = paginatedData.cases;
@@ -219,6 +219,8 @@ export const useCaseStore = defineStore('case', () => {
       createdAt: new Date(caseById.value.createdAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
       updatedAt:new Date(caseById.value.updatedAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
       analistaId:caseById.value.analistaId.name,
+      categoriaId:caseById.value.categoriaId._id,
+      subCategoriaId:caseById.value.subCategoriaId._id,
     }
     return caseData
   });

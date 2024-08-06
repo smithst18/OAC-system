@@ -15,6 +15,7 @@ const props =  defineProps<{
 }>();
 const emit = defineEmits<{
   (event: "pickedElement", id: string): void;
+  (event: "searchData", search: string): void;
   (event: "buttonAction"): void;
   (event: "getPreviusPage"): void;
   (event: "getNextPage"): void;
@@ -35,26 +36,27 @@ const emit = defineEmits<{
 
     //propiedad computed para los resultados
     const results =  computed(() => props.data.length );
-    //componente barra de busqueda retorna mediante un evento  el string a buscar
-    const searchData = (event:string) => { 
-        console.log(event);
-    }
 
-    const nextPage = () =>{
+    const nextPage = async() =>{
       //desde estas funciones se valida si el total de paginas el posible incrementar o decrementar y en dado caso se llama a la function de composable get next page luego se modifica la pagina en el store y luego se setea la nueva lista de users en el store para que asi se modifique la tabla 
       if(caseStore.page <= caseStore.totalPages ){
         getNextPage();
         caseStore.NextPage();
-        caseStore.setCaseList();
+        await caseStore.setCaseList();
       }
       
     }
+    
+    const setDataPagination = async (page: number) => {
+      caseStore.page = page;
+      await caseStore.setCaseList()
+    }
 
-    const prevPage = () =>{
+    const prevPage = async() =>{
       if(caseStore.totalPages > 1){
         getPreviusPage();
         caseStore.PrevPage();
-        caseStore.setCaseList();
+        await caseStore.setCaseList();
       }
     }
     onMounted(() => getDataPagination(actualPage.value));
@@ -71,7 +73,7 @@ const emit = defineEmits<{
               title="" 
               @doSomething="$emit('buttonAction')"
               class=" mr-5"></Button>
-              <SearchingBar @on-search-data="searchData($event)" class=""/>
+              <SearchingBar @on-search-data="emit('searchData',$event)" class=""/>
             </div>
             <!-- body for the table -->
             <div class="w-full h-[70%] overflow-auto">
@@ -110,7 +112,7 @@ const emit = defineEmits<{
                     :visible-pages="visiblePages"
                     :elementsPerPage="props.elementsPerPage"
                     :results="results"
-                    @dataPagination="getDataPagination"
+                    @dataPagination="setDataPagination($event)"
                     @prevPage="prevPage"
                     @nextPage="nextPage"
                 />
