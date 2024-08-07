@@ -26,11 +26,11 @@
 
 <template>
   <div class="w-full h-full flex items-center justify-center relative">
-    <p class="w-full h-full  bg-white flex items-center justify-center"  v-if="caseStore.getCaseById._id == ''">
+    <CaseForm :caseById="caseStore.getCaseById" v-if="caseStore.getCaseById._id != ''"/>
+    <p class="w-full h-full  bg-white flex items-center justify-center"  v-else>
       Cargando Datos 
       <MainSpinner class="ml-3"/>
     </p>
-    <CaseForm :caseById="caseStore.getCaseById" v-if="caseStore.getCaseById._id != ''"/>
     <Button :full-size="false" title="" icon="menu_book" class="absolute top-10 right-24" @click="toggleModal">
       
     </Button>

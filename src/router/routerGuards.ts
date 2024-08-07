@@ -17,3 +17,14 @@ export const isNotAuth = (to:RouteLocationNormalized, from:RouteLocationNormaliz
   else next()
   
 }
+
+export const rolGuard = (to:RouteLocationNormalized, from:RouteLocationNormalized, next:NavigationGuardNext) => {
+  const store = useMainStore();
+
+  if(to.meta.rolsAllow && Array.isArray(to.meta.rolsAllow) && to.meta.rolsAllow.includes(store.logedUser.rol)){
+    next();
+  } 
+  else {
+    if(store.logedUser.rol == 'normal') next({ name:'dashboard'});
+  }
+}

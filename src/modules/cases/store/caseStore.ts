@@ -1,13 +1,23 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { saveCaseService, getCasesService, getSpecificCaseService, updateCaseService, StatisticsService  } from '@/services/casesServices';
+import { 
+  saveCaseService,
+  getCasesService, 
+  getSpecificCaseService, 
+  updateCaseService, 
+  StatisticsService  
+} from '@/services/casesServices';
+import {
+  getDiariesService,
+  saveDiaryService
+} from "@/services/diaryServices";
 import type { Case } from '@/interfaces/caseInterface';
 import { useMainStore } from '@/stores/mainStore';
-
 export const useCaseStore = defineStore('case', () => {
-
+  const mainStore = useMainStore();
   // =======================> STATE
   const caseActualList = ref([]); //lista de usuarios
+  const caseDiaryList = ref<any>([]); //lista de usuarios
   const caseById = ref<Case>({
     _id:"",
     remitente:"O.A.C",
@@ -38,7 +48,6 @@ export const useCaseStore = defineStore('case', () => {
   const page = ref(0); // pagina en la que comienza la pagination
   const totalPages = ref(0); //numero de paginas 
   const perPage = ref(0)
-  const mainStore = useMainStore();
 
   const closedCasesChart =  ref<{ counts: number[]; labels: string[] }>({
     counts: [],
@@ -63,7 +72,7 @@ export const useCaseStore = defineStore('case', () => {
 
   const setCaseList = async (search?:string) => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
-    const { paginatedData } = await getCasesService(page.value.toString(),search);
+    const { paginatedData } = await getCasesService(page.value.toString(),mainStore.logedUser.id,search);
     if(paginatedData && paginatedData.paginator && paginatedData.cases.length > 0){
       
       caseActualList.value = paginatedData.cases;
@@ -72,6 +81,34 @@ export const useCaseStore = defineStore('case', () => {
       perPage.value = paginatedData.paginator.perPage;
       return "200"
     }else  return "500";
+  }
+
+  const setDiaryCaseList = async (id:string) => {
+    //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
+    const { diaries, response } = await getDiariesService(id);
+
+    if(diaries && diaries.length > 0){
+      
+      caseDiaryList.value = diaries;
+      return "200"
+    }else if(response) return "404" ;
+    else return "500";
+  }
+  
+  const saveDiary = async (form : object) => {
+
+    const { savedDiary, response } = await saveDiaryService(form);
+
+    if(savedDiary){
+      caseDiaryList.value.push(savedDiary);
+      return "200";
+    }
+    else if(response){ 
+      return "403"
+    }
+    else{
+      return "500";
+    };
   }
 
   const setCaseById = async (id : string) =>{
@@ -91,11 +128,11 @@ export const useCaseStore = defineStore('case', () => {
       return "200";
     }
     else if(data.response){ 
-      mainStore.changeRequestStatus(false)
+      // mainStore.changeRequestStatus(false)
       return "403"
     }
     else{
-      mainStore.changeRequestStatus(false)
+      // mainStore.changeRequestStatus(false)
       return "500";
     };
   }
@@ -107,11 +144,11 @@ export const useCaseStore = defineStore('case', () => {
       return "200";
     }
     else if(data.response){ 
-      mainStore.changeRequestStatus(false);
+      // mainStore.changeRequestStatus(false);
       return "403"
     }
     else{
-      mainStore.changeRequestStatus(false);
+      // mainStore.changeRequestStatus(false);
       return "500";
     };
   }
@@ -134,11 +171,11 @@ export const useCaseStore = defineStore('case', () => {
       return "200"
     }
     else if(response){ 
-      mainStore.changeRequestStatus(false);
+      // mainStore.changeRequestStatus(false);
       return "403"
     }
     else{
-      mainStore.changeRequestStatus(false);
+      // mainStore.changeRequestStatus(false);
       return "500"
     };
   }
@@ -200,6 +237,7 @@ export const useCaseStore = defineStore('case', () => {
       counts: [],
       labels: [],
     };
+    caseDiaryList.value = [];
   }
   // =======================> GETTERS
   const getCaseList = computed(() => {
@@ -220,8 +258,10 @@ export const useCaseStore = defineStore('case', () => {
       updatedAt:new Date(caseById.value.updatedAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
       analistaId:caseById.value.analistaId.name,
       categoriaId:caseById.value.categoriaId._id,
-      subCategoriaId:caseById.value.subCategoriaId._id,
     }
+    if(caseById.value.subCategoriaId) caseData.subCategoriaId = caseById.value.subCategoriaId._id;
+    else caseData.subCategoriaId = '';
+
     return caseData
   });
 
@@ -233,6 +273,17 @@ export const useCaseStore = defineStore('case', () => {
     }else return 0
   });
 
+  const getCaseDiaryList = computed(() => {
+    let data = caseDiaryList.value.map((elm:any) => {
+      return { 
+        ...elm,
+        createdAt: new Date(elm.createdAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString()
+      }
+      
+    })
+    return data
+  });
+
   return {
     caseActualList,
     page,
@@ -240,11 +291,14 @@ export const useCaseStore = defineStore('case', () => {
     perPage,
     caseById,
     closedCasesChart,
+    caseDiaryList,
     setCaseList,
     setCaseById,
     saveCase,
     updateCase,
     setGeneralStatistics,
+    setDiaryCaseList,
+    saveDiary,
     NextPage,
     PrevPage,
     getCaseList,
@@ -254,6 +308,7 @@ export const useCaseStore = defineStore('case', () => {
     getOpenCasesChart:computed(() => openCasesChart.value),
     getOnProcessCasesChart:computed(() => onProcessCasesChart.value),
     getQuantityPerCategory: computed(() => quantityPerCategory.value),
+    getCaseDiaryList,
     getTotalCases,
     getCaseById,
     $reset

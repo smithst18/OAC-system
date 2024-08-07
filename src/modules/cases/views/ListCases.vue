@@ -8,7 +8,7 @@
 
   const caseStore = useCaseStore();
   const router = useRouter();
-  const toSearchData = ref('');
+  
   const titles : Array < string > = [
     "id",
     "remitente",  

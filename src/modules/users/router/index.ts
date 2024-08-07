@@ -1,3 +1,4 @@
+import { rolGuard } from "@/router/routerGuards";
 
 export default {
     name:"managment",
@@ -6,15 +7,15 @@ export default {
         {
             path:'registro',
             name:'signin',
-            //meta:{ rolsAllow: ['admin', 'tech'] },
-            //beforeEnter: [ rolGuard ],
+            meta:{ rolsAllow: ['admin'] },
+            beforeEnter: [ rolGuard ],
             component: () =>  import(/* webpackChunkName: "tech principal view "*/"@/modules/users/views/SignIn.vue"),
         },
         {
             path:'administracion',
             name:'management',
-            //meta:{ rolsAllow: ['admin', 'tech'] },
-            //beforeEnter: [ rolGuard ],
+            meta:{ rolsAllow: ['admin'] },
+            beforeEnter: [ rolGuard ],
             component: () =>  import (/* webpackChunkName: "tech principal view "*/"@/modules/users/views/ManagementView.vue"),
         },
         { 

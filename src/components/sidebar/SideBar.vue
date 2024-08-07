@@ -1,8 +1,10 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import SidebarDropdown from '@/components/sidebar/DropDown.vue';
-  import SidebarLink from '@/components/sidebar/LinkVue.vue';
+  // import SidebarLink from '@/components/sidebar/LinkVue.vue';
   import userCard from '../commons/userCard.vue';
+  import { useMainStore } from '@/stores/mainStore';
+  const mainStore = useMainStore();
   const emits = defineEmits<{
     (event:'OnToggleSidebar',is_spanded:boolean ):void
   }>();
@@ -55,13 +57,13 @@
         icon="plagiarism" 
         :links="CasesLinks" 
         :is_spanded="is_spanded" 
-        @in-focus="spandDropdown"/>
+        @in-focus="spandDropdown" v-if="mainStore.logedUser.rol === 'normal'"/>
       <SidebarDropdown 
         title="Gestion" 
         icon="manage_accounts" 
         :links="adminLinks" 
         :is_spanded="is_spanded" 
-        @in-focus="spandDropdown"/>
+        @in-focus="spandDropdown" v-if="mainStore.logedUser.rol === 'admin'"/>
     </div>
     <!--user config-->
     <div class="mt-auto mb-5">

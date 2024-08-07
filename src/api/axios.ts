@@ -32,6 +32,8 @@ AxiosInstance.interceptors.response.use((response) => {
 
   return response;
 }, (error) => {
+  const mainStore = useMainStore();
+  mainStore.requestIsLoading = false;
   return Promise.reject(error);
 });
 

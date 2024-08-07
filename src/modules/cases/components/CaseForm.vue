@@ -550,10 +550,10 @@
                 class="capitalize"
                   required
                   name="subCategoria"
+                  placeholder=""
                   v-model="subCategoriaId" 
                   v-bind="subCategoriaAttrs"
                   >
-                  <option disabled value="" selected>seleccionar sub Categoria</option>
                   <option
                     v-for="subcategory in subCategoriesList" 
                     :key="subcategory._id" 
@@ -589,7 +589,7 @@
               <submitButton :full-size="true" title="Guardar" class="col-span-3 text-center my-5 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </submitButton>
-            </Form>
+            </form>
         </div>
   </div>
 </template>

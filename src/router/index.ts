@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import casesRoutes from "@/modules/cases/router"
 import managementRoutes from "@/modules/users/router"
-import { isNotAuth,isAuth } from "@/router/routerGuards";
+import { isNotAuth, isAuth } from "@/router/routerGuards";
 
 
 const router = createRouter({
@@ -21,8 +21,7 @@ const router = createRouter({
       redirect: { name:"cases" },
       children:[
         { path: "casos", ...casesRoutes },
-        { path: "gestion", ...managementRoutes },
-        //{ path: "mail", ...chatRoutes },
+        { path: "gestion", ...managementRoutes }
       ]
     },
     { 

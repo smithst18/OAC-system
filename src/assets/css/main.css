@@ -21,5 +21,5 @@ button{
 }
 
 ::-webkit-scrollbar-thumb{
-    @apply bg-primary bg-opacity-80 w-2 rounded-md
+    @apply bg-primary bg-opacity-60 w-2 rounded-md
 }
