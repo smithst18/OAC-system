@@ -1,11 +1,13 @@
 <script setup lang='ts'>
-import { useMainStore } from '@/stores/mainStore';
+  import { useMainStore } from '@/stores/mainStore';
 
-    const props = defineProps<{
-        is_spanded:boolean,
-        icon?:string,
-    }>();
-    const mainStore = useMainStore();
+  const props = defineProps<{
+      is_spanded:boolean,
+      icon?:string,
+  }>();
+  const mainStore = useMainStore();
+  const { logOut } = mainStore;
+
 </script>
 
 <template>
@@ -32,8 +34,11 @@ import { useMainStore } from '@/stores/mainStore';
             ]"> -->
         </div>
         <!-- USER NAME-->
-        <div class="max-w-[150px] w-[150px] truncate text-white text-center" v-if="props.is_spanded">
-            {{ mainStore.logedUser.name }}
+        <div class="flex justify-center items-center">
+          <div class="max-w-[150px] w-[150px] truncate text-white text-center mr-3" v-if="props.is_spanded">
+              {{ mainStore.logedUser.name }}
+          </div>
+          <p class="material-symbols-outlined mr-3 text-lg cursor-pointer ml-auto text-white" v-if="is_spanded" @click="logOut">logout</p>
         </div>
     </div>
 </template>
