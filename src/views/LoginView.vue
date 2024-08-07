@@ -16,7 +16,10 @@
 
   const onSubmit = async () =>{
     const resp = await mainStore.logIn(formData);
-    if(resp === '200')  router.push({ name:'home' });
+    if(resp === '200'){
+      if(mainStore.logedUser.rol == "admin") router.push({ name:'management' });
+      else router.push({ name:'home' });
+    }  
     else if(resp === "400") error.value = true;
     else if(resp === "500") apiServerError.value = true;
     else{
