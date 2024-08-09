@@ -39,7 +39,7 @@
         <div class="w-[40%] h-full py-1 text-gray-500 text-sm">
           Las siguientes gráficas entregan valores al dia mes y año  {{ new Date().toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit'}) }}.
 
-          <span>Entregando un total de : <span class="font-bold text-green-500" v-if="caseStore.getTotalCases > 0">{{ caseStore.getTotalCases }}</span>  casos totales, a la fecha en curso del dia de hoy</span>
+          <span>Entregando un total de : <span class="font-bold text-green-500" v-if="caseStore.getTotalCases >= 0">{{ caseStore.getTotalCases }}</span>  casos totales, a la fecha en curso del dia de hoy</span>
         </div>
 
       </div>
