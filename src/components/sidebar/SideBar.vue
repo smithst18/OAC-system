@@ -57,7 +57,7 @@
         icon="plagiarism" 
         :links="CasesLinks" 
         :is_spanded="is_spanded" 
-        @in-focus="spandDropdown"/>
+        @in-focus="spandDropdown" v-if="mainStore.logedUser.rol === 'normal'"/>
       <SidebarDropdown 
         title="Gestion" 
         icon="manage_accounts" 
