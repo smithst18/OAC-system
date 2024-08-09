@@ -31,7 +31,7 @@ export const useUserStore = defineStore('user', () => {
     }
     //goint this bloq if user error
     else if(data.response) {
-      
+      console.log(data.response);
       return '403';
     }
     //goint this bloq if server error

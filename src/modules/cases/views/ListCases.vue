@@ -5,7 +5,7 @@
 
   const InforBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const DataTable = defineAsyncComponent(() => import("@/components/table/DataTable.vue"));
-
+  const Spinner = defineAsyncComponent(() => import("@/components/commons/MainSpinner.vue"));
   const caseStore = useCaseStore();
   const router = useRouter();
   
@@ -52,14 +52,18 @@
         </h1>
 
         <div class="w-full h-[80%]" v-if="caseStore.getCaseList.length > 0">
-            <DataTable 
-            :titles="titles" 
-            :data="caseStore.getCaseList" 
-            :elements-per-page="caseStore.getPerPages" 
-            :total-pages="caseStore.getTotalPages" 
-            @picked-element="on_picked_element"
-            @button-action="router.push({ name:'add-case' })"
-            @search-data="SearchData($event)"/>
+          <DataTable 
+          :titles="titles" 
+          :data="caseStore.getCaseList" 
+          :elements-per-page="caseStore.getPerPages" 
+          :total-pages="caseStore.getTotalPages" 
+          @picked-element="on_picked_element"
+          @button-action="router.push({ name:'add-case' })"
+          @search-data="SearchData($event)"/>
+        </div>
+        <div class="w-full h-[80%] text-center flex items-center justify-center" v-else >
+          <p class="text-white font-semibold mr-3">Esperando nuevos casos ... </p>
+          <Spinner class="mt-[-5px]"/>
         </div>
     </div>
 </template>

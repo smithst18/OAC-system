@@ -85,10 +85,10 @@
     
     const response = await userStore.updateUser(update);
     if(response == '200'){
-      Toast.successToast("Usuario actualizado Correctamente")
-    }else{
-      Toast.errorToast("Error al actualizar Cedula debe ser unica ")
-    }
+      Toast.successToast("Usuario actualizado Correctamente");
+    }else if(response == '403'){ 
+      Toast.errorToast("Error al actualizar Usuario");
+    }else Toast.errorToast("Error de Servidor");
 
   });
 
