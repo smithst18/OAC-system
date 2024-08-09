@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 const props = defineProps<{
     pages:number,
@@ -34,32 +34,35 @@ const nextArroy = () => {
     emit("nextPage");
   }
 };
-const endOfPage =  computed(() => activeIndex.value * props.elementsPerPage);
-const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
+// const endOfPage =  computed(() => activeIndex.value * props.elementsPerPage);
+// const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
 
 </script>
 
 <template>
   <div class="flex items-center w-full h-full">
     <div class="">
-      <span class="ml-2">{{ startOfPage }} a {{ endOfPage }} elementos de {{ results }} resultados totales</span>
+      <!-- <span class="ml-2">{{ startOfPage }} a {{ endOfPage }} elementos de {{ results }} resultados totales</span> -->
     </div>
-    <nav class="ml-auto">
+    <nav class="mx-auto bg-primary rounded-2xl">
       <ul class="">
-        <li @click="prevArroy"><a href="#">&lt;</a></li>
+        <li @click="prevArroy" class="text-third"><a href="#" class="text-xl">&lt;</a></li>
 
         <li
           v-for="(page, index) in visiblePages"
           :class="[
             { 'bg-primary text-white': activeIndex === page },
-            { 'text-zinc-600': activeIndex !== page },
+            { 'text-third': activeIndex !== page },
           ]"
           :key="page"
           @click="clickedPage(page,index)">
-          <a href="#"> {{ page }} </a>
+          <a href="#" 
+            :class="{ 'bg-white text-slate-800 px-2': activeIndex === page }"> 
+              {{ page }} 
+          </a>
         </li>
 
-        <li @click="nextArroy"><a href="#">></a></li>
+        <li @click="nextArroy" class="text-third"><a href="#" class="text-xl">></a></li>
       </ul>
     </nav>
   </div>
@@ -67,9 +70,12 @@ const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
 
 <style scoped>
   nav>ul {
-    @apply list-none flex items-center justify-end;
+    @apply list-none flex;
+  }
+  li{
+    @apply h-2 w-6
   }
   nav>ul>li {
-    @apply border rounded-md mx-1 py-1 w-8 h-8 text-center cursor-pointer hover:text-white hover:bg-primary;
+    @apply mx-3 py-1 text-center cursor-pointer my-auto h-full;
   }
 </style>

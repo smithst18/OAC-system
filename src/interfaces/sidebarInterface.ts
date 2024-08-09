@@ -1,4 +1,4 @@
-export interface TicketLink {
+export interface Link {
     to: string;
     name: string;
     icon: string;

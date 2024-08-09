@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ticketsRoutes from "@/modules/ticket/router"
-import mailRoutes from "@/modules/mail/router"
+import casesRoutes from "@/modules/cases/router"
 import managementRoutes from "@/modules/users/router"
-import LoginView from '@/views/LoginView.vue';
+import { isNotAuth, isAuth } from "@/router/routerGuards";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,19 +10,18 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: LoginView
+      beforeEnter: [ isNotAuth ],
+      component: () => import(/* webpackChunkName: "Vista principal donde se cargan las rutas"*/"@/views/LoginView.vue"),
     },
     {
       path: "/",
       name:"home",
-      //beforeEnter: [ isAuthGuard ],
+      beforeEnter: [ isAuth ],
       component: () => import(/* webpackChunkName: "Vista principal donde se cargan las rutas"*/"@/views/HomeView.vue"),
-      redirect: { name:"tickets" },
+      redirect: { name:"cases" },
       children:[
-        { path: "tickets", ...ticketsRoutes },
-        { path: "mail", ...mailRoutes },
-        { path: "gestion", ...managementRoutes },
-        //{ path: "mail", ...chatRoutes },
+        { path: "casos", ...casesRoutes },
+        { path: "gestion", ...managementRoutes }
       ]
     },
     { 

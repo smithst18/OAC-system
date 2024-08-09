@@ -2,56 +2,87 @@
 import SearchingBar from "@/components/commons/SearchBar.vue";
 import PaginationBar from "@/components/table/PaginationBar.vue"
 import { useDataTable } from "@/composables/useDataTble"; 
-import { computed, onMounted } from "vue";
-
+import { computed, onMounted, defineAsyncComponent } from "vue";
+import { useCaseStore } from "@/modules/cases/store/caseStore";
+import type { Case } from "@/interfaces/caseInterface";
+const caseStore = useCaseStore();
+const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 const props =  defineProps<{
     titles: Array <string>,
-    data:Array<object>,
+    data:Array<Case>,
     elementsPerPage:number
+    totalPages:number,
 }>();
 const emit = defineEmits<{
   (event: "pickedElement", id: string): void;
+  (event: "searchData", search: string): void;
+  (event: "buttonAction"): void;
+  (event: "getPreviusPage"): void;
+  (event: "getNextPage"): void;
 }>();
 
     const { 
-        paginatedData,
         pages,
         actualPage,
         visiblePages,
         getDataPagination,
+        getNextPage,
         getPreviusPage,
-        getNextPage
-    } = useDataTable(props.data,props.elementsPerPage); 
+    } = useDataTable(
+      props.data,
+      props.elementsPerPage,
+      props.totalPages
+    ); 
 
     //propiedad computed para los resultados
     const results =  computed(() => props.data.length );
-    //componente barra de busqueda retorna mediante un evento  el string a buscar
-    const searchData = (event:string) => { 
-        console.log(event);
+
+    const nextPage = async() =>{
+      //desde estas funciones se valida si el total de paginas el posible incrementar o decrementar y en dado caso se llama a la function de composable get next page luego se modifica la pagina en el store y luego se setea la nueva lista de users en el store para que asi se modifique la tabla 
+      if(caseStore.page <= caseStore.totalPages ){
+        getNextPage();
+        caseStore.NextPage();
+        await caseStore.setCaseList();
+      }
+      
+    }
+    
+    const setDataPagination = async (page: number) => {
+      caseStore.page = page;
+      await caseStore.setCaseList()
     }
 
+    const prevPage = async() =>{
+      if(caseStore.totalPages > 1){
+        getPreviusPage();
+        caseStore.PrevPage();
+        await caseStore.setCaseList();
+      }
+    }
     onMounted(() => getDataPagination(actualPage.value));
 </script>
 
 <template>
     <div class="w-full h-full">
-        <div class="w-full h-full hidden md:block shadow-md rounded-md p-2">
+        <div class="w-full h-full hidden md:block">
             <!-- head of the table-->
-            <div class="flex mt-2">
-                <p class="text-lg font-semibold">Historial de Tickets</p>
-                <SearchingBar @on-search-data="searchData($event)" class="flex ml-auto my-5"/>
+            <div class="flex items-center justify-end my-4">
+              <Button 
+              :full-size="false" 
+              icon="Add" 
+              title="" 
+              @doSomething="$emit('buttonAction')"
+              class=" mr-5"></Button>
+              <SearchingBar @on-search-data="emit('searchData',$event)" class=""/>
             </div>
             <!-- body for the table -->
             <div class="w-full h-[70%] overflow-auto">
 
-                <table class="table-fixed  w-full text-sm border-collapse relative">
-                    <!-- <caption class="caption-bottom">
-                        Table 3.1: Professional wrestlers and their signature moves.
-                    </caption> -->
+                <table class="table-fixed  w-full text-sm border-collapse relative border-2 border-t-0 border-primary-light  zebra-stripe ">
                     <!-- TITLES FOR TABLE DATA -->
-                    <thead class="bg-gray-50 border-gray-200 sticky top-0 drop-shadow-sm">
+                    <thead class="sticky top-0 drop-shadow-sm">
                         <tr class="">
-                            <th class="p-3 text-sm font-semibold opacity-75 tracking-wide capitalize text-left"
+                            <th class="p-8 bg-primary text-sm font-semibold tracking-wide uppercase text-left text-third"
                                 v-for="title in titles" :key="title">
                                 {{ title }}
                             </th>
@@ -59,15 +90,15 @@ const emit = defineEmits<{
                     </thead>
 
                     <tbody class="">
-                        <tr v-for="elm in paginatedData" :key="elm">
-                            <td class="text-sm text-third capitalize text-left whitespace-nowrap overflow-x-auto"
-                                v-for="(property, index) in elm" :key="index">
-                                <p v-if="String(index) !== 'nombre'" class="p-3">
+                        <tr v-for="(elm) in data" :key="elm._id">
+                            <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
+                                v-for="(property, propertyName, index) in elm" :key="index" 
+                                @click="emit('pickedElement',elm._id)">
+                                <p class="p-8" v-if="propertyName !== '_id'">
                                     {{ property }}
                                 </p>
-                                <p v-if="String(index) === 'nombre'" class="p-3"
-                                    @click="emit('pickedElement',elm.numero_random)">
-                                    {{ property }}
+                                <p class="p-8" v-if="propertyName == '_id'">
+                                    {{ property.substring(property.length - 5) }}
                                 </p>
                             </td>
                         </tr>
@@ -75,26 +106,16 @@ const emit = defineEmits<{
                 </table>
             </div>
             <!--pagination component-->
-            <div class="border-t-2 mt-2 w-full h-10">
+            <div class=" mt-2 w-full h-10">
                 <PaginationBar 
                     :pages="pages" 
                     :visible-pages="visiblePages"
                     :elementsPerPage="props.elementsPerPage"
                     :results="results"
-                    @dataPagination="getDataPagination"
-                    @prevPage="getPreviusPage"
-                    @nextPage="getNextPage"
+                    @dataPagination="setDataPagination($event)"
+                    @prevPage="prevPage"
+                    @nextPage="nextPage"
                 />
-            </div>
-        </div>
-        
-        <!-- tabla para mobiles ETC -->
-        <div class="grid grid-cols-1 gap-4 md:hidden border">
-            <div class="bg-white p-4 rounded-lg shadow text-xs">
-                <div class="grid grid-cols-2 items-center">
-                    <div class="">contenido</div>
-                    <div class="">contenido</div>
-                </div>
             </div>
         </div>
     </div>
@@ -102,9 +123,9 @@ const emit = defineEmits<{
     
     
 <style scoped lang="scss">
-table tbody tr td:first-child {
-    @apply cursor-pointer hover:text-primary font-semibold;
-}
+// table tbody tr td:first-child {
+//     @apply cursor-pointer hover:text-primary font-semibold;
+// }
 thead {
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
 }
@@ -112,5 +133,12 @@ thead {
 td::-webkit-scrollbar{
     @apply hidden
 }
+.zebra-stripe tbody tr:nth-child(odd) {
+    @apply bg-primary-light bg-opacity-50 text-third hover:text-primary cursor-pointer
+}
 
+/* Estilo para filas pares */
+.zebra-stripe tbody tr:nth-child(even) {
+    @apply bg-third bg-opacity-80 text-gray-700 hover:text-primary cursor-pointer
+}
 </style>

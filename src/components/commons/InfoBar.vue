@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+  import { ref } from 'vue';
+  import { useMainStore } from '@/stores/mainStore';
+
+  const { logOut } = useMainStore();
   const time = ref(new Date().toLocaleString('es-US', { hour: 'numeric', minute: '2-digit' }))
   const date = ref(new Date().toLocaleString('es-US', { day: 'numeric', month: 'long', weekday: 'long' }))
 </script>
 
 <template>
-  <div class="bg-white w-full h-[8%] rounded-md flex items-center px-5 text-gray-400 capitalize">
+  <div class="w-full h-full flex items-center px-5 capitalize">
     <p class="text-xl">{{ time }}  |  {{ date }}</p>
     <div class="ml-auto flex">
-      <p class="mr-5"> icon1 </p>
-      <p>icon 2</p>
+      <p class="material-symbols-outlined mr-3 text-lg cursor-pointer">settings</p>
+      <p class="material-symbols-outlined mr-3 text-lg cursor-pointer" @click="logOut">logout</p>
     </div>
   </div>
 </template>

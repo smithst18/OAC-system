@@ -6,9 +6,10 @@
 
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-show="props.showModal">
+    <div class="modal-mask" v-show="props.showModal" @click="$emit('close-modal')">
       <div class="modal-wrapper">
-        <div class="modal-container bg-white">
+        <!-- this here allow to close modal when is clicked outside modal container-->
+        <div class="modal-container bg-white"  @click.stop>
           <!-- header modal  -->
           <div class="modal-header flex items-center">
             <slot name="header">
@@ -51,11 +52,14 @@
   z-index: 999;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   display: table;
   transition: opacity 0.3s ease;
+  overflow: hidden;
+  max-height: 100vh;
+  max-width: 100vw;
 }
 
 .modal-wrapper {
@@ -71,6 +75,7 @@
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
+  overflow: auto;
 }
   
 .modal-header h3 {
