@@ -103,7 +103,8 @@
               :full-size="false" 
               icon="subdirectory_arrow_left" 
               title="" 
-              class="ml-5">
+              class="ml-5"
+              :is-disabled="caseStore.getCaseById.analistaId._id !== mainStore.logedUser.id">
             </Button>
           </form>
         </div>

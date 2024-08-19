@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
 
 const props = defineProps<{
-    pages:number,
+    totalpages:number,
     elementsPerPage: number;
     results: number;
-    visiblePages: Array<number>;
+    visiblePages: number;
+    activeIndex:number | 1;
 }>();
-
-const activeIndex = ref(1);
 
 const emit = defineEmits<{
   (event: "dataPagination", page: number): void;
@@ -16,53 +15,41 @@ const emit = defineEmits<{
   (event: "prevPage"): void;
 }>();
 
-const clickedPage = (page: number, index: number) => {
-  activeIndex.value = page;
-  emit("dataPagination", page);
-};
-
-const prevArroy = () => {
-  if (activeIndex.value > 1) {
-    activeIndex.value -= 1;
-    emit("prevPage");
-  }
-};
-
-const nextArroy = () => {
-  if (activeIndex.value < props.pages) {
-    activeIndex.value += 1;
-    emit("nextPage");
-  }
-};
-// const endOfPage =  computed(() => activeIndex.value * props.elementsPerPage);
-// const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
+const endOfPage =  computed(() => props.activeIndex * props.elementsPerPage);
+const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
 
 </script>
 
 <template>
   <div class="flex items-center w-full h-full">
     <div class="">
-      <!-- <span class="ml-2">{{ startOfPage }} a {{ endOfPage }} elementos de {{ results }} resultados totales</span> -->
+      <span class="ml-2 text-white">
+        mostrando 
+        {{ results }} 
+        elementos 
+        de 
+        {{ startOfPage }} hasta {{ endOfPage }} resultados
+      </span>
     </div>
     <nav class="mx-auto bg-primary rounded-2xl">
       <ul class="">
-        <li @click="prevArroy" class="text-third"><a href="#" class="text-xl">&lt;</a></li>
+        <li @click="emit('prevPage')" class="text-third"><a href="#" class="text-xl">&lt;</a></li>
 
         <li
           v-for="(page, index) in visiblePages"
           :class="[
-            { 'bg-primary text-white': activeIndex === page },
-            { 'text-third': activeIndex !== page },
+            { 'bg-primary text-white': props.activeIndex === page },
+            { 'text-third': props.activeIndex !== page },
           ]"
           :key="page"
-          @click="clickedPage(page,index)">
+          @click="emit('dataPagination', page)">
           <a href="#" 
-            :class="{ 'bg-white text-slate-800 px-2': activeIndex === page }"> 
+            :class="{ 'bg-white text-slate-800 px-2': props.activeIndex === page }"> 
               {{ page }} 
           </a>
         </li>
 
-        <li @click="nextArroy" class="text-third"><a href="#" class="text-xl">></a></li>
+        <li @click="emit('nextPage')" class="text-third"><a href="#" class="text-xl">></a></li>
       </ul>
     </nav>
   </div>

@@ -1,11 +1,13 @@
 <script setup lang='ts'>
   import { defineAsyncComponent,onMounted, onUnmounted, ref, watch } from 'vue';
   import { useUserStore } from "@/modules/users/store/userStore";
+  import { useMainStore } from '@/stores/mainStore';
   const ManagementTable = defineAsyncComponent(() => import("@/modules/users/components/ManagementTable.vue"));
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const SearchBar =  defineAsyncComponent(() => import("@/components/commons/SearchBar.vue"));
   const UserBar = defineAsyncComponent(() => import("@/components/commons/UserBar.vue"));
   const userStore = useUserStore();
+  const mainStore = useMainStore();
   const dataToSearch = ref("");
 
   const searchData = (data:string) => {
@@ -42,9 +44,9 @@
       <UserBar/>
       <SearchBar class="w-[20%] h-[5%] ml-auto" @on-search-data="searchData"/>
     </div>
-    <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5" v-if="userStore.getTotalPages != 0">
-      <ManagementTable :data="userStore.getUserList" :perpage="userStore.getPerPages" :pages="userStore.getTotalPages" />
-      <p v-if="userStore.getTotalPages < 1">Cargando data ...</p>
+    <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5" v-if="mainStore.getTotalPages != 0">
+      <ManagementTable :data="userStore.getUserList" :perpage="mainStore.getPerPages" :pages="mainStore.getTotalPages" />
+      <p v-if="mainStore.getTotalPages < 1">Cargando data ...</p>
     </div>
   </div>
 </template>

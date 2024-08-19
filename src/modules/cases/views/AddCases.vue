@@ -5,12 +5,14 @@
   import { ref, defineAsyncComponent, onMounted, watch } from 'vue';
   import * as yup from 'yup';
   import { useForm, useResetForm,  } from 'vee-validate';
-  import { getCategoriesService } from "@/services/categoriesServices"; 
-  import { getsubcategoriesService } from "@/services/subcategories"; 
-  import type { category } from "@/interfaces/categoryInterface";
+  import { getSubCategoriesService } from "@/services/subCategoryServices"; 
+  import { getTypesService } from "@/services/typesServices"; 
+  import type { subCategory } from "@/interfaces/categoryInterface";
+
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       remitente: yup.string().required('remitente es requerido').trim(),
@@ -26,11 +28,13 @@
       parroquia: yup .string().required('parroquia es requerido').trim(),
       sector: yup .string().required('sector es requerido').trim(),
       tipoBeneficiario: yup .string().required('tipo de Beneficiario es requerido').trim(),
-      categoriaId: yup .string().required('categoria es requerido').trim(),
-      subCategoriaId: yup .string().trim(),
+      categoria: yup .string().required('categoria es requerido').trim(),
+      subCategoriaId: yup .string().required('categoria es requerido').trim(),
+      tipoId: yup .string().trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
     }),
   });
+
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
   const toast = useToast();
@@ -48,23 +52,23 @@
   const [parroquia,parroquiaAttrs] = defineField('parroquia');
   const [sector,sectorAttrs] = defineField('sector');
   const [tipoBeneficiario,tipoBeneficiarioAttrs] = defineField('tipoBeneficiario');
-  const [categoriaId,categoriaAttrs] = defineField('categoriaId');
+  const [categoria,categoriaAttrs] = defineField('categoria');
   const [subCategoriaId,subCategoriaAttrs] = defineField('subCategoriaId');
+  const [tipoId,tipoAttrs] = defineField('tipoId');
   const [prioridad,prioridadAttrs] = defineField('prioridad');
 
-  const categoriesList = ref<category[]>([]);
-  const subCategoriesList = ref<category[]>([]);
+  const subCategoriesList = ref<subCategory[]>([]);
+  const typesList = ref<subCategory[]>([]);
 
   //watcher para setear las sub categorias
   watch(
-    () => values.categoriaId,
-    async (categoriaId) => {
-      if(categoriaId && categoriesList.value.length > 0){
-        const { subcaterogiesByCategory } = await getsubcategoriesService(categoriaId);
-        if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
+    () => values.subCategoriaId,
+    async (subCategoriaId) => {
+      if(subCategoriaId && subCategoriesList.value.length > 0){
+        const  { typesByCategory } = await getTypesService(subCategoriaId);
+        if(typesByCategory) typesList.value = typesByCategory;
         else{
-          console.log("error seteando sub categoria revizar respuesta")
-          mainStore.changeRequestStatus(false)
+          console.log("error seteando los tipos revizar respuesta");
         }
       }
   });
@@ -74,7 +78,6 @@
       ...values,
       analistaId: mainStore.logedUser.id,
     } 
-    console.log(formulary);
     const resp = await caseStore.saveCase(formulary);
 
     if(resp == '200') {
@@ -86,17 +89,18 @@
   });
 
   onMounted(async() =>{
-    const { categories } = await getCategoriesService();
-    if(categories){
-      categoriesList.value = categories;
+    const { subcategories } = await getSubCategoriesService();
+
+    if(subcategories && subcategories.length > 0){
+      subCategoriesList.value = subcategories;
     }else console.log("Error recibiendo la data revizar respuesta");
-  })
+  });
 </script>
 
 <template>
   <div class="w-full h-full flex items-center justify-center">
-        <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar un Nuevo caso</h1>
+        <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-white overflow-auto">
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar nuevo caso</h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
               <!--REMITENTE-->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
@@ -375,49 +379,77 @@
                 <ErrorMessage :err="errors.tipoBeneficiario"/>
               </div>
 
-              <!--CATEGORIAS-->
+              <!-- CATEGORIA -->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
                 class="capitalize"
                   required
                   name="categoria"
-                  v-model="categoriaId" 
-                  v-bind="categoriaAttrs">
+                  v-model="categoria" 
+                  v-bind="categoriaAttrs"
+                  >
                   <option disabled value="" selected>seleccionar categoria</option>
-                  <option 
-                    v-for="category in categoriesList" 
-                    :key="category._id" 
-                    :value="category._id"
-                    v-if="categoriesList.length > 0">
-                      {{ category.name}}
+                  <option  value="peticion">
+                    peticion
+                  </option>
+                  <option  value="quejas">
+                    quejas
+                  </option>
+                  <option  value="reclamo">
+                    reclamo
+                  </option>
+                  <option  value="sugerencia">
+                    sugerencia
+                  </option>
+                  <option  value="denuncia">
+                    denuncia
                   </option>
                 </select>
                 <label for="categoria" class="origin-0">categoria</label>
-                <ErrorMessage :err="errors.categoriaId"/>
+                <ErrorMessage :err="errors.categoria"/>
               </div>
-              <!-- <div v-for="category in categoriesList" :key="category._id">
 
-              </div> -->
-              <!--SUBCATEGORIA -->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.categoriaId && subCategoriesList.length > 0">
+              <!--SUB CATEGORIA-->
+              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
                 class="capitalize"
                   required
                   name="subCategoria"
                   v-model="subCategoriaId" 
-                  v-bind="subCategoriaAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar sub Categoria</option>
-                  <option
-                    v-for="subcategory in subCategoriesList" 
-                    :key="subcategory._id" 
-                    :value="subcategory._id"
-                    v-if="categoriesList.length > 0" >
-                      {{ subcategory.name}}
+                  v-bind="subCategoriaAttrs">
+                  <option disabled value="" selected>seleccionar subcategoria</option>
+                  <option 
+                    v-for="subCategoria in subCategoriesList" 
+                    :key="subCategoria._id" 
+                    :value="subCategoria._id"
+                    v-if="subCategoriesList.length > 0">
+                      {{ subCategoria.name}}
                   </option>
                 </select>
-                <label for="categoria" class="origin-0">sub categoria</label>
+                <label for="subCategoria" class="origin-0">subCategoria</label>
                 <ErrorMessage :err="errors.subCategoriaId"/>
+              </div>
+
+              <!--TIPO -->
+              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.subCategoriaId && typesList.length > 0">
+                <select 
+                class="capitalize"
+                  required
+                  name="tipo"
+                  v-model="tipoId" 
+                  v-bind="tipoAttrs"
+                  >
+                  <option disabled value="" selected>seleccionar tipo</option>
+                  <option
+                    v-for="type in typesList" 
+                    :key="type._id" 
+                    :value="type._id"
+                    v-if="typesList.length > 0" >
+                      {{ type.name}}
+                  </option>
+                </select>
+                <label for="categoria" class="origin-0">tipo</label>
+                <ErrorMessage :err="errors.tipoId"/>
               </div>
 
               <!--PRIORIDAD-->
@@ -439,26 +471,6 @@
                 <label for="prioridad" class="origin-0">prioridad</label>
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
-
-              <!--VIA DE RESOLUTION-->
-              <!-- <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="viaResolucion"
-                  v-model="viaResolucion" 
-                  v-bind="viaResolucionAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar via de resolucion</option>
-                  <option value="administrativa">administrativa</option>
-                  <option value="Servicio desconcentrado fondo negro primero">Servicio desconcentrado fondo negro primero</option>
-                  <option value="remitido">remitido</option>
-                  <option value="recursos propios">recursos propios</option>
-                  <option value="denuncia">denuncia</option>
-                </select>
-                <label for="viaResolucion" class="origin-0">via de resolucion</label>
-                <ErrorMessage :err="errors.viaResolucion"/>
-              </div> -->
 
               <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>

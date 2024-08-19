@@ -1,65 +1,52 @@
 <script setup lang='ts'>
-import SearchingBar from "@/components/commons/SearchBar.vue";
-import PaginationBar from "@/components/table/PaginationBar.vue"
-import { useDataTable } from "@/composables/useDataTble"; 
-import { computed, onMounted, defineAsyncComponent } from "vue";
-import { useCaseStore } from "@/modules/cases/store/caseStore";
-import type { Case } from "@/interfaces/caseInterface";
-const caseStore = useCaseStore();
-const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
-const props =  defineProps<{
-    titles: Array <string>,
-    data:Array<Case>,
-    elementsPerPage:number
-    totalPages:number,
-}>();
-const emit = defineEmits<{
-  (event: "pickedElement", id: string): void;
-  (event: "searchData", search: string): void;
-  (event: "buttonAction"): void;
-  (event: "getPreviusPage"): void;
-  (event: "getNextPage"): void;
-}>();
+  import SearchingBar from "@/components/commons/SearchBar.vue";
+  import PaginationBar from "@/components/table/PaginationBar.vue"
+  import { useDataTable } from "@/composables/useDatatable"; 
+  import { computed, defineAsyncComponent } from "vue";
+  import { useCaseStore } from "@/modules/cases/store/caseStore";
+  import type { Case } from "@/interfaces/caseInterface";
+  import { useMainStore } from "@/stores/mainStore";
+  const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 
-    const { 
-        pages,
-        actualPage,
-        visiblePages,
-        getDataPagination,
-        getNextPage,
-        getPreviusPage,
-    } = useDataTable(
-      props.data,
-      props.elementsPerPage,
-      props.totalPages
-    ); 
+  const props =  defineProps<{
+      titles: Array <string>,
+      data:Array<Case>,
+      elementsPerPage:number
+      totalPages:number,
+  }>();
+  const emit = defineEmits<{
+    (event: "pickedElement", id: string): void;
+    (event: "searchData", search: string): void;
+    (event: "buttonAction"): void;
+    (event: "getPreviusPage"): void;
+    (event: "getNextPage"): void;
+  }>();
 
-    //propiedad computed para los resultados
-    const results =  computed(() => props.data.length );
+  const mainStore = useMainStore();
+  const caseStore = useCaseStore();
+  const { 
+    activeIndex,
+    nextPage,
+    setDataPagination,
+    prevPage
+  } = useDataTable(mainStore.getPage);
 
-    const nextPage = async() =>{
-      //desde estas funciones se valida si el total de paginas el posible incrementar o decrementar y en dado caso se llama a la function de composable get next page luego se modifica la pagina en el store y luego se setea la nueva lista de users en el store para que asi se modifique la tabla 
-      if(caseStore.page <= caseStore.totalPages ){
-        getNextPage();
-        caseStore.NextPage();
-        await caseStore.setCaseList();
-      }
-      
-    }
-    
-    const setDataPagination = async (page: number) => {
-      caseStore.page = page;
-      await caseStore.setCaseList()
-    }
+  //propiedad computed para los resultados
+  const results =  computed(() => props.data.length );
 
-    const prevPage = async() =>{
-      if(caseStore.totalPages > 1){
-        getPreviusPage();
-        caseStore.PrevPage();
-        await caseStore.setCaseList();
-      }
-    }
-    onMounted(() => getDataPagination(actualPage.value));
+
+  const setNextPage = async() =>{
+    nextPage(async () => await caseStore.setCaseList(mainStore.getSearch))
+  }
+  
+  const setDataPaginations = async (page: number) => {
+    setDataPagination(page,async () => await caseStore.setCaseList(mainStore.getSearch))
+  }
+
+  const setPrevPage = async() =>{
+    prevPage(async () => await caseStore.setCaseList(mainStore.getSearch))
+  }
+
 </script>
 
 <template>
@@ -68,12 +55,13 @@ const emit = defineEmits<{
             <!-- head of the table-->
             <div class="flex items-center justify-end my-4">
               <Button 
-              :full-size="false" 
-              icon="Add" 
-              title="" 
-              @doSomething="$emit('buttonAction')"
-              class=" mr-5"></Button>
-              <SearchingBar @on-search-data="emit('searchData',$event)" class=""/>
+                :full-size="false" 
+                icon="Add" 
+                title="" 
+                @doSomething="$emit('buttonAction')"
+                class=" mr-5">
+              </Button>
+              <SearchingBar @on-search-data=" emit('searchData',$event)" class=""/>
             </div>
             <!-- body for the table -->
             <div class="w-full h-[70%] overflow-auto">
@@ -106,15 +94,16 @@ const emit = defineEmits<{
                 </table>
             </div>
             <!--pagination component-->
-            <div class=" mt-2 w-full h-10">
+            <div class=" mt-2 w-full h-10" v-if="mainStore.showPagination">
                 <PaginationBar 
-                    :pages="pages" 
-                    :visible-pages="visiblePages"
+                    :totalpages="mainStore.getTotalPages" 
+                    :visible-pages="mainStore.getTotalPages"
                     :elementsPerPage="props.elementsPerPage"
                     :results="results"
-                    @dataPagination="setDataPagination($event)"
-                    @prevPage="prevPage"
-                    @nextPage="nextPage"
+                    :active-index="activeIndex"
+                    @dataPagination="setDataPaginations($event)"
+                    @prevPage="setPrevPage"
+                    @nextPage="setNextPage"
                 />
             </div>
         </div>

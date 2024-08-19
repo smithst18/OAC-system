@@ -11,27 +11,23 @@
 
   const is_spanded = ref(false);
 
-  // const HomeLink = { 
-  //   to: 'dashboard', 
-  //   name:'inicio',       
-  //   icon:'home'   
-  // };
-
   const CasesLinks = [
-    { to: 'dashboard'    ,     name:'inicio'    ,      icon:'home'         },
-    { to: 'add-case'    ,     name:'añadir'    ,      icon:'post_add'         },
-    { to: 'list'      , name:'casos'   ,      icon:'description'          },
-  ];
-  const adminLinks = [
-    { to: 'signin'    ,     name:'registro'    ,      icon:'person_add'         },
-    { to: 'management'      , name:'gestion'   ,      icon:'manage_accounts'          },
+    { to: 'dashboard',  name:'inicio', icon:'home'                  },
+    { to: 'add-case' ,  name:'añadir', icon:'post_add'              },
+    { to: 'list'     ,  name:'casos' , icon:'description'           },
+    // { to: 'files'     ,  name:'archivos' , icon:'partner_reports'   },
   ];
 
+  const adminLinks = [
+    { to: 'signin'     , name:'registro'  , icon:'person_add'       },
+    { to: 'management' , name:'gestion'   , icon:'manage_accounts'  },
+  ];
 
   const toggleMenu = () => {
     is_spanded.value = !is_spanded.value ;
     emits('OnToggleSidebar',is_spanded.value);
   }
+  
   const spandDropdown = () => { 
     if(is_spanded.value == false) toggleMenu();
   }

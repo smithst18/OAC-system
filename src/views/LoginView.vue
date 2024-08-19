@@ -17,6 +17,7 @@
   const onSubmit = async () =>{
     const resp = await mainStore.logIn(formData);
     if(resp === '200'){
+      error.value = false;
       if(mainStore.logedUser.rol == "admin") router.push({ name:'management' });
       else router.push({ name:'home' });
     }  

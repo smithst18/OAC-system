@@ -9,6 +9,8 @@ export const useMainStore = defineStore('main', () => {
   // =======================================> STATES
   const router = useRouter();
   const { cookies } = useCookies();
+  //esta propiedad es usada para hacer las busquedas en el componente searchBar
+  const search = ref('');
   const isLoged = ref<boolean>(false);
   const logedUser = ref<User | any>({
     id:'',
@@ -16,7 +18,12 @@ export const useMainStore = defineStore('main', () => {
     ci:'',
     rol:'',
   });
-
+  //propertys para las tablas y paginacion
+  const page = ref(0); // pagina en la que comienza la pagination
+  const totalPages = ref(0); //numero de paginas 
+  const perPage = ref(0);
+  const showPagination = ref(true);
+  //properti para las resp 
   const requestIsLoading = ref(false);
   // =======================================> GETTERS
 
@@ -84,7 +91,11 @@ export const useMainStore = defineStore('main', () => {
       ci:'',
       rol:'',
     };
-    cookies.remove('user')
+    search.value = '';
+    page.value = 0;// pagina en la que comienza la pagination
+    totalPages.value = 0;//numero de paginas 
+    perPage.value = 0;
+    cookies.remove('user');
     cookies.remove('token');
   }
 
@@ -101,10 +112,21 @@ export const useMainStore = defineStore('main', () => {
     logedUser,
     isLoged,
     requestIsLoading, 
+    search,
+    showPagination,
     logIn,
     logOut,
     signUp, 
+    setPage: (value: number) => page.value = value, 
+    setPerPages: (value: number) => perPage.value = value, 
+    setTotalPages: (value: number) => totalPages.value = value, 
+    nextPage: () => page.value = page.value + 1,
+    prevPage: () => page.value = page.value - 1,
     $reset,
+    getPage:computed(() => page.value),
+    getPerPages:computed(() => perPage.value),
+    getTotalPages: computed(() => totalPages.value),
+    getSearch: computed(() => search.value),
     changeRequestStatus
   }
 })

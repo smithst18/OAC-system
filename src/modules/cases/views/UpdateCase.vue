@@ -8,6 +8,7 @@
   const MainSpinner = defineAsyncComponent(() => import('@/components/commons/MainSpinner.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   
+
   const { showModal, toggleModal } = useModal(false);
   const caseStore = useCaseStore();
   const rout =  useRoute();
@@ -31,8 +32,11 @@
       Cargando Datos 
       <MainSpinner class="ml-3"/>
     </p>
-    <Button :full-size="false" title="" icon="menu_book" class="absolute top-10 right-24" @click="toggleModal">
-      
+    <Button 
+      :full-size="false" 
+      title="" icon="menu_book" 
+      class="absolute top-10 right-24" 
+      @click="toggleModal">
     </Button>
     <CaseDiary :show-modal="showModal" @toggleModal="toggleModal" :id="caseStore.getCaseById._id" v-if="caseStore.getCaseById._id != ''"/>
   </div>

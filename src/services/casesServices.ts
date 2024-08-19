@@ -60,3 +60,16 @@ export const StatisticsService = async () =>{
     
   }
 }
+
+
+export const downloadCasesExcel = async () =>{
+  try{
+
+    const response = await AxiosInstance.get(`/cases/getCasesInExcel`, { responseType: 'blob' });
+    return response;
+
+  }catch(e){
+    return e
+    
+  }
+}

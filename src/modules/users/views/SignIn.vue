@@ -7,6 +7,7 @@
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+  const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const mainStore = useMainStore();
   const { successToast, errorToast } = useToast();
   const { values, errors, defineField, handleSubmit } = useForm({
@@ -61,8 +62,11 @@
 </script>
 
 <template>
-    <div class="w-full h-full flex items-center justify-center">
-        <div class="w-[70%] p-5 rounded-md shadow-md bg-white">
+    <div class="w-full h-full flex flex-col items-center justify-center">
+        <div class="bg-white shadow-md rounded-2xl w-full h-[8%] mb-10">
+          <InfoBar class="text-gray-400"/>
+        </div>
+        <div class="w-full p-5 rounded-2xl shadow-md bg-white">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Nuevo usuario</h1>
             <form class="p-5 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
                 <div class="relative z-0 w-full mb-10">

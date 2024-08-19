@@ -1,25 +1,32 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { updateUserService, userListService, deleteUserService } from '@/services/userServices';
+import { useMainStore } from '@/stores/mainStore';
 
 export const useUserStore = defineStore('user', () => {
-
+  const mainStore = useMainStore();
   // =======================> STATE
+
   const userActualList = ref([]);//lista de usuarios
-  const page = ref(0);// pagina en la que comienza la pagination
-  const totalPages = ref(0);//numero de paginas 
-  const perPage = ref(0)
+
    // =======================> SETTERS
+
   const setUserList = async () => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
-    const { paginatedData } = await userListService(page.value.toString());
+    const { paginatedData } = await userListService(mainStore.getPage.toString());
+      
+    if(paginatedData && paginatedData.users.length > 0){
+
       if(paginatedData && paginatedData.paginator){
-        userActualList.value = paginatedData.users;
-        page.value = paginatedData.paginator.currentPage;
-        totalPages.value = paginatedData.paginator.totalPages;
-        perPage.value = paginatedData.paginator.perPage;
-        return "200"
-      }else  return "500";
+        mainStore.showPagination = true;
+        mainStore.setPage(paginatedData.paginator.currentPage);
+        mainStore.setPerPages(paginatedData.paginator.perPage);
+        mainStore.setTotalPages(paginatedData.paginator.totalPages);
+      }
+
+      userActualList.value = paginatedData.users;
+      return "200"
+    }else  return "500";
   }
 
   const updateUser = async (userId:object) => {
@@ -62,37 +69,19 @@ export const useUserStore = defineStore('user', () => {
     
   }
 
-  const NextPage = () => {
-    page.value = page.value + 1;
-
-  }
-
-  const PrevPage = () => {
-    page.value = page.value - 1;
-  }
 
   const $reset = () => {
     userActualList.value = [];//lista de usuarios
-    page.value = 0;// pagina en la que comienza la pagination
-    totalPages.value = 0;//numero de paginas 
-    perPage.value = 0
   }
   // =======================> GETTERS
 
   
   return {
     userActualList,
-    page,
-    totalPages,
-    perPage,
     setUserList,
     updateUser,
     deleteUser,
-    NextPage,
-    PrevPage,
     $reset,
     getUserList: computed(() => userActualList.value),
-    getPerPages:computed(() => perPage.value),
-    getTotalPages: computed(() => totalPages.value)
   }
 });

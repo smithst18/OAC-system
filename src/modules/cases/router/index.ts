@@ -25,14 +25,20 @@ export default {
           beforeEnter: [ rolGuard ],
           component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/UpdateCase.vue"),
         },
-        {
-          
-            path:'agregar',
-            name:'add-case',
-            meta:{ rolsAllow: ['admin', 'tech', 'normal'] },
-            beforeEnter: [ rolGuard ],
-            component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/AddCases.vue"),
+        { 
+          path:'agregar',
+          name:'add-case',
+          meta:{ rolsAllow: ['admin', 'tech', 'normal'] },
+          beforeEnter: [ rolGuard ],
+          component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/AddCases.vue"),
         },
+        // {
+        //   path:'archivos',
+        //   name:'files',
+        //   meta:{ rolsAllow: ['admin', 'tech', 'normal'] },
+        //   beforeEnter: [ rolGuard ],
+        //   component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/FilesView.vue"),
+        // },
         { 
             path: '/:pathMatch(.*)*', 
             redirect:{ name:"dashboard" }

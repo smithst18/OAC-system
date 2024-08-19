@@ -1,5 +1,9 @@
 <script setup lang="ts">
   import { ref} from 'vue';
+  import { useMainStore } from "@/stores/mainStore";
+  import { useCaseStore } from '@/modules/cases/store/caseStore';
+  const mainStore = useMainStore();
+  const caseStore = useCaseStore();
   const emit = defineEmits<{
       ( event:'onSearchData', value:string ): void,
   }>();
@@ -13,6 +17,9 @@
   const clearDataToFind = () =>{
     dataToFind.value = "";
     input.value.focus();
+    emit('onSearchData','');
+    mainStore.search = '';
+    mainStore.setPage(1);
   }
 </script>
 

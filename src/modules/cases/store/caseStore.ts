@@ -13,6 +13,7 @@ import {
 } from "@/services/diaryServices";
 import type { Case } from '@/interfaces/caseInterface';
 import { useMainStore } from '@/stores/mainStore';
+
 export const useCaseStore = defineStore('case', () => {
   const mainStore = useMainStore();
   // =======================> STATE
@@ -33,8 +34,9 @@ export const useCaseStore = defineStore('case', () => {
     parroquia:"",
     sector:"",
     tipoBeneficiario:"",
-    categoriaId:"",
+    categoria:"peticion",
     subCategoriaId:"",
+    tipoId:"",
     prioridad:"",
     status:"",
     fechaRedireccion:"",
@@ -45,9 +47,7 @@ export const useCaseStore = defineStore('case', () => {
     createdAt:"",
     updatedAt:"",
   });
-  const page = ref(0); // pagina en la que comienza la pagination
-  const totalPages = ref(0); //numero de paginas 
-  const perPage = ref(0)
+  
 
   const closedCasesChart =  ref<{ counts: number[]; labels: string[] }>({
     counts: [],
@@ -70,15 +70,20 @@ export const useCaseStore = defineStore('case', () => {
   });
   // =======================> SETTERS
 
-  const setCaseList = async (search?:string) => {
+  const setCaseList = async (search?:string): Promise<string> => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
-    const { paginatedData } = await getCasesService(page.value.toString(),mainStore.logedUser.id,search);
-    if(paginatedData && paginatedData.paginator && paginatedData.cases.length > 0){
-      
+    const { paginatedData } = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
+    if(paginatedData && paginatedData.cases.length > 0){
+
+      if(!paginatedData.paginator) mainStore.showPagination = false;
+      else{
+        mainStore.showPagination = true;
+        mainStore.setPage(paginatedData.paginator.currentPage);
+        mainStore.setPerPages(paginatedData.paginator.perPage);
+        mainStore.setTotalPages(paginatedData.paginator.totalPages);
+      }
+
       caseActualList.value = paginatedData.cases;
-      page.value = paginatedData.paginator.currentPage;
-      totalPages.value = paginatedData.paginator.totalPages;
-      perPage.value = paginatedData.paginator.perPage;
       return "200"
     }else  return "500";
   }
@@ -112,10 +117,11 @@ export const useCaseStore = defineStore('case', () => {
   }
 
   const setCaseById = async (id : string) =>{
-    const { Case } = await getSpecificCaseService(id);
-    if(Case){
+    const { foundCase } = await getSpecificCaseService(id);
+
+    if(foundCase){
       
-      caseById.value = Case;
+      caseById.value = foundCase;
       return "200"
     }else  return "500";
   }
@@ -168,6 +174,7 @@ export const useCaseStore = defineStore('case', () => {
 
       quantityPerCategory.value.counts =  quantityPerCategoryValues.counts
       quantityPerCategory.value.labels = quantityPerCategoryValues.categories
+      console.log(quantityPerCategoryValues)
       return "200"
     }
     else if(response){ 
@@ -178,15 +185,6 @@ export const useCaseStore = defineStore('case', () => {
       // mainStore.changeRequestStatus(false);
       return "500"
     };
-  }
-
-  const NextPage = () => {
-    page.value = page.value + 1;
-
-  }
-
-  const PrevPage = () => {
-    page.value = page.value - 1;
   }
   
   const  $reset = () => {
@@ -206,8 +204,9 @@ export const useCaseStore = defineStore('case', () => {
       parroquia:"",
       sector:"",
       tipoBeneficiario:"",
-      categoriaId:"",
+      categoria:"peticion",
       subCategoriaId:"",
+      tipoId:"",
       prioridad:"",
       status:"",
       fechaRedireccion:"",
@@ -218,9 +217,6 @@ export const useCaseStore = defineStore('case', () => {
       createdAt:"",
       updatedAt:"",
     };
-    page.value = 0;// pagina en la que comienza la pagination
-    totalPages.value = 0;//numero de paginas 
-    perPage.value = 0;
     closedCasesChart.value = {
       counts: [],
       labels: [],
@@ -256,11 +252,11 @@ export const useCaseStore = defineStore('case', () => {
       ...caseById.value,
       createdAt: new Date(caseById.value.createdAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
       updatedAt:new Date(caseById.value.updatedAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
-      analistaId:caseById.value.analistaId.name,
-      categoriaId:caseById.value.categoriaId._id,
+      subCategoriaId:caseById.value.subCategoriaId._id,
+      tipoId:caseById.value.tipoId._id
     }
-    if(caseById.value.subCategoriaId) caseData.subCategoriaId = caseById.value.subCategoriaId._id;
-    else caseData.subCategoriaId = '';
+    // if(caseById.value.tipoId) caseData.tipoId = caseById.value.tipoId._id;
+    // else caseData.tipoId = '';
 
     return caseData
   });
@@ -286,9 +282,6 @@ export const useCaseStore = defineStore('case', () => {
 
   return {
     caseActualList,
-    page,
-    totalPages,
-    perPage,
     caseById,
     closedCasesChart,
     caseDiaryList,
@@ -299,15 +292,11 @@ export const useCaseStore = defineStore('case', () => {
     setGeneralStatistics,
     setDiaryCaseList,
     saveDiary,
-    NextPage,
-    PrevPage,
     getCaseList,
-    getPerPages:computed(() => perPage.value),
-    getTotalPages: computed(() => totalPages.value),
     getClosedCasesChart:computed(() => closedCasesChart.value),
     getOpenCasesChart:computed(() => openCasesChart.value),
     getOnProcessCasesChart:computed(() => onProcessCasesChart.value),
-    getQuantityPerCategory: computed(() => quantityPerCategory.value),
+    getquantityPerCategory: computed(() => quantityPerCategory.value),
     getCaseDiaryList,
     getTotalCases,
     getCaseById,

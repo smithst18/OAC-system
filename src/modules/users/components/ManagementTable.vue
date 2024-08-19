@@ -1,8 +1,9 @@
 <script setup lang='ts'>
-    import { defineAsyncComponent, ref, reactive } from 'vue';
-    import { useDataTable } from "@/composables/useDataTble";
     import type { User } from '@/interfaces/userInterfaces';
+    import { defineAsyncComponent, ref, reactive } from 'vue';
+    import { useDataTable } from "@/composables/useDatatable";
     import { useUserStore } from "@/modules/users/store/userStore";
+    import { useMainStore } from '@/stores/mainStore';
     const ManagUserCard = defineAsyncComponent(() => import('@/modules/users/components/ManagUserCard.vue'));
     const PaginationBar = defineAsyncComponent(() => import('@/components/table/PaginationBar.vue'));
     const UpdateUserComponent = defineAsyncComponent(() => import('@/modules/users/components/ManagmentUpdate.vue'));
@@ -11,6 +12,8 @@
     //this property is for send the userdID  as and property
     let user = reactive({} as User);
     const userStore = useUserStore();
+    const mainStore = useMainStore();
+    
     const props = defineProps<{
       data:any,
       perpage:number,
@@ -18,29 +21,24 @@
     }>();
 
     const { 
-        pages,
-        visiblePages,
-        getDataPagination,
-        getPreviusPage,
-        getNextPage
-    } = useDataTable(props.data,props.perpage,props.pages);
+      activeIndex,
+      nextPage,
+      setDataPagination,
+      prevPage,
+    } = useDataTable(1);
     
-    const nextPage = () =>{
-      //desde estas funciones se valida si el total de paginas el posible incrementar o decrementar y en dado caso se llama a la function de composable get next page luego se modifica la pagina en el store y luego se setea la nueva lista de users en el store para que asi se modifique la tabla 
-      if(userStore.page <= userStore.totalPages ){
-        getNextPage();
-        userStore.NextPage();
-        userStore.setUserList();
-      }
-      
+    const setNextPage = async () =>{
+      nextPage(async () => await userStore.setUserList());
     }
-    const prevPage = () =>{
-      if(userStore.totalPages > 1){
-        getPreviusPage();
-        userStore.PrevPage();
-        userStore.setUserList();
-      }
+
+    const setDataPaginations = async (page:number) => {
+      setDataPagination(page,async () => await userStore.setUserList())
     }
+
+    const setPrevPage = async() =>{
+      prevPage(async () => await userStore.setUserList());
+    }
+
     const handleUserUpdate = (userParam:User) => {
       user = userParam;
       showModal.value =  true;
@@ -96,13 +94,14 @@
         <div class="h-[15%] w-full bg-primary-light bg-opacity-80">
             <PaginationBar 
                 class="w-full h-full border px-2"
-                :pages="pages" 
-                :visible-pages="visiblePages"
+                :totalpages="mainStore.getTotalPages" 
+                :visible-pages="mainStore.getTotalPages"
                 :elementsPerPage="10"
                 :results="props.data.length"
-                @dataPagination="getDataPagination"
-                @prevPage="prevPage"
-                @nextPage="nextPage"
+                :active-index="activeIndex"
+                @dataPagination="setDataPaginations($event)"
+                @prevPage="setPrevPage"
+                @nextPage="setNextPage"
             />
         </div>
 

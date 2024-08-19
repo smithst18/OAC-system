@@ -6,9 +6,9 @@
   import { ref, defineAsyncComponent, onMounted, watch, computed, onUnmounted } from 'vue';
   import * as yup from 'yup';
   import { useForm } from 'vee-validate';
-  import { getCategoriesService } from "@/services/categoriesServices"; 
-  import { getsubcategoriesService } from "@/services/subcategories"; 
-  import type { category } from "@/interfaces/categoryInterface";
+  import { getSubCategoriesService } from "@/services/subCategoryServices"; 
+  import { getTypesService } from "@/services/typesServices"; 
+  import type { subCategory } from "@/interfaces/categoryInterface";
   import type { Case } from '@/interfaces/caseInterface';
 
   const props = defineProps<{
@@ -16,7 +16,7 @@
   }>();
 
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
-  const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  const SubmitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
@@ -34,7 +34,7 @@
       parroquia: yup .string().required('parroquia es requerido').trim(),
       sector: yup .string().required('sector es requerido').trim(),
       tipoBeneficiario: yup .string().required('tipo de Beneficiario es requerido').trim(),
-      categoriaId: yup .string().required('categoria es requerido').trim(),
+      categoria: yup .string().required('categoria es requerido').trim(),
       subCategoriaId: yup .string().trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
       viaResolucion: yup .string().trim(),
@@ -48,9 +48,9 @@
   const toast = useToast();
   const rout =  useRoute();
   const caseId = computed(() => rout.params.id.toString());
-  // const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5));
-  const categoriesList = ref<category[]>([]);
-  const subCategoriesList = ref<category[]>([]);
+  const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5).toUpperCase());
+  const subCategoriesList = ref<subCategory[]>([]);
+  const typesList = ref<subCategory[]>([]);
   
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
@@ -65,8 +65,9 @@
   const [parroquia,parroquiaAttrs] = defineField('parroquia');
   const [sector,sectorAttrs] = defineField('sector');
   const [tipoBeneficiario,tipoBeneficiarioAttrs] = defineField('tipoBeneficiario');
-  const [categoriaId,categoriaAttrs] = defineField('categoriaId');
+  const [categoria,categoriaAttrs] = defineField('categoria');
   const [subCategoriaId,subCategoriaAttrs] = defineField('subCategoriaId');
+  const [tipoId,tipoAttrs] = defineField('tipoId');
   const [prioridad,prioridadAttrs] = defineField('prioridad');
   const [viaResolucion,viaResolucionAttrs] = defineField('viaResolucion');
   const [analistaId,analistaIdAttrs] = defineField('analistaId');
@@ -78,14 +79,13 @@
 
   //watcher para setear las sub categorias.
   watch(
-    () => values.categoriaId,
-    async (categoriaId) => {
-      if(categoriaId && categoriesList.value.length > 0){
-        const { subcaterogiesByCategory } = await getsubcategoriesService(categoriaId);
-        if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
+    () => values.subCategoriaId,
+    async (subCategoriaId) => {
+      if(subCategoriaId && subCategoriesList.value.length > 0){
+        const  { typesByCategory } = await getTypesService(subCategoriaId);
+        if(typesByCategory) typesList.value = typesByCategory;
         else{
-          console.log("error seteando sub categoria revizar respuesta")
-          mainStore.changeRequestStatus(false)
+          console.log("error seteando los tipos revizar respuesta");
         }
       }
   });
@@ -94,7 +94,8 @@
     let formulary = {
       id:caseId.value,
       ...values,
-    } 
+    }
+    console.log(formulary);
     const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
@@ -108,18 +109,19 @@
     //seteamos el form con los valores del caso
     resetForm({values:{
       ...props.caseById,
+      analistaId:props.caseById.analistaId.name,
     } ,});
-    //si la subcategoria existe en el caso seteamos la lista de subcategorias
-    if(props.caseById.subCategoriaId){
-      const { subcaterogiesByCategory } = await getsubcategoriesService(props.caseById.categoriaId);
-      if(subcaterogiesByCategory) subCategoriesList.value = subcaterogiesByCategory;
-    }
-    //esto es para setear la lista de categorias
-    const { categories } = await getCategoriesService();
 
-    if(categories){
-      categoriesList.value = categories;
-    }else console.log("Error recibiendo la data de las categorias revizar respuesta");
+
+    const { subcategories } = await getSubCategoriesService();
+
+    if(subcategories) subCategoriesList.value = subcategories;
+    
+    const { typesByCategory } = await getTypesService(props.caseById.subCategoriaId);
+    if(typesByCategory && typesByCategory.length > 0) typesList.value = typesByCategory;
+    else console.log("Error recibiendo la data revizar respuesta");
+    console.log(props.caseById)
+
   });
 
   onUnmounted(() => {
@@ -130,7 +132,7 @@
 <template>
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto" v-if="props.caseById">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseId }} </h1>
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseIdShort }} </h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
 
               <!--FECHA ULTIMA ACTUALIZACION-->
@@ -523,47 +525,77 @@
                 <ErrorMessage :err="errors.tipoBeneficiario"/>
               </div>
 
-              <!--CATEGORIAS-->
+              <!-- CATEGORIA -->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
                 class="capitalize"
                   required
                   name="categoria"
-                  v-model="categoriaId" 
-                  v-bind="categoriaAttrs">
+                  v-model="categoria" 
+                  v-bind="categoriaAttrs"
+                  >
                   <option disabled value="" selected>seleccionar categoria</option>
-                  <option 
-                    v-for="category in categoriesList" 
-                    :key="category._id" 
-                    :value="category._id"
-                    v-if="categoriesList.length > 0">
-                      {{ category.name}}
+                  <option  value="peticion">
+                    peticion
+                  </option>
+                  <option  value="quejas">
+                    quejas
+                  </option>
+                  <option  value="reclamo">
+                    reclamo
+                  </option>
+                  <option  value="sugerencia">
+                    sugerencia
+                  </option>
+                  <option  value="denuncia">
+                    denuncia
                   </option>
                 </select>
                 <label for="categoria" class="origin-0">categoria</label>
-                <ErrorMessage :err="errors.categoriaId"/>
+                <ErrorMessage :err="errors.categoria"/>
               </div>
 
-              <!--SUBCATEGORIA -->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.categoriaId && subCategoriesList.length > 0">
+              <!--SUB CATEGORIA-->
+              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
                 class="capitalize"
                   required
                   name="subCategoria"
-                  placeholder=""
                   v-model="subCategoriaId" 
-                  v-bind="subCategoriaAttrs"
-                  >
-                  <option
-                    v-for="subcategory in subCategoriesList" 
-                    :key="subcategory._id" 
-                    :value="subcategory._id"
-                    v-if="categoriesList.length > 0" >
-                      {{ subcategory.name}}
+                  v-bind="subCategoriaAttrs">
+                  <option disabled value="" selected>seleccionar subcategoria</option>
+                  <option 
+                    v-for="subCategoria in subCategoriesList" 
+                    :key="subCategoria._id" 
+                    :value="subCategoria._id"
+                    v-if="subCategoriesList.length > 0">
+                      {{ subCategoria.name}}
                   </option>
                 </select>
-                <label for="categoria" class="origin-0">sub categoria</label>
+                <label for="subCategoria" class="origin-0">subCategoria</label>
                 <ErrorMessage :err="errors.subCategoriaId"/>
+              </div>
+
+              <!--TIPO -->
+              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.subCategoriaId && typesList.length > 0">
+                <select 
+                class="capitalize"
+                  required
+                  name="tipo"
+                  v-model="tipoId" 
+                  v-bind="tipoAttrs"
+                  >
+                  <option disabled value="" selected>seleccionar tipo</option>
+                  <option
+                    v-for="type in typesList" 
+                    :key="type._id" 
+                    :value="type._id"
+                    v-if="typesList.length > 0" >
+                      {{ type.name}}
+                  </option>
+                </select>
+                <label for="categoria" class="origin-0">tipo</label>
+                <ErrorMessage :err="errors.tipoId"/>
               </div>
 
               <!--PRIORIDAD-->
@@ -585,59 +617,61 @@
                 <label for="prioridad" class="origin-0">prioridad</label>
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
-
-              <submitButton :full-size="true" title="Guardar" class="col-span-3 text-center my-5 mb-auto">
+              <SubmitButton 
+                :full-size="true" 
+                title="Guardar" 
+                class="col-span-3 text-center my-5 mb-auto" 
+                :is-disabled="mainStore.logedUser.id !== props.caseById.analistaId._id">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
-              </submitButton>
+              </SubmitButton>
             </form>
         </div>
   </div>
 </template>
  
 <style scoped lang="scss">
-input,select {
-      @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
-    }
-    label{
-        @apply absolute duration-300 top-3 -z-1 text-gray-500
-    }
-    /* estilos para evitar errores en ela utocompletar de el formulario */ 
-    input {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        -webkit-background-clip: text !important;
-        background-clip:  text !important;
-    }
-
-    .-z-1 {
-        z-index: -1;
-    }
-      .origin-0 {
-        transform-origin: 0%;
-    }
-    input:focus ~ label,
-    input:not(:placeholder-shown) ~ label,
-    textarea:focus ~ label,
-    textarea:not(:placeholder-shown) ~ label,
-    select:focus ~ label,
-    select:not([value='']):valid ~ label {
-      /* @apply transform; scale-75; -translate-y-6; */
-      --tw-translate-x: 0;
-      --tw-translate-y: 0;
-      --tw-rotate: 0;
-      --tw-skew-x: 0;
-      --tw-skew-y: 0;
-      transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate))
-        skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-      --tw-scale-x: 0.75;
-      --tw-scale-y: 0.75;
-      --tw-translate-y: -1.5rem;
-    }
-    input:focus ~ label,
-    select:focus ~ label {
-      /* @apply text-black; left-0; */
-      --tw-text-opacity: 1;
-      color: rgba(0, 0, 0, var(--tw-text-opacity));
-      left: 0px;
-    }
+  input,select {
+    @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
+  }
+  label{
+    @apply absolute duration-300 top-3 -z-1 text-gray-500
+  }
+  /* estilos para evitar errores en ela utocompletar de el formulario */ 
+  input {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    -webkit-background-clip: text !important;
+    background-clip:  text !important;
+  }
+  .-z-1 {
+    z-index: -1;
+  }
+  .origin-0 {
+    transform-origin: 0%;
+  }
+  input:focus ~ label,
+  input:not(:placeholder-shown) ~ label,
+  textarea:focus ~ label,
+  textarea:not(:placeholder-shown) ~ label,
+  select:focus ~ label,
+  select:not([value='']):valid ~ label {
+    /* @apply transform; scale-75; -translate-y-6; */
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate))
+      skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    --tw-scale-x: 0.75;
+    --tw-scale-y: 0.75;
+    --tw-translate-y: -1.5rem;
+  }
+  input:focus ~ label,
+  select:focus ~ label {
+    /* @apply text-black; left-0; */
+    --tw-text-opacity: 1;
+    color: rgba(0, 0, 0, var(--tw-text-opacity));
+    left: 0px;
+  }
 </style>
