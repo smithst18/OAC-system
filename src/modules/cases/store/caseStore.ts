@@ -21,6 +21,7 @@ export const useCaseStore = defineStore('case', () => {
   const caseDiaryList = ref<any>([]); //lista de usuarios
   const caseById = ref<Case>({
     _id:"",
+    subId:0,
     remitente:"O.A.C",
     nombreSolicitante:"",
     cedulaSolicitante:"",
@@ -191,6 +192,7 @@ export const useCaseStore = defineStore('case', () => {
      caseActualList.value = [];//lista de usuarios
      caseById.value = {
       _id:"",
+      subId:0,
       remitente:"O.A.C",
       nombreSolicitante:"",
       cedulaSolicitante:"",
@@ -239,8 +241,12 @@ export const useCaseStore = defineStore('case', () => {
   const getCaseList = computed(() => {
     let cases = caseActualList.value.map(( elm:Case ) => {
       return {
-        ...elm,
-        analistaId:elm.analistaId.name
+        id:elm.subId,
+        remitente:elm.remitente,
+        cedulaBeneficiario:elm.cedulaBeneficiario,
+        prioridad:elm.prioridad,
+        status:elm.status,
+        analistaId:elm.analistaId.name,
       }
     })
     return cases

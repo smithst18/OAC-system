@@ -23,7 +23,7 @@
 
   const { values, errors, defineField, handleSubmit, resetField } = useForm({
     validationSchema: yup.object({
-      description: yup.string().required('descriction es requerida').trim().min(5,'debe tener al menos 5 caracteres').max(300,"maximo 300 caracteres")
+      description: yup.string().required('descriction es requerida').trim().min(5,'debe tener al menos 5 caracteres').max(10000,"maximo 10000 caracteres")
     }),
   });
   const Toast = useToast();

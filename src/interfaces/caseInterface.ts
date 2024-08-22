@@ -1,5 +1,6 @@
 export interface Case {
   _id:string
+  subId:number,
   remitente: "O.A.C" | "ministro" | "viceministerios" | "sala situacional" | "entes adscritos" | "gabinete ministerial" | "abordaje territorial" | "venapp" | "institucion";
   nombreSolicitante:string;
   cedulaSolicitante:string;

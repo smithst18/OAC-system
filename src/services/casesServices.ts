@@ -73,3 +73,15 @@ export const downloadCasesExcel = async () =>{
     
   }
 }
+
+export const downloadCasesExcelById = async (id:string) =>{
+  try{
+
+    const response = await AxiosInstance.get(`/cases/generateExcelOneCase/${id}`, { responseType: 'arraybuffer' });
+    return response;
+
+  }catch(e){
+    return e
+    
+  }
+}

@@ -95,7 +95,7 @@
       id:caseId.value,
       ...values,
     }
-    console.log(formulary);
+
     const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
@@ -120,7 +120,6 @@
     const { typesByCategory } = await getTypesService(props.caseById.subCategoriaId);
     if(typesByCategory && typesByCategory.length > 0) typesList.value = typesByCategory;
     else console.log("Error recibiendo la data revizar respuesta");
-    console.log(props.caseById)
 
   });
 

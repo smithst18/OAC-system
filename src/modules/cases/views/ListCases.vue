@@ -24,6 +24,7 @@
   ]
 
   const on_picked_element = (elm:string) => {
+    console.log(elm)
     //open page with all case information + diary book
     router.push({name:"update-case", params:{ id:elm }});
   }
