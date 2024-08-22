@@ -31,7 +31,7 @@
 
   const SearchData = async (search :string) => {
     mainStore.search = search;
-    if(mainStore.getSearch.length >= 5) {
+    if(mainStore.getSearch.length >= 1) {
       const resp = await caseStore.setCaseList(mainStore.getSearch);
       if(resp ==="200") mainStore.setPage(1);
     }
