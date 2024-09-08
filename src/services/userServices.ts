@@ -58,9 +58,9 @@ export const updateUserService = async (form: object) => {
 };
 
 
-export const deleteUserService = async (_id: string) => {
+export const deleteUserService = async (userId: string) => {
   try {
-    const response = await AxiosInstance.put('/user/delete', {_id});
+    const response = await AxiosInstance.put('/user/delete', {userId});
     return response.data;
   } catch (e) {
     return e

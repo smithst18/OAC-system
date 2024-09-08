@@ -32,6 +32,7 @@ export const useUserStore = defineStore('user', () => {
   const updateUser = async (userId:object) => {
 
     const data  = await updateUserService(userId);
+    console.log(data);
     if(data.updatedUser) {
       setUserList()
       return '200'

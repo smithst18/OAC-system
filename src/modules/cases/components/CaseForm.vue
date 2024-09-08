@@ -8,8 +8,11 @@
   import { useForm } from 'vee-validate';
   import { getSubCategoriesService } from "@/services/subCategoryServices"; 
   import { getTypesService } from "@/services/typesServices"; 
+  import { listEstados, listMunicipios } from "@/services/DTPservices";
   import type { subCategory } from "@/interfaces/categoryInterface";
   import type { Case } from '@/interfaces/caseInterface';
+  import type { Entity } from "@/interfaces/Entity";
+
 
   const props = defineProps<{
     caseById: Case
@@ -37,9 +40,10 @@
       categoria: yup .string().required('categoria es requerido').trim(),
       subCategoriaId: yup .string().trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
-      viaResolucion: yup .string().trim(),
-      status: yup .string().required('prioridad es status').trim(),
+      viaResolucion: yup .string().trim().required('prioridad es requerido'),
+      status: yup .string().required('status es requerido').trim(),
       enteRedireccionado: yup .string().trim(),
+      descripcion: yup .string().trim().max(300,"max 300 caracteres").required('descripcion es requerido'),
     }),
   });
   
@@ -49,8 +53,6 @@
   const rout =  useRoute();
   const caseId = computed(() => rout.params.id.toString());
   const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5).toUpperCase());
-  const subCategoriesList = ref<subCategory[]>([]);
-  const typesList = ref<subCategory[]>([]);
   
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
@@ -71,11 +73,39 @@
   const [prioridad,prioridadAttrs] = defineField('prioridad');
   const [viaResolucion,viaResolucionAttrs] = defineField('viaResolucion');
   const [analistaId,analistaIdAttrs] = defineField('analistaId');
+  const [descripcion,descripcionAttrs] = defineField('descripcion');
 
   const [status,statusAttrs] = defineField('status');
   const [enteRedireccionado,enteRedireccionadoAttrs] = defineField('enteRedireccionado');
   const [createdAt,createdAtAttrs] = defineField('createdAt');
   const [updatedAt,updatedAtAttrs] = defineField('updatedAt');
+
+  const estadoList = ref<Entity[]>([]);
+  const municipioList = ref<Entity[]>([]);
+  const parroquiaList = ref<Entity[]>([]);
+  const subCategoriesList = ref<subCategory[]>([]);
+  const typesList = ref<subCategory[]>([]);
+
+  watch(
+    () => values.estado,
+    async (estado) => {
+      if (estado && estadoList.value.length > 0) {
+
+        municipioList.value = [];
+        parroquiaList.value = [];
+
+        let estadoId = estadoList.value.find((elm) => {
+          return elm.toponymName === estado;
+        })?.geonameId || 0;
+
+        const { geonames } = await listMunicipios(estadoId);
+
+        if (geonames && geonames.length >= 1) {
+          municipioList.value = geonames;
+        } else console.log('No se pudieron setear los municipios');
+
+      }
+  });
 
   //watcher para setear las sub categorias.
   watch(
@@ -92,8 +122,9 @@
   
   const onSubmit = handleSubmit(async (values) => {
     let formulary = {
-      id:caseId.value,
       ...values,
+      caseSubId:caseId.value,
+      userId:mainStore.logedUser.id,
     }
 
     const resp = await caseStore.updateCase(formulary);
@@ -106,13 +137,18 @@
   });
 
   onMounted(async() =>{
+    //setear estados
+    const { geonames } = await listEstados();
+    if(geonames) estadoList.value = geonames;
+    else console.log("error al setear estados"); 
+  
     //seteamos el form con los valores del caso
-    resetForm({values:{
-      ...props.caseById,
-      analistaId:props.caseById.analistaId.name,
-    } ,});
-
-
+    resetForm({
+      values:{
+        ...props.caseById,
+        analistaId:props.caseById.analistaId.name,
+      }
+    });
     const { subcategories } = await getSubCategoriesService();
 
     if(subcategories) subCategoriesList.value = subcategories;
@@ -135,7 +171,7 @@
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
 
               <!--FECHA ULTIMA ACTUALIZACION-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -150,7 +186,7 @@
                 <label for="createdAt" class="origin-0">Fecha de apertura</label>
               </div>
               <!--FECHA APERTURA-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -181,7 +217,7 @@
               </div>
 
               <!--VIA DE RESOLUTION-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -194,14 +230,14 @@
                   <option value="Servicio desconcentrado fondo negro primero">Servicio desconcentrado fondo negro primero</option>
                   <option value="remitido">remitido</option>
                   <option value="recursos propios">recursos propios</option>
-                  <option value="denuncia">denuncia</option>
+                  <option value="no procede">no procede</option>
                 </select>
                 <label for="viaResolucion" class="origin-0">via de resolucion</label>
                 <ErrorMessage :err="errors.viaResolucion"/>
               </div>
 
               <!--ANALISTA-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -231,19 +267,34 @@
                   v-bind="statusAttrs"
                   >
                   <option disabled value="" selected>seleccionar status</option>
-                  <option  value="en proceso" class="text-red-500">
-                    En proceso
+                  <option  value="contacto inicial" class="text-red-500">
+                    Contacto Inicial.
                   </option>
-                  <option  value="cerrado" class="text-green-500">
+                  <option  value="conformacion del expediente" class="text-red-500">
+                    Conformacion del expediente.
+                  </option>
+                  <option  value="proceso de analisis" class="text-red-500">
+                    Proceso de analisis.
+                  </option>
+                  <option  value="notificacion al solicitante" class="text-red-500">
+                    Notificacion al solicitante.
+                  </option>
+                  <option  value="en proceso" class="text-red-500">
+                    Proceso administrativo.
+                  </option>
+                  <option  value="seguimiento" class="text-red-500">
+                    Seguimiento
+                  </option>
+                  <option  value="cerrado" class="text-green-500" :disabled="viaResolucion == 'en espera'">
                     Cerrado
                   </option>
                 </select>
                 <label for="status" class="origin-0">Estatus</label>
                 <ErrorMessage :err="errors.status"/>
               </div>
-
+              {{ values.viaResolucion }}
               <!--REMITENTE-->          
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -285,7 +336,7 @@
               </div>
 
               <!-- NOMBRE COMPLETO SOLICITANTE-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
@@ -362,40 +413,22 @@
               </div>
 
               <!-- EDAD -->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
+              <div class="relative z-0 w-full mb-10 capitalize">
+                <input
                   required
+                  type="number"
                   name="edad"
+                  placeholder=""
+                  autocomplete="edad"
                   v-model="edad" 
                   v-bind="edadAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar edad</option>
-                  <option  value="0-2">
-                    0-24 meses
-                  </option>
-                  <option  value="3-11">
-                    3-11 años
-                  </option>
-                  <option  value="12-17">
-                    12-17 años
-                  </option>
-                  <option  value="18-30">
-                    18-30 años
-                  </option>
-                  <option  value="31-69">
-                    31-69 años
-                  </option>
-                  <option  value="70">
-                    mayor a 70 años
-                  </option>
-                </select>
-                <label for="edad" class="origin-0">edad</label>
+                />
                 <ErrorMessage :err="errors.edad"/>
+                <label for="cedulaBeneficiario" class="origin-0">Edad</label>
               </div>
 
               <!--GENERO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -404,10 +437,10 @@
                   v-bind="generoAttrs"
                   >
                   <option disabled value="" selected>seleccionar genero</option>
-                  <option  value="masculino">
+                  <option  value="M">
                     masculino
                   </option>
-                  <option  value="femenino">
+                  <option  value="F">
                     femenino
                   </option>
                 </select>
@@ -416,40 +449,23 @@
               </div>
 
               <!--ESTADO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
-                class="capitalize"
+                  class="capitalize"
                   required
                   name="estado"
                   v-model="estado" 
                   v-bind="estadoAttrs"
                   >
-                  <option disabled value="" selected>seleccionar estado</option>
-                  <option value="Amazonas">Amazonas</option>
-                  <option value="Anzoátegui">Anzoátegui</option>
-                  <option value="Apure">Apure</option>
-                  <option value="Aragua">Aragua</option>
-                  <option value="Barinas">Barinas</option>
-                  <option value="Bolívar">Bolívar</option>
-                  <option value="Carabobo">Carabobo</option>
-                  <option value="Cojedes">Cojedes</option>
-                  <option value="Delta amacuro">Delta Amacuro</option>
-                  <option value="Falcón">Falcón</option>
-                  <option value="Guárico">Guárico</option>
-                  <option value="Lara">Lara</option>
-                  <option value="Mérida">Mérida</option>
-                  <option value="Miranda">Miranda</option>
-                  <option value="Monagas">Monagas</option>
-                  <option value="Nueva esparta">Nueva Esparta</option>
-                  <option value="Portuguesa">Portuguesa</option>
-                  <option value="Sucre">Sucre</option>
-                  <option value="Táchira">Táchira</option>
-                  <option value="Trujillo">Trujillo</option>
-                  <option value="Vargas">Vargas</option>
-                  <option value="Yaracuy">  Yaracuy</option>
-                  <option value="Zulia">  Zulia</option>
-                  <option value="Distrito Capital">  Distrito Capital</option>
-                  <option value="Dependencias Federales">  Dependencias Federales </option>
+                  <option disabled value="" selected v-if="estadoList.length >= 1">Seleccionar Estado</option>
+                  <option disabled value="" selected v-if="estadoList.length < 1">Cargando Entidades ...</option>
+                  <option 
+                    v-for="estado in estadoList" 
+                    :key="estado.geonameId" 
+                    :value="estado.toponymName"
+                    v-if="estadoList.length > 0">
+                      {{ estado.toponymName }}
+                  </option>
                 </select>
                 <label for="estado" class="origin-0">estado</label>
                 <ErrorMessage :err="errors.estado"/>
@@ -457,22 +473,28 @@
 
               <!--MUNICIPIOS-->
               <div class="relative z-0 w-full mb-10 capitalize">
-                <input
+                <select 
+                  class="capitalize"
                   required
-                  type="text"
                   name="municipio"
-                  placeholder=""
-                  autocomplete="municipio"
                   v-model="municipio" 
                   v-bind="municipioAttrs"
-                  class="capitalize"
-                />
+                  >
+                  <option disabled value="" selected v-if="municipioList.length >= 1">Seleccionar Municipio</option>
+                  <option disabled value="" selected v-if="municipioList.length < 1">Cargando Municipios</option>
+                  <option 
+                    v-for="municipio in municipioList" 
+                    :key="municipio.geonameId" 
+                    :value="municipio.toponymName"
+                    v-if="municipioList.length > 0">
+                      {{ municipio.toponymName }}
+                  </option>
+                </select>
                 <ErrorMessage :err="errors.municipio"/>
                 <label for="municipio" class="origin-0">municipio</label>
               </div>
 
-              <!--PARROQUIAS-->
-              
+              <!--PARROQUIAS-->  
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
@@ -482,10 +504,9 @@
                   autocomplete="parroquia"
                   v-model="parroquia" 
                   v-bind="parroquiaAttrs"
-                  class="capitalize"
                 />
                 <ErrorMessage :err="errors.parroquia"/>
-                <label for="parroquia" class="origin-0">parroquia</label>
+                <label for="sector" class="origin-0">parroquia</label>
               </div>
 
               <!--SECTOR-->
@@ -505,7 +526,7 @@
               </div>
 
               <!--TIPO DE BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -525,7 +546,7 @@
               </div>
 
               <!-- CATEGORIA -->          
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -555,7 +576,7 @@
               </div>
 
               <!--SUB CATEGORIA-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -576,7 +597,7 @@
               </div>
 
               <!--TIPO -->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize" v-if="values.subCategoriaId && typesList.length > 0">
+              <div class="relative z-0 w-full mb-10 capitalize" v-if="values.subCategoriaId && typesList.length > 0">
                 <select 
                 class="capitalize"
                   required
@@ -598,7 +619,7 @@
               </div>
 
               <!--PRIORIDAD-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <select 
                 class="capitalize"
                   required
@@ -611,16 +632,33 @@
                   <option value="urgente-noImportante">urgente-no Importante</option>
                   <option value="noUrgente-importante">no urgente-importante</option>
                   <option value="noUrgente-noImportante">no Urgente-no Importante</option>
-                  <option value="denuncia">denuncia</option>
                 </select>
                 <label for="prioridad" class="origin-0">prioridad</label>
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
+
+              <!--DESCRIPCION-->
+              <div class="relative z-0 w-full mb-10">
+                <textarea
+                  required
+                  rows="1" cols="5"
+                  name="descripcion"
+                  placeholder=""
+                  autocomplete="descripcion"
+                  v-model="descripcion" 
+                  v-bind="descripcionAttrs"
+                  class="capitalize textarea-custom"
+                >
+                </textarea>
+                <ErrorMessage :err="errors.descripcion"/>
+                <label for="nombreSolicitante" class="origin-0">descripcion</label>
+              </div>
               <SubmitButton 
+                v-if="(mainStore.logedUser.id == caseById.analistaId._id && mainStore.logedUser.rol != 'auditor')|| mainStore.logedUser.rol == 'auditor'"
                 :full-size="true" 
                 title="Guardar" 
                 class="col-span-3 text-center my-5 mb-auto" 
-                :is-disabled="mainStore.logedUser.id !== props.caseById.analistaId._id">
+                :is-disabled="mainStore.logedUser.rol == 'normal' && caseById.status == 'cerrado'">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </SubmitButton>
             </form>
@@ -629,7 +667,10 @@
 </template>
  
 <style scoped lang="scss">
-  input,select {
+  .textarea-custom {
+    resize: none; /* Deshabilita el redimensionamiento */
+  }
+  input,select,textarea {
     @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
   }
   label{

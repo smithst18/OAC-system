@@ -38,10 +38,6 @@
       .min(6,'Minimo 6 caracteres')
       .oneOf([yup.ref('password')],'deben coincidir'),
 
-      birthDate: yup
-      .string()
-      .trim(),
-
       phoneNumber: yup
       .string()
       .trim(),
@@ -61,7 +57,6 @@
   const [ci,ciAttrs] = defineField('ci');
   const [password,passwordAttrs] = defineField('password');
   const [repassword,repasswordAttrs] = defineField('repassword');
-  const [birthDate,birthDateAttrs] = defineField('birthDate');
   const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber');
   const [rol,rolAttrs] = defineField('rol');
   const modification_Confirm = ref(false);
@@ -79,8 +74,8 @@
     //valida el cambio de boton para la confirmacion 
     modification_Confirm.value = false;
     let update =  {
-      _id:props.userToupdate._id,
-      ...values
+      ...values,
+      _id:props.userToupdate._id
     };
     
     const response = await userStore.updateUser(update);
@@ -172,19 +167,6 @@
                 <div class="relative z-0 w-full mb-10">
                     <input
                       required
-                      type="date"
-                      name="birthDate"
-                      placeholder=""
-                      autocomplete="bday"
-                      v-model="birthDate" 
-                      v-bind="birthDateAttrs"
-                    />
-                    <ErrorMessage :err="errors.birthDate"/>
-                    <label for="birthDate" class="origin-0">Fecha de Nacimiento</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
                       type="text"
                       name="phoneNumber"
                       placeholder=""
@@ -209,7 +191,7 @@
                       Auditor
                     </option>
                     <option  value="normal">
-                      User
+                      Normal
                     </option>
                   </select>
                   <label for="rol" class="origin-0">Permisos</label>

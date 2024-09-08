@@ -7,7 +7,7 @@ export interface Case {
   nombreBeneficiario:string;
   cedulaBeneficiario:string;
   telefonoBeneficiario:string,
-  edad:string,
+  edad:number,
   genero:string,
   estado:string,
   municipio:string,
@@ -23,7 +23,8 @@ export interface Case {
   viaResolucion:string,
   enteRedireccionado:string,
   analistaId:any,
-  diario:any
+  diario:any,
+  descripcion:string,
   createdAt: string;
   updatedAt: string;
 }

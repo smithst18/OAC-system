@@ -6,7 +6,6 @@
   const Doughnut = defineAsyncComponent(() => import("@/components/charts/DoughnutChart.vue"));
   const BarChart = defineAsyncComponent(() => import("@/components/charts/barChart.vue"));
   const UserBar = defineAsyncComponent(() => import("@/components/commons/UserBar.vue"));
-  // const Button = defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 
   const caseStore = useCaseStore();
   const toast = useToast();
@@ -40,7 +39,7 @@
 
         <div class="w-[40%] h-full mr-10">
           <Doughnut title="Cantidad de casos por categoria" :data="caseStore.getquantityPerCategory.counts" :labels="caseStore.getquantityPerCategory.labels" v-if="caseStore.getquantityPerCategory.counts.length > 0"/>
-          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
+          <p v-else class="text-center"> Casos Insuficientes ...</p>
         </div>
 
         <div class="w-[40%] h-full py-1 text-gray-500 text-sm flex items-center flex-col text-justify">
@@ -61,17 +60,17 @@
       <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
         <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos Cerrados" :labels="caseStore.getClosedCasesChart.labels" :data="caseStore.getClosedCasesChart.counts" v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
+          <p v-else class="text-center"> Casos Insuficientes ...</p>
         </div>
 
         <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos Abiertos" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
+          <p v-else class="text-center"> Casos Insuficientes ...</p>
         </div>
 
         <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos En Proceso" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Estadisticas Insuficientes ...</p>
+          <p v-else class="text-center"> Casos Insuficientes ...</p>
         </div>
       </div>
     </div>

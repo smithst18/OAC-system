@@ -18,8 +18,12 @@
     const resp = await mainStore.logIn(formData);
     if(resp === '200'){
       error.value = false;
-      if(mainStore.logedUser.rol == "admin") router.push({ name:'management' });
-      else router.push({ name:'home' });
+      if(mainStore.logedUser.rol == "admin"){
+        router.push({ name:'management' });
+      } 
+      else{
+        router.push({ name:'home' });
+      } 
     }  
     else if(resp === "400") error.value = true;
     else if(resp === "500") apiServerError.value = true;
@@ -70,6 +74,7 @@
           />
           <label for="name" class="absolute duration-300 top-3 -z-1 origin-0 text-primary text-base">Contraseña</label>
         </div>
+        <span class="text-sm text-green-400 text-opacity-90 text-center mb-3" v-if="mainStore.logedUser.id != ''">Sesion Iniciada</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="error">Usuario o contraseña invalidos</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="apiServerError">Error en la Conexion con Servidor</span>
         <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit"> 

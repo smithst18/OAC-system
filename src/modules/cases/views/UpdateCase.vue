@@ -3,8 +3,9 @@
   import { defineAsyncComponent, onMounted ,computed, ref } from "vue";
   import { useModal } from '@/composables/useModal';
   import { useCaseStore } from '../store/caseStore';
-  import { downloadCasesExcelById } from "@/services/casesServices";
+  import { downloadCasesExcelById, downloadExcelClosedCase } from "@/services/casesServices";
   import type { AxiosResponse } from 'axios';
+  import { useMainStore } from '@/stores/mainStore';
   const CaseDiary = defineAsyncComponent(()=> import('@/modules/cases/components/CaseDiary.vue'));
   const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseForm.vue'));
   const MainSpinner = defineAsyncComponent(() => import('@/components/commons/MainSpinner.vue'));
@@ -13,29 +14,60 @@
 
   const { showModal, toggleModal } = useModal(false);
   const caseStore = useCaseStore();
+  const mainStore = useMainStore();
   const rout =  useRoute();
   const caseId = computed(() => rout.params.id.toString());
 
   const downloadCaseById = async () => {
     try {
       const resp = await downloadCasesExcelById(caseId.value) as AxiosResponse<ArrayBuffer>;
-      
-      // Convertir el ArrayBuffer a un Blob con el tipo MIME correcto para un archivo de Word
-      const blob = new Blob([resp.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      if(resp.data){
+        // Convertir el ArrayBuffer a un Blob con el tipo MIME correcto para un archivo de Word
+        const blob = new Blob([resp.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+  
+        // Crear una URL para el Blob
+        const url = URL.createObjectURL(blob);
+  
+        // Crear un enlace temporal y hacer clic en él para iniciar la descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `planilla_caso_${caseId.value}.docx`; // Nombre del archivo que se descargará
+        document.body.appendChild(a);
+        a.click();
+  
+        // Limpiar
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }else alert("Error al Generar formato");
 
-      // Crear una URL para el Blob
-      const url = URL.createObjectURL(blob);
+    } catch (error) {
+        console.error('Error al descargar el archivo:', error);
+    }
+  };
 
-      // Crear un enlace temporal y hacer clic en él para iniciar la descarga
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `planilla_caso_${caseId.value}.docx`; // Nombre del archivo que se descargará
-      document.body.appendChild(a);
-      a.click();
+  const downloadClosedCaseById = async () => {
+    alert("FORMATO DE CIERRE")
+    try {
+      const resp = await downloadExcelClosedCase(caseId.value) as AxiosResponse<ArrayBuffer>;
+      if(resp.data){
+        
+        // Convertir el ArrayBuffer a un Blob con el tipo MIME correcto para un archivo de Word
+        const blob = new Blob([resp.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 
-      // Limpiar
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+        // Crear una URL para el Blob
+        const url = URL.createObjectURL(blob);
+
+        // Crear un enlace temporal y hacer clic en él para iniciar la descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `caso_cerrado_n_${caseId.value}.docx`; // Nombre del archivo que se descargará
+        document.body.appendChild(a);
+        a.click();
+
+        // Limpiar
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }else alert("Error al Generar formato");
     } catch (error) {
         console.error('Error al descargar el archivo:', error);
     }
@@ -71,6 +103,13 @@
       class="absolute top-10 right-44" 
       @click="downloadCaseById"
       v-if="caseStore.getCaseById._id != ''">
+    </Button>
+    <Button 
+      :full-size="false" 
+      title="" icon="print_connect" 
+      class="absolute top-10 right-64" 
+      @click="downloadClosedCaseById"
+      v-if="caseStore.getCaseById._id != '' && caseStore.getCaseById.status == 'cerrado' && mainStore.logedUser.rol == 'auditor'">
     </Button>
     <CaseDiary :show-modal="showModal" @toggleModal="toggleModal" :id="caseStore.getCaseById._id" v-if="caseStore.getCaseById._id != ''"/>
   </div>

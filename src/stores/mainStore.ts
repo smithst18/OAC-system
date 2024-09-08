@@ -90,6 +90,7 @@ export const useMainStore = defineStore('main', () => {
       name:'',
       ci:'',
       rol:'',
+      id:'',
     };
     search.value = '';
     page.value = 0;// pagina en la que comienza la pagination

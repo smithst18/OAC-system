@@ -10,7 +10,7 @@
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const mainStore = useMainStore();
   const { successToast, errorToast } = useToast();
-  const { values, errors, defineField, handleSubmit } = useForm({
+  const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       name: yup
       .string().required('Nombre es requerido').trim(),
@@ -26,11 +26,6 @@
       .required('repetir Contraseña es requerido')
       .min(6,'Minimo 6 caracteres')
       .oneOf([yup.ref('password')],'deben coincidir'),
-
-      birthDate: yup
-      .string()
-      .required('Fecha requerida')
-      .trim(),
 
       phoneNumber: yup
       .string()
@@ -48,13 +43,15 @@
   const [ci,ciAttrs] = defineField('ci')
   const [password,passwordAttrs] = defineField('password')
   const [repassword,repasswordAttrs] = defineField('repassword')
-  const [birthDate,birthDateAttrs] = defineField('birthDate')
   const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber')
   const [rol,rolAttrs] = defineField('rol')
 
   const onSubmit = handleSubmit(async (values) => {
     const resp = await mainStore.signUp(values);
-    if(resp === '200') successToast('Usuario creado correctamente');
+    if(resp === '200'){
+      successToast('Usuario creado correctamente');
+      resetForm();
+    } 
     else if (resp === '403') errorToast('El usuario ya Existe');
     else errorToast('Server Error')
   });
@@ -68,7 +65,7 @@
         </div>
         <div class="w-full p-5 rounded-2xl shadow-md bg-white">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Nuevo usuario</h1>
-            <form class="p-5 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
+            <form class="p-10 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
                 <div class="relative z-0 w-full mb-10">
                   <input
                       required
@@ -124,19 +121,6 @@
                 <div class="relative z-0 w-full mb-10">
                     <input
                       required
-                      type="date"
-                      name="birthDate"
-                      placeholder=""
-                      autocomplete="bday"
-                      v-model="birthDate" 
-                      v-bind="birthDateAttrs"
-                    />
-                    <ErrorMessage :err="errors.birthDate"/>
-                    <label for="birthDate" class="origin-0">Fecha de Nacimiento</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
                       type="text"
                       name="phoneNumber"
                       placeholder=""
@@ -161,7 +145,7 @@
                       Auditor
                     </option>
                     <option  value="normal">
-                      User
+                      Normal
                     </option>
                   </select>
                   <label for="rol" class="origin-0">Permisos</label>

@@ -28,7 +28,7 @@ export const useCaseStore = defineStore('case', () => {
     nombreBeneficiario:"",
     cedulaBeneficiario:"",
     telefonoBeneficiario:"",
-    edad:"",
+    edad:0,
     genero:"",
     estado:"",
     municipio:"",
@@ -45,6 +45,7 @@ export const useCaseStore = defineStore('case', () => {
     enteRedireccionado:"",
     analistaId:"",
     diario:"",
+    descripcion:"",
     createdAt:"",
     updatedAt:"",
   });
@@ -148,6 +149,8 @@ export const useCaseStore = defineStore('case', () => {
 
     const data = await updateCaseService(form);
     if(data.updatedCase){
+      //seteamos el nuevo caso para que se refleje en los formularios
+      caseById.value = data.updatedCase;
       return "200";
     }
     else if(data.response){ 
@@ -199,7 +202,7 @@ export const useCaseStore = defineStore('case', () => {
       nombreBeneficiario:"",
       cedulaBeneficiario:"",
       telefonoBeneficiario:"",
-      edad:"",
+      edad:0,
       genero:"",
       estado:"",
       municipio:"",
@@ -216,6 +219,7 @@ export const useCaseStore = defineStore('case', () => {
       enteRedireccionado:"",
       analistaId:"",
       diario:"",
+      descripcion:"",
       createdAt:"",
       updatedAt:"",
     };
