@@ -2,7 +2,7 @@
 
 SGAP (Sistema de Gestión de Ayuda Social) es una plataforma robusta diseñada para gestionar de manera eficiente los casos de ayuda social de una empresa que presta este tipo de servicios. El sistema cuenta con un módulo completo de gestión de usuarios, incluyendo CRUD con soft delete y permisos diferenciados para administradores y auditores.
 
-## Características principales
+## Características principales ⚙
 
 - **Gestión de usuarios**: CRUD con soporte de soft delete y roles diferenciados (administrador, auditor).
 - **Gestión de casos de ayuda social**: Registro y seguimiento de casos de ayuda social mediante tablas interactivas.
@@ -11,7 +11,7 @@ SGAP (Sistema de Gestión de Ayuda Social) es una plataforma robusta diseñada p
 - **Flujo de datos eficiente**: Gestión de estado global mediante Pinia.
 - **Validaciones robustas**: Validaciones estrictas en los datos y permisos de usuario tanto en frontend como en backend.
 
-## Tecnologías utilizadas
+## Tecnologías utilizadas 🛠️
 
 - **Frontend**: Vue 3, Pinia, Tailwind CSS
 - **Backend**: Node.js, Express.js, TypeScript
