@@ -49,5 +49,3 @@ npm run type-check
 ```bash
 npm run lint
 ```
-
-z
