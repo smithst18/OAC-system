@@ -1,46 +1,30 @@
-# front
+# SGAP - Sistema de Gestión de Ayudas Sociales
 
-This template should help get you started developing with Vue 3 in Vite.
+SGAP (Sistema de Gestión de Ayuda Social) es una plataforma robusta diseñada para gestionar de manera eficiente los casos de ayuda social de una empresa que presta este tipo de servicios. El sistema cuenta con un módulo completo de gestión de usuarios, incluyendo CRUD con soft delete y permisos diferenciados para administradores y auditores.
 
-## Recommended IDE Setup
+## Características principales
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- **Gestión de usuarios**: CRUD con soporte de soft delete y roles diferenciados (administrador, auditor).
+- **Gestión de casos de ayuda social**: Registro y seguimiento de casos de ayuda social mediante tablas interactivas.
+- **Estadísticas detalladas**: Generación de estadísticas generales y específicas basadas en tiempo y características particulares.
+- **Arquitectura modular**: Uso de componentes reutilizables en Vue 3 para garantizar la escalabilidad y mantenibilidad del sistema.
+- **Flujo de datos eficiente**: Gestión de estado global mediante Pinia.
+- **Validaciones robustas**: Validaciones estrictas en los datos y permisos de usuario tanto en frontend como en backend.
 
-## Type Support for `.vue` Imports in TS
+## Tecnologías utilizadas
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+- **Frontend**: Vue 3, Pinia, Tailwind CSS
+- **Backend**: Node.js, Express.js, TypeScript
+- **Base de datos**: MongoDB, Mongoose
+- **Estilos**: Tailwind CSS
+- **Validaciones**: Validación de datos y permisos mediante TypeScript y Mongoose
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+## Instalación
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Para ejecutar el proyecto localmente, sigue los siguientes pasos:
 
-## Customize configuration
+### 1. Clonar el repositorio
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+```bash
+git clone https://github.com/tu-usuario/sgap.git
+cd sgap
