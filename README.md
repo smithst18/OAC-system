@@ -17,7 +17,7 @@ SGAP (Sistema de Gestión de Ayuda Social) es una plataforma robusta diseñada p
 - **Backend**: Node.js, Express.js, TypeScript
 - **Base de datos**: MongoDB, Mongoose
 - **Estilos**: Tailwind CSS
-- **Validaciones**: Validación de datos y permisos mediante TypeScript y Mongoose
+- **Validaciones**: Validación de datos y permisos mediante TypeScript y Mongoose, ademas de la imprementacion de veevalidate para formularios y expressvalidator
 
 ## Instalación
 
@@ -28,3 +28,26 @@ Para ejecutar el proyecto localmente, sigue los siguientes pasos:
 ```bash
 git clone https://github.com/tu-usuario/sgap.git
 cd sgap
+```
+### 2. Instala las dependencias necesarias con:
+```bash
+npm install
+```
+### 3. Compilar y ejecutar en modo desarrollo:
+```bash
+npm run dev
+```
+### 4. Compilar y minificar para producción:
+```bash
+npm run build
+```
+### 5. Verificación de tipos:
+```bash
+npm run type-check
+```
+### 6. Linting con ESLint:
+```bash
+npm run lint
+```
+
+z
