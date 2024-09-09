@@ -49,3 +49,6 @@ npm run type-check
 ```bash
 npm run lint
 ```
+
+### Licencia
+Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
