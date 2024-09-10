@@ -11,9 +11,12 @@ export const isAuth = (to:RouteLocationNormalized, from:RouteLocationNormalized,
 }
 
 export const isNotAuth = (to:RouteLocationNormalized, from:RouteLocationNormalized, next:NavigationGuardNext) => {
-  const { isLoged } = useMainStore();
+  const { isLoged, logedUser } = useMainStore();
 
-  if(isLoged) next({ name:'home'});
+  if(isLoged) {
+    if(logedUser.rol == "admin") next({ name:'management'});
+    else next({ name:'home'});
+  }
   else next()
   
 }
