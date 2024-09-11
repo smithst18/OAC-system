@@ -3,7 +3,11 @@ import  AxiosInstance  from "@/api/axios"
 export const saveCaseService = async ( form : object ) =>{
   try{
 
-    const response = await AxiosInstance.post('/cases/save',form);
+    const response = await AxiosInstance.post('/cases/save',form ,{
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return response.data;
 
   }catch(e){

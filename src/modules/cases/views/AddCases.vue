@@ -4,7 +4,7 @@
   import { useToast } from '@/composables/useToast';
   import { ref, defineAsyncComponent, onMounted, watch } from 'vue';
   import * as yup from 'yup';
-  import { useForm, useResetForm,  } from 'vee-validate';
+  import { useForm } from 'vee-validate';
   import { listEstados, listMunicipios } from "@/services/DTPservices";
   import { getSubCategoriesService } from "@/services/subCategoryServices"; 
   import { getTypesService } from "@/services/typesServices"; 
@@ -14,6 +14,7 @@
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+  const FileInput = defineAsyncComponent(() => import('@/components/commons/FileInput.vue'));
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
@@ -60,7 +61,7 @@
   const [tipoId,tipoAttrs] = defineField('tipoId');
   const [prioridad,prioridadAttrs] = defineField('prioridad');
   const [descripcion,descripcionAttrs] = defineField('descripcion');
-
+  const file = ref<File>();
   const estadoList = ref<Entity[]>([]);
   const municipioList = ref<Entity[]>([]);
   const parroquiaList = ref<Entity[]>([]);
@@ -102,11 +103,16 @@
       }
   });
 
+  const saveFile = (event:File) => file.value = event; 
+
   const onSubmit = handleSubmit(async (values) => {
-    // se hace una busqueda por id en el array debido a que el value en el formulario se vuelve temporalment eun numero
+    let fileToSend = undefined;
+    if(file != undefined) fileToSend = file.value;
+    // se hace una busqueda por id en el array debido a que el value en el formulario se vuelve temporalmente un numero
     let formulary = {
       ...values,
       analistaId: mainStore.logedUser.id,
+      casoPdf:fileToSend
     } 
     console.log(formulary);
     const resp = await caseStore.saveCase(formulary);
@@ -118,6 +124,7 @@
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
     else toast.errorToast("Error de servidor");
   });
+  
 
   onMounted(async() =>{
     //setear estados
@@ -338,28 +345,6 @@
                 <label for="municipio" class="origin-0">municipio</label>
               </div>
 
-              <!--PARROQUIAS-->  
-              <!-- <div class="relative z-0 w-full mb-10 capitalize">
-                <select 
-                  class="capitalize"
-                  required
-                  name="parroquia"
-                  v-model="parroquia" 
-                  v-bind="parroquiaAttrs"
-                  >
-                  <option disabled value="" selected v-if="parroquiaList.length >= 1">Seleccionar Parroquia</option>
-                  <option disabled value="" selected v-if="parroquiaList.length < 1">Cargando Parroquia</option>
-                  <option 
-                    v-for="parroquia in parroquiaList" 
-                    :key="parroquia.geonameId" 
-                    :value="parroquia.toponymName"
-                    v-if="parroquiaList.length > 0">
-                      {{ parroquia.toponymName }}
-                  </option>
-                </select>
-                <ErrorMessage :err="errors.parroquia"/>
-                <label for="parroquia" class="origin-0">parroquia</label>
-              </div> -->
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
@@ -519,6 +504,8 @@
                 <label for="nombreSolicitante" class="origin-0">descripcion</label>
               </div>
 
+              <FileInput title="Ningún archivo seleccionado" :allowed-extensions="['application/pdf']" @send-file="saveFile"/>
+
               <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </submitButton>
@@ -528,52 +515,56 @@
 </template>
  
 <style scoped lang="scss">
-    .textarea-custom {
-      resize: none; /* Deshabilita el redimensionamiento */
-    }
-    input,select,textarea {
-      @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
-    }
-    label{
-        @apply absolute duration-300 top-3 -z-1 text-gray-500
-    }
-    /* estilos para evitar errores en ela utocompletar de el formulario */ 
-    input {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        -webkit-background-clip: text !important;
-        background-clip:  text !important;
-    }
+.textarea-custom {
+  resize: none; /* Deshabilita el redimensionamiento */
+}
 
-    .-z-1 {
-        z-index: -1;
-    }
-      .origin-0 {
-        transform-origin: 0%;
-    }
-    input:focus ~ label,
-    input:not(:placeholder-shown) ~ label,
-    textarea:focus ~ label,
-    textarea:not(:placeholder-shown) ~ label,
-    select:focus ~ label,
-    select:not([value='']):valid ~ label {
-      /* @apply transform; scale-75; -translate-y-6; */
-      --tw-translate-x: 0;
-      --tw-translate-y: 0;
-      --tw-rotate: 0;
-      --tw-skew-x: 0;
-      --tw-skew-y: 0;
-      transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate))
-        skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-      --tw-scale-x: 0.75;
-      --tw-scale-y: 0.75;
-      --tw-translate-y: -1.5rem;
-    }
-    input:focus ~ label,
-    select:focus ~ label {
-      /* @apply text-black; left-0; */
-      --tw-text-opacity: 1;
-      color: rgba(0, 0, 0, var(--tw-text-opacity));
-      left: 0px;
-    }
+input, select, textarea {
+  @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300;
+}
+
+label {
+  @apply absolute duration-300 top-3 -z-1 text-gray-500;
+}
+
+.hidden {
+  display: none;
+}
+input {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+.-z-1 {
+  z-index: -1;
+}
+
+.origin-0 {
+  transform-origin: 0%;
+}
+
+/* Estilos para la animación de etiqueta flotante */
+input:focus ~ label,
+input:not(:placeholder-shown) ~ label,
+textarea:focus ~ label,
+textarea:not(:placeholder-shown) ~ label,
+select:focus ~ label,
+select:not([value='']):valid ~ label {
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.75) scaleY(0.75);
+  --tw-translate-y: -1.5rem;
+}
+
+input:focus ~ label,
+select:focus ~ label {
+  --tw-text-opacity: 1;
+  color: rgba(0, 0, 0, var(--tw-text-opacity));
+  left: 0px;
+}
 </style>
