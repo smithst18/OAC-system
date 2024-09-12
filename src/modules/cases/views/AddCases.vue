@@ -61,13 +61,13 @@
   const [tipoId,tipoAttrs] = defineField('tipoId');
   const [prioridad,prioridadAttrs] = defineField('prioridad');
   const [descripcion,descripcionAttrs] = defineField('descripcion');
-  const file = ref<File>();
+
+  const file = ref<File | null>(null);
   const estadoList = ref<Entity[]>([]);
   const municipioList = ref<Entity[]>([]);
   const parroquiaList = ref<Entity[]>([]);
   const subCategoriesList = ref<subCategory[]>([]);
   const typesList = ref<subCategory[]>([]);
-
   //watcher para setear las sub categorias
 
   watch(
@@ -107,6 +107,7 @@
 
   const onSubmit = handleSubmit(async (values) => {
     let fileToSend = undefined;
+    
     if(file != undefined) fileToSend = file.value;
     // se hace una busqueda por id en el array debido a que el value en el formulario se vuelve temporalmente un numero
     let formulary = {
@@ -114,12 +115,12 @@
       analistaId: mainStore.logedUser.id,
       casoPdf:fileToSend
     } 
-    console.log(formulary);
     const resp = await caseStore.saveCase(formulary);
     
     if(resp == '200') {
       toast.successToast("Caso guardado de manera correcta");
       resetForm();
+      file.value = null;
     }
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
     else toast.errorToast("Error de servidor");
@@ -504,7 +505,8 @@
                 <label for="nombreSolicitante" class="origin-0">descripcion</label>
               </div>
 
-              <FileInput title="Ningún archivo seleccionado" :allowed-extensions="['application/pdf']" @send-file="saveFile"/>
+              <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
+                @send-file="(event:File) => file= event"/>
 
               <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>

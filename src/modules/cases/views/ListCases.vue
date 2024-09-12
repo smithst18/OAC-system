@@ -24,7 +24,6 @@
   ]
 
   const on_picked_element = (elm:string) => {
-    console.log(elm)
     //open page with all case information + diary book
     router.push({name:"update-case", params:{ id:elm }});
   }
@@ -41,7 +40,8 @@
   onMounted(async () => {
     try{
       const resp = await caseStore.setCaseList();
-      console.log(resp)
+      if(resp =="200") console.log("table data cargada ");
+      else console.log("error table data no cargada ");
     }catch(e){
       console.log(e);
     }

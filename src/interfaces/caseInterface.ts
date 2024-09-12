@@ -25,6 +25,7 @@ export interface Case {
   analistaId:any,
   diario:any,
   descripcion:string,
+  file:string,
   createdAt: string;
   updatedAt: string;
 }

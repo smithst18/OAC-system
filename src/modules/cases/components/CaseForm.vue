@@ -292,7 +292,6 @@
                 <label for="status" class="origin-0">Estatus</label>
                 <ErrorMessage :err="errors.status"/>
               </div>
-              {{ values.viaResolucion }}
               <!--REMITENTE-->          
               <div class="relative z-0 w-full mb-10 capitalize">
                 <select 

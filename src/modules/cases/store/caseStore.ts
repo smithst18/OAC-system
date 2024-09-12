@@ -46,6 +46,7 @@ export const useCaseStore = defineStore('case', () => {
     analistaId:"",
     diario:"",
     descripcion:"",
+    file:"",
     createdAt:"",
     updatedAt:"",
   });
@@ -178,7 +179,7 @@ export const useCaseStore = defineStore('case', () => {
 
       quantityPerCategory.value.counts =  quantityPerCategoryValues.counts
       quantityPerCategory.value.labels = quantityPerCategoryValues.categories
-      console.log(quantityPerCategoryValues)
+  
       return "200"
     }
     else if(response){ 
@@ -220,6 +221,7 @@ export const useCaseStore = defineStore('case', () => {
       analistaId:"",
       diario:"",
       descripcion:"",
+      file:"",
       createdAt:"",
       updatedAt:"",
     };

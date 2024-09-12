@@ -72,7 +72,17 @@
         console.error('Error al descargar el archivo:', error);
     }
   };
-  
+
+  const downLoadCaseSources = async () => {
+    try {
+      // Abrir el enlace en una nueva ventana
+      const fileUrl = `http://${caseStore.getCaseById.file}`; 
+      window.open(fileUrl, '_blank');
+    } catch (error) {
+      console.error('Error al abrir el enlace:', error);
+    }
+  };
+
   onMounted( async () => {
     const resp = await caseStore.setCaseById(caseId.value);
     if(resp === "200"){
@@ -92,22 +102,29 @@
     </p>
     <Button 
       :full-size="false" 
+      title="" icon="cloud_download" 
+      class="absolute top-10 right-12" 
+      @click="downLoadCaseSources"
+      v-if="caseStore.getCaseById._id != ''">
+    </Button>
+    <Button 
+      :full-size="false" 
       title="" icon="menu_book" 
-      class="absolute top-10 right-24" 
+      class="absolute top-10 right-32" 
       @click="toggleModal"
       v-if="caseStore.getCaseById._id != ''">
     </Button>
     <Button 
       :full-size="false" 
       title="" icon="print" 
-      class="absolute top-10 right-44" 
+      class="absolute top-10 right-52" 
       @click="downloadCaseById"
       v-if="caseStore.getCaseById._id != ''">
     </Button>
     <Button 
       :full-size="false" 
       title="" icon="print_connect" 
-      class="absolute top-10 right-64" 
+      class="absolute top-10 right-72" 
       @click="downloadClosedCaseById"
       v-if="caseStore.getCaseById._id != '' && caseStore.getCaseById.status == 'cerrado' && mainStore.logedUser.rol == 'auditor'">
     </Button>
