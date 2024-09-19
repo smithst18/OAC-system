@@ -93,7 +93,7 @@ export const downloadCasesExcelById = async (caseSubId:string) =>{
 export const downloadExcelClosedCase = async (caseSubId:string) =>{
   try{
 
-    const response = await AxiosInstance.get(`/cases//generateExcelClosedCase/${caseSubId}`, { responseType: 'arraybuffer' });
+    const response = await AxiosInstance.get(`/cases/generateExcelClosedCase/${caseSubId}`, { responseType: 'arraybuffer' });
     return response;
 
   }catch(e){

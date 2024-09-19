@@ -1,18 +1,22 @@
 <script setup lang="ts">  
+  import type { Case } from '@/interfaces/caseInterface';
+  import type { AxiosResponse } from 'axios';
   import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
   import * as yup from 'yup';
   import { useForm } from 'vee-validate'; 
   import { useToast } from '@/composables/useToast';
   import { useCaseStore } from '../store/caseStore';
   import { useMainStore } from '@/stores/mainStore';
+  import { downloadCaseDiary } from "@/services/diaryServices";
   const Modal = defineAsyncComponent(()=> import('@/components/commons/GenericModal.vue'));
   const DiaryItem = defineAsyncComponent(()=> import('@/modules/cases/components/DiaryItem.vue'));
   const Button =  defineAsyncComponent(()=> import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+  
 
   const props = defineProps<{
     showModal: boolean
-    id:string
+    case:Case
   }>();
 
   const emit = defineEmits<{
@@ -43,24 +47,52 @@
     
     let toSave =  {
       description:values.description,
-      casoId: props.id,
+      caseStatus:props.case.status,
+      casoId: props.case._id,
       userId: mainStore.logedUser.id,
     };
-
     const response = await caseStore.saveDiary(toSave);
 
     if(response == '200'){
       scrollToBottom();
       resetField('description');
-      Toast.successToast("Parte diario guardado correctamnete");
+      Toast.successToast("Parte diario guardado correctamente");
     }else{
       Toast.errorToast("Error al guardar parte diario ");
     }
 
   });
 
+  const downLoadDiary = async () => {
+    try {
+      const resp = await downloadCaseDiary(props.case._id) as AxiosResponse<ArrayBuffer>;
+      if(resp.data){
+        // Convertir el ArrayBuffer a un Blob con el tipo MIME correcto para un archivo de Word
+        const blob = new Blob([resp.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+        // Crear una URL para el Blob
+        const url = URL.createObjectURL(blob);
+  
+        // Crear un enlace temporal y hacer clic en él para iniciar la descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `parte_diario_caso_${props.case.subId}.docx`; // Nombre del archivo que se descargará
+        document.body.appendChild(a);
+        a.click();
+  
+        // Limpiar
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }else alert("Error al Generar formato diary");
+
+    } catch (error) {
+        console.error('Error al descargar el archivo:', error);
+    }
+  }
+
   onMounted( async () => {
-    const resp = await caseStore.setDiaryCaseList(props.id);
+    console.log(props.case)
+    const resp = await caseStore.setDiaryCaseList(props.case._id);
     if(resp == "200") console.log("diarys Setted");
     else if(resp == "404") console.log("No hay diarios");
     else console.log("Error seteando informacion revizar api");
@@ -75,11 +107,26 @@
   <Teleport to="body">
     <Modal :show-modal="props.showModal" @close-modal="emit('toggleModal')">
       <template #header> 
-        <p class="mr-5 text-center">Parte diario :</p>
+        <div class="flex items-center w-full">
+          <p class="mr-5 text-center">Parte diario :</p>
+          <Button 
+            :full-size="false" 
+            title="" icon="download" 
+            class="bg-transparent !text-primary hover:bg-transparent hover:!text-primary-light ml-auto active:bg-transparent focus:outline-none focus:ring-2 focus:ring-transparent active:!text-secondary focus:!text-secondary mr-2" 
+            @click="downLoadDiary">
+          </Button>
+        </div>
       </template>
       <template #body> 
         <div class="w-[650px] h-96 overflow-y-auto" ref="ScrolBar" >
-          <DiaryItem v-for="item in caseStore.getCaseDiaryList" class="mb-5" :date="item.createdAt" :description="item.description" v-if="caseStore.getCaseDiaryList.length > 0"/>
+          <DiaryItem 
+              v-for="item in caseStore.getCaseDiaryList" 
+              class="mb-5" 
+              :date="item.createdAt" 
+              :description="item.description"
+              :case-status="item.caseStatus" 
+              v-if="caseStore.getCaseDiaryList.length > 0"
+              />
           <p class="flex items-center justify-center h-full" v-else> No hay parte diarios disponible </p>
         </div>
       </template>

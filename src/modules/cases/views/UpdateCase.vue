@@ -10,7 +10,6 @@
   const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseForm.vue'));
   const MainSpinner = defineAsyncComponent(() => import('@/components/commons/MainSpinner.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
-  
 
   const { showModal, toggleModal } = useModal(false);
   const caseStore = useCaseStore();
@@ -128,7 +127,12 @@
       @click="downloadClosedCaseById"
       v-if="caseStore.getCaseById._id != '' && caseStore.getCaseById.status == 'cerrado' && mainStore.logedUser.rol == 'auditor'">
     </Button>
-    <CaseDiary :show-modal="showModal" @toggleModal="toggleModal" :id="caseStore.getCaseById._id" v-if="caseStore.getCaseById._id != ''"/>
+    <CaseDiary 
+      :show-modal="showModal" 
+      :case="caseStore.getCaseById"
+      @toggleModal="toggleModal" 
+      v-if="caseStore.getCaseById._id != ''"
+    />
   </div>
 </template>
  

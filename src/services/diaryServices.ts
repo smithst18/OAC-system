@@ -24,3 +24,15 @@ export const getDiariesService = async (id: string) =>{
     
   }
 }
+
+export const downloadCaseDiary = async (id:string) =>{
+  try{
+
+    const response = await AxiosInstance.get(`/diary/generateFileOneCase/${id}`, { responseType: 'arraybuffer' });
+    return response;
+
+  }catch(e){
+    return e
+    
+  }
+}

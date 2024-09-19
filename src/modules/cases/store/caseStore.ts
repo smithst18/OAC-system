@@ -13,12 +13,13 @@ import {
 } from "@/services/diaryServices";
 import type { Case } from '@/interfaces/caseInterface';
 import { useMainStore } from '@/stores/mainStore';
+import type { Diary } from '@/interfaces/diaryInterface';
 
 export const useCaseStore = defineStore('case', () => {
   const mainStore = useMainStore();
   // =======================> STATE
   const caseActualList = ref([]); //lista de usuarios
-  const caseDiaryList = ref<any>([]); //lista de usuarios
+  const caseDiaryList = ref<Diary[]>([]); //lista de usuarios
   const caseById = ref<Case>({
     _id:"",
     subId:0,
@@ -282,16 +283,24 @@ export const useCaseStore = defineStore('case', () => {
   });
 
   const getCaseDiaryList = computed(() => {
-    let data = caseDiaryList.value.map((elm:any) => {
+    let data = caseDiaryList.value.map((elm: Diary) => {
       return { 
         ...elm,
-        createdAt: new Date(elm.createdAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString()
-      }
-      
-    })
-    return data
+        createdAt: elm.createdAt ? 
+          new Date(elm.createdAt).toLocaleString('es-ES', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+          }).toString() 
+          : 'Fecha no disponible' // Manejo de caso cuando createdAt es undefined
+      };
+    });
+    return data;
   });
-
+  
   return {
     caseActualList,
     caseById,
