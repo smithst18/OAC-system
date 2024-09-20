@@ -35,7 +35,7 @@
       </div>
       <UserBar/>
 
-      <div class=" w-full h-[30%] flex justify-around items-center border bg-white shadow-md  rounded-2xl px-5 py-5">
+      <div class=" w-full h-[30%] flex justify-around items-center border bg-white shadow-md  rounded-2xl p-5">
 
         <div class="w-[40%] h-full mr-10">
           <Doughnut title="Cantidad de casos por categoria" :data="caseStore.getquantityPerCategory.counts" :labels="caseStore.getquantityPerCategory.labels" v-if="caseStore.getquantityPerCategory.counts.length > 0"/>

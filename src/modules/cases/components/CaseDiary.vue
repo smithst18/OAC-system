@@ -119,14 +119,16 @@
       </template>
       <template #body> 
         <div class="w-[650px] h-96 overflow-y-auto" ref="ScrolBar" >
-          <DiaryItem 
-              v-for="item in caseStore.getCaseDiaryList" 
-              class="mb-5" 
-              :date="item.createdAt" 
-              :description="item.description"
-              :case-status="item.caseStatus" 
-              v-if="caseStore.getCaseDiaryList.length > 0"
-              />
+          <div  v-if="caseStore.getCaseDiaryList.length > 0"> 
+            <DiaryItem 
+                v-for="item in caseStore.getCaseDiaryList" :key="item.userId"
+                class="mb-5" 
+                :date="item.createdAt" 
+                :description="item.description"
+                :case-status="item.caseStatus" 
+                
+                />
+          </div>
           <p class="flex items-center justify-center h-full" v-else> No hay parte diarios disponible </p>
         </div>
       </template>

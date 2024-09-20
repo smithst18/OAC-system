@@ -168,7 +168,7 @@
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto" v-if="props.caseById">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseIdShort }} </h1>
-            <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
+            <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
 
               <!--FECHA ULTIMA ACTUALIZACION-->
               <div class="relative z-0 w-full mb-10 capitalize">

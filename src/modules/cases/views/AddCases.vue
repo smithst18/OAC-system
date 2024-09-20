@@ -108,7 +108,7 @@
   const onSubmit = handleSubmit(async (values) => {
     let fileToSend = undefined;
     
-    if(file != undefined) fileToSend = file.value;
+    if(file.value != undefined) fileToSend = file.value;
     // se hace una busqueda por id en el array debido a que el value en el formulario se vuelve temporalmente un numero
     let formulary = {
       ...values,
@@ -146,7 +146,7 @@
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-white overflow-auto">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar nuevo caso</h1>
-            <form class="p-5 grid grid-cols-3 gap-x-9 w-full" novalidate @submit="onSubmit">
+            <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
               <!--REMITENTE-->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 

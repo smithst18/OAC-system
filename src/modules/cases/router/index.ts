@@ -33,6 +33,13 @@ export default {
           component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/AddCases.vue"),
         },
         { 
+          path:'reportes',
+          name:'report-maker',
+          meta:{ rolsAllow: ['admin', 'auditor', 'normal'] },
+          beforeEnter: [ rolGuard ],
+          component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/ReportMakerView.vue"),
+        },
+        { 
             path: '/:pathMatch(.*)*', 
             redirect:{ name:"dashboard" }
         },
