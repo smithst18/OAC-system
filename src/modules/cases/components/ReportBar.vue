@@ -1,49 +1,77 @@
 <script setup lang="ts">
-import type { FilterI } from "@/interfaces/filterInterface"
-  import { defineAsyncComponent, reactive } from "vue";
+  import type { FilterI } from "@/interfaces/filterInterface";
+  import { defineAsyncComponent } from "vue";
   import { useMainStore } from "@/stores/mainStore";
   import * as yup from 'yup';
   import { useForm } from 'vee-validate';
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
 
   const mainStore = useMainStore();
   const emit = defineEmits<{
-    (e: 'filter', filterParam: object): void
+    (e: 'sendFilter', filterParams: FilterI): void
   }>();
-
-  const filters = reactive<FilterI>({
-    field: '',
-    parameter: '',      
-    fechaStart: new Date(),  
-    fechaEnd: new Date(),      
-  });
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
-      // remitente: yup.string().required('Remitente es requerido').trim(),
-      // nombreSolicitante: yup .string().required('Nombre del Solicitante es requerido').trim(),
-      // cedulaSolicitante: yup .string().required('Cedula del Solicitante es requerido').trim(),
+      field: yup
+        .string()
+        .required('Nombre del Solicitante es requerido')
+        .trim(),
+      parameter: yup
+        .string()
+        .required('Nombre del Solicitante es requerido')
+        .trim(),
+      fechaStart: yup
+        .date()
+        .required('La fecha de inicio es requerida')
+        .max(yup.ref('fechaEnd'), 'La fecha de inicio no puede ser mayor que la fecha de fin'),
+      fechaEnd: yup
+        .date()
+        .required('La fecha de fin es requerida')
+        .min(yup.ref('fechaStart'), 'La fecha final no puede ser menor que la fecha de inicio'),
+
     }),
   });
 
-  const [field,fieldAttrs] = defineField('parameter');
+  const [field,fieldAttrs] = defineField('field');
   const [parameter,paramAttrs] = defineField('parameter');
   const [fechaStart,fechaStartAttrs] = defineField('fechaStart');
   const [fechaEnd,fechaEndAttrs] = defineField('fechaEnd');
 
-  const onSubmit = handleSubmit(async (values:any) => {
-    alert('generando reporte');
-    console.log(values);
-  });
+  const onSubmit = handleSubmit(async (values: any) => {
+  // Crear fechas asegurándote de que se consideren en UTC
+  const fechaStart = new Date(values.fechaStart + 'T00:00:00Z'); // Forzamos UTC añadiendo 'Z'
+  const fechaEnd = new Date(values.fechaEnd + 'T00:00:00Z');
+
+  let ParamsToEmit = {
+    ...values,
+    fechaStart: fechaStart.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'UTC' // Usar zona horaria UTC para evitar desplazamientos
+    }),
+    fechaEnd: fechaEnd.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'UTC' // Usar zona horaria UTC para evitar desplazamientos
+    })
+  };
+
+  emit('sendFilter', ParamsToEmit);
+});
 
 </script>
 
 <template>
-  <div class="border border-green-500 w-full h-20">
-    <form class="w-full h-full grid grid-cols-5 gap-x-9 p-5" novalidate @submit="onSubmit">
+  <div class="w-full h-20 bg-third rounded-2xl flex items-center justify-center">
+    <form class="w-full h-[90%] grid grid-cols-5 gap-x-9 p-5" novalidate @submit="onSubmit">
 
-      <!-- NOMBRE COMPLETO SOLICITANTE-->
+      <!-- CAMPO A VALIDAD-->
+
       <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
         <select 
           class="capitalize"
@@ -52,51 +80,52 @@ import type { FilterI } from "@/interfaces/filterInterface"
           v-model="field" 
           v-bind="fieldAttrs"
         >
-          <option disabled value="" selected>seleccionar prioridad</option>
-          <option value="urgente-importante">urgente-importante</option>
-          <option value="urgente-noImportante">urgente-no Importante</option>
-          <option value="noUrgente-importante">no urgente-importante</option>
-          <option value="noUrgente-noImportante">no Urgente-no Importante</option>
+          <option disabled value="" selected>seleccionar campo</option>
+          <option value="estado">estado</option>
+          <option value="tipoBeneficiario">tipo de beneficiario</option>
+          <option value="categoria">categoria</option>
+          <option value="prioridad">prioridad</option>
+          <option value="genero">genero</option>
+          <option value="edad">edad</option>
         </select>
-        <label for="prioridad" class="origin-0">Campo</label>
-        <ErrorMessage :err="errors.prioridad"/>
+        <label for="field" class="origin-0">Campo</label>
+        <ErrorMessage :err="errors.field"/>
       </div>
 
-      <!-- NOMBRE COMPLETO SOLICITANTE-->
-      <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-        <select 
-          class="capitalize"
+      <!-- VALOR DEL CAMPO -->
+
+      <div class="relative z-0 w-full mb-10">
+        <input
           required
+          type="text"
           name="parameter"
+          placeholder=""
+          autocomplete="parameter"
           v-model="parameter" 
           v-bind="paramAttrs"
-        >
-          <option disabled value="" selected>seleccionar prioridad</option>
-          <option value="urgente-importante">urgente-importante</option>
-          <option value="urgente-noImportante">urgente-no Importante</option>
-          <option value="noUrgente-importante">no urgente-importante</option>
-          <option value="noUrgente-noImportante">no Urgente-no Importante</option>
-        </select>
-        <label for="prioridad" class="origin-0">Valor</label>
-        <ErrorMessage :err="errors.prioridad"/>
+        />
+        <ErrorMessage :err="errors.parameter"/>
+        <label for="parameter" class="origin-0">Valor del Campo</label>
       </div>
       
-      <!-- NOMBRE COMPLETO SOLICITANTE-->
+
+      <!-- FECHA INICIAL DE REPORTE -->
+      
       <div class="relative z-0 w-full mb-10">
         <input
           required
           type="date"
           name="fechaStart"
           placeholder=""
-          autocomplete="fechaStart"
+          autocomplete="fechaEnd"
           v-model="fechaStart" 
           v-bind="fechaStartAttrs"
         />
-        <!-- <ErrorMessage :err="errors.nombreSolicitante"/> -->
-        <label for="nombreSolicitante" class="origin-0">Fecha inicio</label>
+        <ErrorMessage :err="errors.fechaStart"/>
+        <label for="fechaStart" class="origin-0">Fecha Inicio</label>
       </div>
 
-      <!-- NOMBRE COMPLETO SOLICITANTE-->
+      <!-- FECHA FINAL DE REPORT-->
 
       <div class="relative z-0 w-full mb-10">
         <input
@@ -108,8 +137,8 @@ import type { FilterI } from "@/interfaces/filterInterface"
           v-model="fechaEnd" 
           v-bind="fechaEndAttrs"
         />
-        <!-- <ErrorMessage :err="errors.nombreSolicitante"/> -->
-        <label for="nombreSolicitante" class="origin-0">Fecha final</label>
+        <ErrorMessage :err="errors.fechaEnd"/>
+        <label for="fechaEnd" class="origin-0">Fecha final</label>
       </div>
 
 

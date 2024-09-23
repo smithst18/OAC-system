@@ -35,7 +35,7 @@ export default {
         { 
           path:'reportes',
           name:'report-maker',
-          meta:{ rolsAllow: ['admin', 'auditor', 'normal'] },
+          meta:{ rolsAllow: ['admin', 'auditor'] },
           beforeEnter: [ rolGuard ],
           component: () =>  import(/* webpackChunkName: "cases list view "*/"@/modules/cases/views/ReportMakerView.vue"),
         },

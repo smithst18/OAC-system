@@ -1,7 +1,9 @@
 <script lang="ts" setup>
   import type { Link } from '@/interfaces/sidebarInterface';
   import { computed } from 'vue';
+  import { useMainStore } from '@/stores/mainStore';
 
+  const mainStore = useMainStore();
   const props = defineProps<{
     link: Link,
     is_spanded: boolean

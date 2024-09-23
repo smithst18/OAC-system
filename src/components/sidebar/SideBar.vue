@@ -11,11 +11,17 @@
 
   const is_spanded = ref(false);
 
-  const CasesLinks = [
-    { to: 'dashboard',  name:'inicio', icon:'home'                  },
-    { to: 'add-case' ,  name:'añadir', icon:'post_add'              },
-    { to: 'list'     ,  name:'casos' , icon:'description'           },
-    // { to: 'files'     ,  name:'archivos' , icon:'partner_reports'   },
+  const normalLinks = [
+    { to: 'dashboard',    name:'inicio',   icon:'home'                  },
+    { to: 'add-case' ,    name:'añadir',   icon:'post_add'              },
+    { to: 'list'     ,    name:'casos' ,   icon:'description'           },
+  ];
+
+  const auditorLinks = [
+    { to: 'dashboard',    name:'inicio',   icon:'home'                  },
+    { to: 'add-case' ,    name:'añadir',   icon:'post_add'              },
+    { to: 'list'     ,    name:'casos' ,   icon:'description'           },
+    { to: 'report-maker', name:'reportes', icon:'content_paste_search'       }
   ];
 
   const adminLinks = [
@@ -51,15 +57,26 @@
       <SidebarDropdown 
         title="Casos" 
         icon="plagiarism" 
-        :links="CasesLinks" 
+        :links="normalLinks" 
         :is_spanded="is_spanded" 
-        @in-focus="spandDropdown" v-if="mainStore.logedUser.rol === 'normal' || mainStore.logedUser.rol === 'auditor'"/>
+        @in-focus="spandDropdown"
+        v-if="mainStore.logedUser.rol === 'normal'"/>
+
+      <SidebarDropdown 
+        title="Casos" 
+        icon="plagiarism" 
+        :links="auditorLinks" 
+        :is_spanded="is_spanded" 
+        @in-focus="spandDropdown" 
+        v-if="mainStore.logedUser.rol === 'auditor' || mainStore.logedUser.rol === 'admin'"/>
+
       <SidebarDropdown 
         title="Gestion" 
         icon="manage_accounts" 
         :links="adminLinks" 
         :is_spanded="is_spanded" 
-        @in-focus="spandDropdown" v-if="mainStore.logedUser.rol === 'admin'"/>
+        @in-focus="spandDropdown" 
+        v-if="mainStore.logedUser.rol === 'admin'"/>
     </div>
     <!--user config-->
     <div class="mt-auto mb-5">
