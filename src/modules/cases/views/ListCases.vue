@@ -55,7 +55,7 @@
 
   onUnmounted(() =>{
     caseStore.$reset();
-  })
+  });
 </script>
 
 <template>
@@ -69,23 +69,22 @@
             Casos Generales
         </h1>
 
-        <div class="w-full h-[80%] relative" v-if="caseStore.getCaseList.length > 0">
+        <div class="w-full h-[75%] relative" v-if="caseStore.getCaseList.length > 0"> 
+          <DataTable 
+          :titles="titles" 
+          :data="caseStore.getCaseList" 
+          :elements-per-page="mainStore.getPerPages" 
+          :total-pages="mainStore.getTotalPages" 
+          @picked-element="on_picked_element"
+          @button-action="router.push({ name:'add-case' })"
+          @search-data="SearchData"/>
+          
           <DownloadButton 
             title="" 
             icon="download" 
             :full-size="false" 
             class="absolute bottom-14 right-4 w-10 h-10 shadow-md"
             @click="DownloadFile"/>
-
-          <DataTable 
-            :titles="titles" 
-            :data="caseStore.getCaseList" 
-            :elements-per-page="mainStore.getPerPages" 
-            :total-pages="mainStore.getTotalPages" 
-            @picked-element="on_picked_element"
-            @button-action="router.push({ name:'add-case' })"
-            @search-data="SearchData"/>
-
         </div>
         <div class="w-full h-[80%] text-center flex items-center justify-center" v-else >
           <p class="text-white font-semibold mr-3">Esperando nuevos casos ... </p>

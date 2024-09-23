@@ -45,22 +45,22 @@
   const fechaStart = new Date(values.fechaStart + 'T00:00:00Z'); // Forzamos UTC añadiendo 'Z'
   const fechaEnd = new Date(values.fechaEnd + 'T00:00:00Z');
 
-  let ParamsToEmit = {
-    ...values,
-    fechaStart: fechaStart.toLocaleDateString('es-ES', {
+  let ParamsToEmit: FilterI = {
+    field:values.field,
+    fieldValue:values.parameter,
+    startDate: fechaStart.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       timeZone: 'UTC' // Usar zona horaria UTC para evitar desplazamientos
     }),
-    fechaEnd: fechaEnd.toLocaleDateString('es-ES', {
+    endDate: fechaEnd.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       timeZone: 'UTC' // Usar zona horaria UTC para evitar desplazamientos
     })
   };
-
   emit('sendFilter', ParamsToEmit);
 });
 
@@ -118,6 +118,7 @@
           name="fechaStart"
           placeholder=""
           autocomplete="fechaEnd"
+          aria-details="sdasdad"
           v-model="fechaStart" 
           v-bind="fechaStartAttrs"
         />

@@ -5,7 +5,8 @@ import {
   getCasesService, 
   getSpecificCaseService, 
   updateCaseService, 
-  StatisticsService  
+  StatisticsService,
+  getCasesByReport
 } from '@/services/casesServices';
 import {
   getDiariesService,
@@ -14,6 +15,7 @@ import {
 import type { Case } from '@/interfaces/caseInterface';
 import { useMainStore } from '@/stores/mainStore';
 import type { Diary } from '@/interfaces/diaryInterface';
+import type { FilterI } from '@/interfaces/filterInterface';
 
 export const useCaseStore = defineStore('case', () => {
   const mainStore = useMainStore();
@@ -90,6 +92,33 @@ export const useCaseStore = defineStore('case', () => {
       caseActualList.value = paginatedData.cases;
       return "200"
     }else  return "500";
+  }
+
+  const setCaseListReport = async ( form:FilterI ): Promise<any> => {
+    //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
+    const response = await getCasesByReport(
+      {
+        ...form,
+        startDate:encodeURIComponent(form.startDate),
+        endDate:encodeURIComponent(form.endDate),
+      },
+      mainStore.logedUser.id,
+      mainStore.getPage.toString());
+      
+    if(response.paginatedData && response.paginatedData.cases.length > 0){
+      if(!response.paginatedData.paginator) mainStore.showPagination = false;
+      else{
+        mainStore.showPagination = true;
+        mainStore.setPage(response.paginatedData.paginator.currentPage);
+        mainStore.setPerPages(response.paginatedData.paginator.perPage);
+        mainStore.setTotalPages(response.paginatedData.paginator.totalPages);
+        mainStore.setTotalresults(response.paginatedData.paginator.totalDocs);
+      }
+
+      caseActualList.value = response.paginatedData.cases;
+      return "200"
+    }else if(response.response) return "404";
+    else return "500";
   }
 
   const setDiaryCaseList = async (id:string) => {
@@ -313,6 +342,7 @@ export const useCaseStore = defineStore('case', () => {
     setGeneralStatistics,
     setDiaryCaseList,
     saveDiary,
+    setCaseListReport,
     getCaseList,
     getClosedCasesChart:computed(() => closedCasesChart.value),
     getOpenCasesChart:computed(() => openCasesChart.value),

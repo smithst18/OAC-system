@@ -3,10 +3,11 @@ import { computed } from "vue";
 
 const props = defineProps<{
     totalpages:number,
-    elementsPerPage: number;
-    results: number;
-    visiblePages: number;
-    activeIndex:number | 1;
+    elementsPerPage: number,
+    results: number,
+    visiblePages: number,
+    activeIndex:number | 1,
+    totalResults?:number
 }>();
 
 const emit = defineEmits<{
@@ -21,14 +22,15 @@ const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
 </script>
 
 <template>
-  <div class="flex items-center w-full h-full">
+  <div class="flex items-center w-full h-10">
     <div class="">
       <span class="ml-2 text-white">
         mostrando 
         {{ results }} 
         elementos 
         de 
-        {{ startOfPage }} hasta {{ endOfPage }} resultados
+        {{ startOfPage }} hasta {{ endOfPage }} resultados 
+        <span v-if="totalResults">, total global : {{ props.totalResults }} </span>
       </span>
     </div>
     <nav class="mx-auto bg-primary rounded-2xl">

@@ -22,6 +22,7 @@ export const useMainStore = defineStore('main', () => {
   const page = ref(0); // pagina en la que comienza la pagination
   const totalPages = ref(0); //numero de paginas 
   const perPage = ref(0);
+  const totalResults = ref(0);
   const showPagination = ref(true);
   //properti para las resp 
   const requestIsLoading = ref(false);
@@ -84,6 +85,12 @@ export const useMainStore = defineStore('main', () => {
   // autoinvoqued functions 
   //this function have to validate if the token exp is valid then it would save the cookies data in the state of the store 
   //fuction for reset the store
+
+  const $resetPaginator = () =>{
+    page.value = 0;// pagina en la que comienza la pagination
+    totalPages.value = 0;//numero de paginas 
+    perPage.value = 0;
+  }
   const  $reset = () => {
     isLoged.value = false;
     logedUser.value = {
@@ -121,12 +128,15 @@ export const useMainStore = defineStore('main', () => {
     setPage: (value: number) => page.value = value, 
     setPerPages: (value: number) => perPage.value = value, 
     setTotalPages: (value: number) => totalPages.value = value, 
+    setTotalresults: (value: number) => totalResults.value = value, 
     nextPage: () => page.value = page.value + 1,
     prevPage: () => page.value = page.value - 1,
     $reset,
+    $resetPaginator,
     getPage:computed(() => page.value),
     getPerPages:computed(() => perPage.value),
     getTotalPages: computed(() => totalPages.value),
+    getTotalResults: computed(() => totalResults.value),
     getSearch: computed(() => search.value),
     changeRequestStatus
   }

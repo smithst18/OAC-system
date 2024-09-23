@@ -1,6 +1,6 @@
 export interface FilterI {
   field: string,
-  parameter: string,
-  fechaStart: Date,
-  fechaEnd: Date,
+  fieldValue: string,
+  startDate: string,
+  endDate: string,
 }

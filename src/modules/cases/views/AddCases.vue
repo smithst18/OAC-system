@@ -508,7 +508,7 @@
               <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
                 @send-file="(event:File) => file= event"/>
 
-              <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto">
+              <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-10 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </submitButton>
             </Form>

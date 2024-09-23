@@ -2,9 +2,8 @@
   import SearchingBar from "@/components/commons/SearchBar.vue";
   import PaginationBar from "@/components/table/PaginationBar.vue"
   import { useDataTable } from "@/composables/useDatatable"; 
-  import { computed, defineAsyncComponent } from "vue";
+  import { computed, defineAsyncComponent, onUnmounted } from "vue";
   import { useCaseStore } from "@/modules/cases/store/caseStore";
-  import type { Case } from "@/interfaces/caseInterface";
   import { useMainStore } from "@/stores/mainStore";
   const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
 
@@ -13,6 +12,7 @@
       data:Array<any>,
       elementsPerPage:number
       totalPages:number,
+      hideBarAndButton?:boolean 
   }>();
   const emit = defineEmits<{
     (event: "pickedElement", id: string): void;
@@ -47,65 +47,73 @@
     prevPage(async () => await caseStore.setCaseList(mainStore.getSearch))
   }
 
+  onUnmounted(() =>{
+    // this trigger a function that reset the store of pagination component
+    mainStore.$resetPaginator();
+  })
 </script>
 
 <template>
-    <div class="w-full h-full">
-        <div class="w-full h-full hidden md:block">
-            <!-- head of the table-->
-            <div class="flex items-center justify-end my-4">
-              <Button 
-                :full-size="false" 
-                icon="Add" 
-                title="" 
-                @doSomething="$emit('buttonAction')"
-                class=" mr-5">
-              </Button>
-              <SearchingBar @on-search-data=" emit('searchData',$event)" class=""/>
-            </div>
-            <!-- body for the table -->
-            <div class="w-full h-[70%] overflow-auto">
+  <div class="w-full h-full flex flex-col">
+      <!-- Head of the table (button and search) -->
+      <div class="w-full flex-shrink-0">
+          <div class="flex items-center justify-end my-4" v-if="hideBarAndButton">
+            <Button 
+              :full-size="false" 
+              icon="Add" 
+              title="" 
+              @doSomething="$emit('buttonAction')"
+              class="mr-5">
+            </Button>
+            <SearchingBar @on-search-data="emit('searchData', $event)" class=""/>
+          </div>
+      </div>
 
-                <table class="table-fixed  w-full text-sm border-collapse relative border-2 border-t-0 border-primary-light  zebra-stripe ">
-                    <!-- TITLES FOR TABLE DATA -->
-                    <thead class="sticky top-0 drop-shadow-sm">
-                        <tr class="">
-                            <th class="p-8 bg-primary text-sm font-semibold tracking-wide uppercase text-left text-third"
-                                v-for="title in titles" :key="title">
-                                {{ title }}
-                            </th>
-                        </tr>
-                    </thead>
+      <!-- Table body with scroll -->
+      <div class="w-full flex-grow overflow-auto">
+          <table class="table-fixed w-full text-sm border-collapse relative border-2 border-t-0 border-primary-light zebra-stripe">
+              <!-- TITLES FOR TABLE DATA -->
+              <thead class="sticky top-0 drop-shadow-sm">
+                  <tr>
+                      <th class="p-8 bg-primary text-sm font-semibold tracking-wide uppercase text-left text-third"
+                          v-for="title in titles" :key="title">
+                          {{ title }}
+                      </th>
+                  </tr>
+              </thead>
 
-                    <tbody class="">
-                        <tr v-for="(elm) in data" :key="elm._id">
-                            <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
-                                v-for="(property, propertyName, index) in elm" :key="index" 
-                                @click="emit('pickedElement',elm.id)">
-                                <p class="p-8">
-                                    {{ property }}
-                                </p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!--pagination component-->
-            <div class=" mt-2 w-full h-10" v-if="mainStore.showPagination">
-                <PaginationBar 
-                    :totalpages="mainStore.getTotalPages" 
-                    :visible-pages="mainStore.getTotalPages"
-                    :elementsPerPage="props.elementsPerPage"
-                    :results="results"
-                    :active-index="activeIndex"
-                    @dataPagination="setDataPaginations($event)"
-                    @prevPage="setPrevPage"
-                    @nextPage="setNextPage"
-                />
-            </div>
-        </div>
-    </div>
+              <tbody>
+                  <tr v-for="(elm) in data" :key="elm._id">
+                      <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
+                          v-for="(property, propertyName, index) in elm" :key="index" 
+                          @click="emit('pickedElement', elm.id)">
+                          <p class="p-8">
+                              {{ property }}
+                          </p>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <!-- Pagination Bar -->
+      <div class="w-full h-10 flex-shrink-0 mt-auto" v-if="mainStore.showPagination">
+          <PaginationBar 
+            class="w-full h-full"
+            :totalpages="mainStore.getTotalPages" 
+            :visible-pages="mainStore.getTotalPages"
+            :elementsPerPage="props.elementsPerPage"
+            :results="results"
+            :total-results="mainStore.getTotalResults"
+            :active-index="activeIndex"
+            @dataPagination="setDataPaginations($event)"
+            @prevPage="setPrevPage"
+            @nextPage="setNextPage"
+          />
+      </div>
+  </div>
 </template>
+
     
     
 <style scoped lang="scss">

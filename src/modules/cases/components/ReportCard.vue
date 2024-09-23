@@ -1,5 +1,7 @@
 <script setup lang="ts">
-  
+  const props = defineProps<{
+    msg:string
+  }>()
 </script>
 
 <template>
@@ -9,7 +11,7 @@
     </span>
     <h3 class="text-xl font-medium text-gray-900 mb-2">Sin Data para el Reporte</h3>
     <p class="text-gray-500">
-      Rellenar los Campos de arriba y clickear "Generar" para ver los reportes
+      {{ props.msg }}
     </p>
   </div>
 </template>
