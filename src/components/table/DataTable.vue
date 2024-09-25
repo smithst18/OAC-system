@@ -12,7 +12,7 @@
       data:Array<any>,
       elementsPerPage:number
       totalPages:number,
-      hideBarAndButton?:boolean 
+      showSearchBar:boolean 
   }>();
   const emit = defineEmits<{
     (event: "pickedElement", id: string): void;
@@ -57,7 +57,7 @@
   <div class="w-full h-full flex flex-col">
       <!-- Head of the table (button and search) -->
       <div class="w-full flex-shrink-0">
-          <div class="flex items-center justify-end my-4" v-if="hideBarAndButton">
+          <div class="flex items-center justify-end my-4" v-if="showSearchBar">
             <Button 
               :full-size="false" 
               icon="Add" 

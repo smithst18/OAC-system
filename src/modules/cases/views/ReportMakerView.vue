@@ -44,7 +44,7 @@
           :elements-per-page="mainStore.getPerPages"
           :titles="['id','remitente','Beneficiario','prioridad','status','analista encargado']"
           :total-pages="mainStore.getTotalPages"
-          :bar-and-button="true"
+          :show-search-bar="false"
           @picked-element="on_picked_element"
           class="h-80%"
           />

@@ -75,6 +75,7 @@
           :data="caseStore.getCaseList" 
           :elements-per-page="mainStore.getPerPages" 
           :total-pages="mainStore.getTotalPages" 
+          :show-search-bar="true"
           @picked-element="on_picked_element"
           @button-action="router.push({ name:'add-case' })"
           @search-data="SearchData"/>
