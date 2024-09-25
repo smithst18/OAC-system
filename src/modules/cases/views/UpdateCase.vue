@@ -6,10 +6,12 @@
   import { downloadCasesExcelById, downloadExcelClosedCase } from "@/services/casesServices";
   import type { AxiosResponse } from 'axios';
   import { useMainStore } from '@/stores/mainStore';
+
   const CaseDiary = defineAsyncComponent(()=> import('@/modules/cases/components/CaseDiary.vue'));
   const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseForm.vue'));
   const MainSpinner = defineAsyncComponent(() => import('@/components/commons/MainSpinner.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
+  const ToolTip = defineAsyncComponent(() => import('@/components/commons/ToolTip.vue'));
 
   const { showModal, toggleModal } = useModal(false);
   const caseStore = useCaseStore();
@@ -99,34 +101,45 @@
       Cargando Datos 
       <MainSpinner class="ml-3"/>
     </p>
-    <Button 
-      :full-size="false" 
-      title="hola" icon="cloud_download" 
-      class="absolute top-10 right-12" 
-      @click="downLoadCaseSources"
-      v-if="caseStore.getCaseById._id != ''">
-    </Button>
-    <Button 
-      :full-size="false" 
-      title="" icon="menu_book" 
-      class="absolute top-10 right-32" 
-      @click="toggleModal"
-      v-if="caseStore.getCaseById._id != ''">
-    </Button>
-    <Button 
-      :full-size="false" 
-      title="" icon="print" 
-      class="absolute top-10 right-52" 
-      @click="downloadCaseById"
-      v-if="caseStore.getCaseById._id != ''">
-    </Button>
-    <Button 
-      :full-size="false" 
-      title="" icon="print_connect" 
-      class="absolute top-10 right-72" 
-      @click="downloadClosedCaseById"
-      v-if="caseStore.getCaseById._id != '' && caseStore.getCaseById.status == 'cerrado' && mainStore.logedUser.rol == 'auditor'">
-    </Button>
+    <div class="absolute top-10 right-12 flex gap-5">
+
+      <ToolTip text="Descargar recursos PDF">
+        <Button
+          :full-size="false" 
+          title="" icon="cloud_download"  
+          @click="downLoadCaseSources"
+          v-if="caseStore.getCaseById._id != ''">
+        </Button>
+      </ToolTip>
+
+      <ToolTip text="Parte diario">
+        <Button
+          :full-size="false" 
+          title="" icon="menu_book" 
+          @click="toggleModal"
+          v-if="caseStore.getCaseById._id != ''">
+        </Button>
+      </ToolTip>
+
+      <ToolTip text="Imprimir planilla">
+        <Button
+          :full-size="false" 
+          title="" icon="print"
+          @click="downloadCaseById"
+          v-if="caseStore.getCaseById._id != ''">
+        </Button>
+      </ToolTip>
+
+      <ToolTip text="Planilla Caso Cerrado">
+        <Button
+          :full-size="false" 
+          title="" icon="print_connect" 
+          @click="downloadClosedCaseById"
+          v-if="caseStore.getCaseById._id != '' && caseStore.getCaseById.status == 'cerrado' && mainStore.logedUser.rol == 'auditor'">
+        </Button>
+      </ToolTip>
+      
+    </div>
     <CaseDiary 
       :show-modal="showModal" 
       :case="caseStore.getCaseById"

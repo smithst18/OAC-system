@@ -6,6 +6,7 @@
   import { useCaseStore } from "@/modules/cases/store/caseStore";
   import { useMainStore } from "@/stores/mainStore";
   const Button =  defineAsyncComponent(() => import("@/components/commons/MainButton.vue"));
+  const ToolTip = defineAsyncComponent(() => import('@/components/commons/ToolTip.vue'));
 
   const props =  defineProps<{
       titles: Array <string>,
@@ -70,13 +71,15 @@
       <!-- Head of the table (button and search) -->
       <div class="w-full flex-shrink-0">
           <div class="flex items-center justify-end my-4" v-if="showSearchBar">
-            <Button 
-              :full-size="false" 
-              icon="Add" 
-              title="" 
-              @doSomething="$emit('buttonAction')"
-              class="mr-5">
-            </Button>
+            <ToolTip text="Anadir Caso">
+              <Button 
+                :full-size="false" 
+                icon="Add" 
+                title="" 
+                @doSomething="$emit('buttonAction')"
+                class="mr-5">
+              </Button>
+            </ToolTip>
             <SearchingBar @on-search-data="handleSearchData" class=""/>
           </div>
       </div>
