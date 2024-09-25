@@ -14,6 +14,7 @@
       totalPages:number,
       showSearchBar:boolean 
   }>();
+
   const emit = defineEmits<{
     (event: "pickedElement", id: string): void;
     (event: "searchData", search: string): void;
@@ -28,7 +29,8 @@
     activeIndex,
     nextPage,
     setDataPagination,
-    prevPage
+    prevPage,
+    setActiveIndex
   } = useDataTable(mainStore.getPage);
 
   //propiedad computed para los resultados
@@ -45,6 +47,16 @@
 
   const setPrevPage = async() =>{
     prevPage(async () => await caseStore.setCaseList(mainStore.getSearch))
+  }
+
+  const handleSearchData = (value:string) => {
+    console.log(value)
+    //seteamos el index en el composable a 1 para que se vea reflejado y evitar erroes 
+    setActiveIndex(1);
+    //seteamos la pagina en el store tambien a 1 
+    mainStore.setPage(1)
+    //emitimos el valor
+    emit('searchData', value)
   }
 
   onUnmounted(() =>{
@@ -65,7 +77,7 @@
               @doSomething="$emit('buttonAction')"
               class="mr-5">
             </Button>
-            <SearchingBar @on-search-data="emit('searchData', $event)" class=""/>
+            <SearchingBar @on-search-data="handleSearchData" class=""/>
           </div>
       </div>
 

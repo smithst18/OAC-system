@@ -13,6 +13,9 @@
     ci:'',
     password:'',
   });
+  const showPassword = ref(false);
+
+  const handleShowPassword = () => showPassword.value = !showPassword.value;
 
   const onSubmit = async () =>{
     const resp = await mainStore.logIn(formData);
@@ -32,7 +35,6 @@
       apiServerError.value = false;
     }
   }
-
 </script>
 
 <template>
@@ -63,7 +65,7 @@
   
         <div class="relative z-0 w-full mb-10">
           <input
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           name="password"
           required
           placeholder=" "
@@ -72,6 +74,22 @@
           oninput="setCustomValidity('')"
           v-model="formData.password"
           />
+          <transition name="fade">
+            <span 
+              class="material-symbols-outlined absolute top-3 right-1 cursor-pointer text-primary" 
+              @click="handleShowPassword"
+              v-if="showPassword">
+              visibility
+            </span>
+          </transition>
+          <transition name="fade">
+            <span 
+              class="material-symbols-outlined absolute top-3 right-1 cursor-pointer text-primary" 
+              @click="handleShowPassword"
+              v-if="!showPassword">
+              visibility_off
+            </span>
+          </transition>
           <label for="name" class="absolute duration-300 top-3 -z-1 origin-0 text-primary text-base">Contraseña</label>
         </div>
         <span class="text-sm text-green-400 text-opacity-90 text-center mb-3" v-if="mainStore.logedUser.id != ''">Sesion Iniciada</span>
@@ -81,8 +99,8 @@
           <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/><!-- this fix center the spinner with the text in parent component-->
         </SubmitButton>
         <button 
-        type="button"
-        class=" text-primary text-base mt-5">
+          type="button"
+          class=" text-primary text-base mt-5">
           recuperar Contraseña
         </button>
       </form>
@@ -91,6 +109,17 @@
 </template>
 
 <style scoped>
+/* efectos visuales para icono de mostrar y ocultar */
+/* Define la transición para el efecto de desvanecimiento (fade) */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+
+
+/**/
 #login {
   background-image: url("../assets/imgs/fondologin.svg");
   background-repeat:no-repeat;

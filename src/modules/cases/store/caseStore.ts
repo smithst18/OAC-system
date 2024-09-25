@@ -78,20 +78,23 @@ export const useCaseStore = defineStore('case', () => {
 
   const setCaseList = async (search?:string): Promise<string> => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
-    const { paginatedData } = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
-    if(paginatedData && paginatedData.cases.length > 0){
+    const response = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
+    console.log(response);
+    if(response.paginatedData && response.paginatedData.cases.length > 0){
 
-      if(!paginatedData.paginator) mainStore.showPagination = false;
+      if(!response.paginatedData.paginator) mainStore.showPagination = false;
       else{
         mainStore.showPagination = true;
-        mainStore.setPage(paginatedData.paginator.currentPage);
-        mainStore.setPerPages(paginatedData.paginator.perPage);
-        mainStore.setTotalPages(paginatedData.paginator.totalPages);
+        mainStore.setPage(response.paginatedData.paginator.currentPage);
+        mainStore.setPerPages(response.paginatedData.paginator.perPage);
+        mainStore.setTotalPages(response.paginatedData.paginator.totalPages);
       }
 
-      caseActualList.value = paginatedData.cases;
+      caseActualList.value = response.paginatedData.cases;
       return "200"
-    }else  return "500";
+    }else if(response.response){
+      return "404"
+    } else return "500";
   }
 
   const setCaseListReport = async ( form:FilterI ): Promise<any> => {

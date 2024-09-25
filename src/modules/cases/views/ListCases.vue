@@ -5,6 +5,7 @@
   import { useMainStore } from "@/stores/mainStore";
   import { downloadCasesExcel } from "@/services/casesServices";
   import { downloadFile } from "@/helpers/handleDownloadFile";
+  import { useToast } from "@/composables/useToast";
 
   const InforBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
   const DataTable = defineAsyncComponent(() => import("@/components/table/DataTable.vue"));
@@ -13,6 +14,7 @@
   const caseStore = useCaseStore();
   const mainStore = useMainStore();
   const router = useRouter();
+  const toast = useToast()
   
   const titles : Array < string > = [
     "id",
@@ -32,7 +34,18 @@
     mainStore.search = search;
     if(mainStore.getSearch.length >= 1) {
       const resp = await caseStore.setCaseList(mainStore.getSearch);
-      if(resp ==="200") mainStore.setPage(1);
+      if(resp ==="200"){
+        //si la respuesta es buena seteamos a pagina 1 y enviamos notificaicon
+        mainStore.setPage(1);
+        toast.successToast("Casos Mostrados correctamente")
+      }
+      else if(resp ==="404"){
+        //si no encontramos casos seteamos la lista a su valor por defecto  y enviamos alerta
+        caseStore.setCaseList();
+        toast.warnToast("No se han encontrado casos ")
+      }
+      // si hay un error de servidor notificamos
+      else toast.errorToast("Error en el servidor")
     }
     else caseStore.setCaseList();
   }

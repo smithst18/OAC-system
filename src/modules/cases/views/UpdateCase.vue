@@ -101,7 +101,7 @@
     </p>
     <Button 
       :full-size="false" 
-      title="" icon="cloud_download" 
+      title="hola" icon="cloud_download" 
       class="absolute top-10 right-12" 
       @click="downLoadCaseSources"
       v-if="caseStore.getCaseById._id != ''">
