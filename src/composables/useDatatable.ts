@@ -34,7 +34,8 @@ export const useDataTable = (initValue:number) => {
 
   }
 
-  const setActiveIndex = (value:number) => activeIndex.value = value
+  const setActiveIndex = (value:number) => activeIndex.value = value;
+  
   return {
     activeIndex,
     nextPage,

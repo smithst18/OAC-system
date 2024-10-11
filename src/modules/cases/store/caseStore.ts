@@ -79,7 +79,7 @@ export const useCaseStore = defineStore('case', () => {
   const setCaseList = async (search?:string): Promise<string> => {
     //lamamos esta funcion cuando se monta el componente para cargar la tabla y steamos todos los valores
     const response = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
-    console.log(response);
+
     if(response.paginatedData && response.paginatedData.cases.length > 0){
 
       if(!response.paginatedData.paginator) mainStore.showPagination = false;

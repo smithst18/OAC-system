@@ -32,8 +32,11 @@
 
   const SearchData = async (search :string) => {
     mainStore.search = search;
+    console.log(search)
     if(mainStore.getSearch.length >= 1) {
+
       const resp = await caseStore.setCaseList(mainStore.getSearch);
+
       if(resp ==="200"){
         //si la respuesta es buena seteamos a pagina 1 y enviamos notificaicon
         mainStore.setPage(1);

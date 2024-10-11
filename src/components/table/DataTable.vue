@@ -116,7 +116,7 @@
           <PaginationBar 
             class="w-full h-full"
             :totalpages="mainStore.getTotalPages" 
-            :visible-pages="mainStore.getTotalPages"
+            :visible-pages="10"
             :elementsPerPage="props.elementsPerPage"
             :results="results"
             :total-results="mainStore.getTotalResults"
