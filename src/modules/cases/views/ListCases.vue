@@ -44,6 +44,7 @@
       }
       else if(resp ==="404"){
         //si no encontramos casos seteamos la lista a su valor por defecto  y enviamos alerta
+        mainStore.search = '';
         caseStore.setCaseList();
         toast.warnToast("No se han encontrado casos ")
       }
