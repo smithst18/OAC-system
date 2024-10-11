@@ -81,13 +81,16 @@ export const useCaseStore = defineStore('case', () => {
     const response = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
 
     if(response.paginatedData && response.paginatedData.cases.length > 0){
-
+      console.log(response)
       if(!response.paginatedData.paginator) mainStore.showPagination = false;
       else{
         mainStore.showPagination = true;
         mainStore.setPage(response.paginatedData.paginator.currentPage);
         mainStore.setPerPages(response.paginatedData.paginator.perPage);
         mainStore.setTotalPages(response.paginatedData.paginator.totalPages);
+        mainStore.setTotalresults(response.paginatedData.paginator.totalDocs);
+        mainStore.setPagingCounter(response.paginatedData.paginator.pagingCounter);
+
       }
 
       caseActualList.value = response.paginatedData.cases;

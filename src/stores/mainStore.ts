@@ -24,6 +24,7 @@ export const useMainStore = defineStore('main', () => {
   const perPage = ref(0);
   const totalResults = ref(0);
   const showPagination = ref(true);
+  const pagingCounter = ref(0);
   //properti para las resp 
   const requestIsLoading = ref(false);
   // =======================================> GETTERS
@@ -129,6 +130,7 @@ export const useMainStore = defineStore('main', () => {
     setPerPages: (value: number) => perPage.value = value, 
     setTotalPages: (value: number) => totalPages.value = value, 
     setTotalresults: (value: number) => totalResults.value = value, 
+    setPagingCounter: (value: number) => pagingCounter.value = value, 
     nextPage: () => page.value = page.value + 1,
     prevPage: () => page.value = page.value - 1,
     $reset,
@@ -137,6 +139,7 @@ export const useMainStore = defineStore('main', () => {
     getPerPages:computed(() => perPage.value),
     getTotalPages: computed(() => totalPages.value),
     getTotalResults: computed(() => totalResults.value),
+    getPagingCounter: computed(() => pagingCounter.value),
     getSearch: computed(() => search.value),
     changeRequestStatus
   }

@@ -1,28 +1,29 @@
 <script setup lang="ts">
-import { computed } from "vue";
 
-const props = defineProps<{
-    totalpages: number,
-    elementsPerPage: number,
-    results: number,
-    visiblePages: number,
-    activeIndex: number | 1,
-    totalResults?: number
-}>();
+  import { computed } from "vue";
 
-const emit = defineEmits<{
-  (event: "dataPagination", page: number): void;
-  (event: "nextPage"): void;
-  (event: "prevPage"): void;
-}>();
+  import { useMainStore } from "@/stores/mainStore";
 
-// Cálculo del rango de páginas visibles
-const startPage = computed(() => Math.max(1, props.activeIndex - Math.floor(props.visiblePages / 2)));
-const endPage = computed(() => Math.min(props.totalpages, startPage.value + props.visiblePages - 1));
+  const mainStore = useMainStore();
 
-// Cálculo de los resultados visibles
-const endOfPage = computed(() => Math.min(props.activeIndex * props.elementsPerPage, props.totalResults || props.results));
-const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
+  const props = defineProps<{
+      totalpages: number,
+      elementsPerPage: number,
+      totalResults?: number,
+      visiblePages: number,
+      activeIndex: number | 1,
+  }>();
+
+  const emit = defineEmits<{
+    (event: "dataPagination", page: number): void;
+    (event: "nextPage"): void;
+    (event: "prevPage"): void;
+  }>();
+
+  // Cálculo del rango de páginas visibles
+  const startPage = computed(() => Math.max(1, props.activeIndex - Math.floor(props.visiblePages / 2)));
+  const endPage = computed(() => Math.min(props.totalpages, startPage.value + props.visiblePages - 1));
+
 </script>
 
 <template>
@@ -30,11 +31,11 @@ const startOfPage = computed(() => endOfPage.value - props.elementsPerPage + 1);
     <div>
       <span class="ml-2 text-white">
         mostrando 
-        {{ results }} 
+        {{ props.elementsPerPage }} 
         elementos 
         de 
-        {{ startOfPage }} hasta {{ endOfPage }} resultados 
-        <span v-if="totalResults">, total global : {{ totalResults }} </span>
+        {{  mainStore.getPagingCounter }} hasta {{ mainStore.getPagingCounter + 10 - 1 }} resultados 
+        <span v-if="props.totalResults">, total global : {{ props.totalResults }} </span>
       </span>
     </div>
     <nav class="mx-auto bg-primary rounded-2xl">
