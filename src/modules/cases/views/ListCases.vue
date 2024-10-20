@@ -18,11 +18,10 @@
   
   const titles : Array < string > = [
     "id",
-    "remitente",  
-    "Beneficiario",
-    "prioridad",
-    "status",
-    "analista encargado"
+    "cedula",  
+    "estatus",
+    "entidad",
+    "tipo de solicitud",
   ]
 
   const on_picked_element = (elm:string) => {

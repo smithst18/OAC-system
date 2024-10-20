@@ -45,7 +45,11 @@ export const getSpecificCaseService = async ( caseSubId : String ) =>{
 export const updateCaseService = async ( form : object ) =>{
   try{
     
-    const response = await AxiosInstance.put(`/cases/updateCaseById`,form);
+    const response = await AxiosInstance.put(`/cases/updateCaseById`,form,{
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return response.data;
     
   }catch(e){

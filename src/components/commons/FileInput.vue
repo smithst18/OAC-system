@@ -49,8 +49,8 @@ const updateFileName = (event: Event) => {
 
     <!-- Etiqueta personalizada para el botón con animación de hover -->
     <label for="file-upload"
-      class="text-gray-500 duration-300 transform origin-0 peer-focus:text-black peer-focus:-translate-y-6 peer-focus:scale-75 cursor-pointer hover:scale-105 transition-transform ease-in-out">
-      Seleccionar archivo
+      class="text-gray-800 duration-300 transform origin-0 peer-focus:text-black peer-focus:-translate-y-6 peer-focus:scale-75 cursor-pointer hover:scale-105 transition-transform ease-in-out">
+      Seleccionar
     </label>
 
     <!-- Mostrar nombre del archivo seleccionado -->
@@ -64,6 +64,6 @@ const updateFileName = (event: Event) => {
 
 <style scoped lang="scss">
 .custom-file-input {
-  @apply border-0 border-b-2 border-opacity-25 border-gray-500 flex pt-3 pb-2 hover:outline-none hover:ring-0 hover:border-primary;
+  @apply flex pt-3 pb-2 border-gray-300 border-b-2 h-11
 }
 </style>

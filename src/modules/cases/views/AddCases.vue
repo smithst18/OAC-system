@@ -18,6 +18,8 @@
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
+      subId: yup.number().required('ID es requerido').positive('debe ser positivo').integer('debe ser un entero'),
+      createdAt: yup .string().required('fecha de apertura es requerido').trim(),
       remitente: yup.string().required('Remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('Nombre del Solicitante es requerido').trim(),
       cedulaSolicitante: yup .string().required('Cedula del Solicitante es requerido').trim(),
@@ -43,6 +45,8 @@
   const caseStore = useCaseStore();
   const toast = useToast();
 
+  const [subId,subIdAttrs] = defineField('subId');
+  const [createdAt,createdAtAttrs] = defineField('createdAt');
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
   const [cedulaSolicitante,cedulaSolicitanteAttrs] = defineField('cedulaSolicitante');
@@ -103,8 +107,6 @@
       }
   });
 
-  const saveFile = (event:File) => file.value = event; 
-
   const onSubmit = handleSubmit(async (values) => {
     let fileToSend = undefined;
     
@@ -122,7 +124,8 @@
       resetForm();
       file.value = null;
     }
-    else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
+    else if(resp == '400') toast.errorToast("Ya existe un caso con el Id elegido")
+    else if(resp == '403') toast.errorToast("Error al guardar caso verifique info")
     else toast.errorToast("Error de servidor");
   });
   
@@ -147,6 +150,37 @@
         <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-white overflow-auto">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar nuevo caso</h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
+               
+              <!-- subId MOMENTANEO BORRAR A FUTURO-->
+              <div class="relative z-0 w-full mb-10">
+                <input
+                  required
+                  type="text"
+                  name="subId"
+                  placeholder=""
+                  autocomplete="subId"
+                  v-model="subId" 
+                  v-bind="subIdAttrs"
+                />
+                <ErrorMessage :err="errors.subId"/>
+                <label for="subId" class="origin-0">ID</label>
+              </div>
+               
+              <!-- createdAt MOMENTANEO BORRAR A FUTURO-->
+              <div class="relative z-0 w-full mb-10">
+                <input
+                  required
+                  type="date"
+                  name="createdAt"
+                  placeholder=""
+                  autocomplete="createdAt"
+                  v-model="createdAt" 
+                  v-bind="createdAtAttrs"
+                />
+                <ErrorMessage :err="errors.createdAt"/>
+                <label for="createdAt" class="origin-0">Fecha de apertura</label>
+              </div>
+              
               <!--REMITENTE-->          
               <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
                 <select 
@@ -488,8 +522,12 @@
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
 
+              <!-- DOCUMENT-->
+              <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
+                @send-file="(event:File) => file= event"/>
+
                <!--DESCRIPCION-->
-              <div class="relative z-0 w-full mb-10">
+              <div class="relative z-0 w-full mb-10 capitalize">
                 <textarea
                   required
                   rows="1" cols="5"
@@ -498,19 +536,20 @@
                   autocomplete="descripcion"
                   v-model="descripcion" 
                   v-bind="descripcionAttrs"
-                  class="capitalize textarea-custom"
+                  class="textarea-custom"
                 >
                 </textarea>
                 <ErrorMessage :err="errors.descripcion"/>
                 <label for="nombreSolicitante" class="origin-0">descripcion</label>
               </div>
 
-              <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
-                @send-file="(event:File) => file= event"/>
 
               <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-10 mb-auto">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </submitButton>
+              <!-- EMPTY BOX TO FIX CSS MB-AUTO-->
+              <div class="w-12 h-12 col-span-3">
+              </div>
             </Form>
         </div>
   </div>
@@ -569,4 +608,9 @@ select:focus ~ label {
   color: rgba(0, 0, 0, var(--tw-text-opacity));
   left: 0px;
 }
+.textarea-custom {
+    resize: vertical; /* Permite el redimensionamiento vertical */
+    max-height: 150px; /* Establece la altura máxima en píxeles */
+    overflow-y: auto; /* Agrega una barra de desplazamiento si el contenido excede la altura máxima */
+  }
 </style>

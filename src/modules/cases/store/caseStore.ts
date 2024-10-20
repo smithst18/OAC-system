@@ -81,7 +81,6 @@ export const useCaseStore = defineStore('case', () => {
     const response = await getCasesService(mainStore.getPage.toString(),mainStore.logedUser.id,search);
 
     if(response.paginatedData && response.paginatedData.cases.length > 0){
-      console.log(response)
       if(!response.paginatedData.paginator) mainStore.showPagination = false;
       else{
         mainStore.showPagination = true;
@@ -172,6 +171,7 @@ export const useCaseStore = defineStore('case', () => {
     if(data.savedCase){
       return "200";
     }
+    else if(data.response.data.code == 400) return "400"
     else if(data.response){ 
       // mainStore.changeRequestStatus(false)
       return "403"
@@ -284,11 +284,10 @@ export const useCaseStore = defineStore('case', () => {
     let cases = caseActualList.value.map(( elm:Case ) => {
       return {
         id:elm.subId,
-        remitente:elm.remitente,
-        cedulaBeneficiario:elm.cedulaBeneficiario,
-        prioridad:elm.prioridad,
-        status:elm.status,
-        analistaId:elm.analistaId.name,
+        cedula:elm.cedulaBeneficiario,
+        estatus:elm.status,
+        entidad:elm.estado,
+        tipoSolicitud:elm.categoria,
       }
     })
     return cases

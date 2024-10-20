@@ -8,6 +8,8 @@
   import { useCaseStore } from '../store/caseStore';
   import { useMainStore } from '@/stores/mainStore';
   import { downloadCaseDiary } from "@/services/diaryServices";
+  import { toast } from 'vue3-toastify';
+
   const Modal = defineAsyncComponent(()=> import('@/components/commons/GenericModal.vue'));
   const DiaryItem = defineAsyncComponent(()=> import('@/modules/cases/components/DiaryItem.vue'));
   const Button =  defineAsyncComponent(()=> import('@/components/commons/MainButton.vue'));
@@ -83,7 +85,7 @@
         // Limpiar
         URL.revokeObjectURL(url);
         document.body.removeChild(a);
-      }else alert("Error al Generar formato diary");
+      }else toast.warning('No hay diarios para mostrar')
 
     } catch (error) {
         console.error('Error al descargar el archivo:', error);
@@ -91,7 +93,6 @@
   }
 
   onMounted( async () => {
-    console.log(props.case)
     const resp = await caseStore.setDiaryCaseList(props.case._id);
     if(resp == "200") console.log("diarys Setted");
     else if(resp == "404") console.log("No hay diarios");
@@ -126,7 +127,6 @@
                 :date="item.createdAt" 
                 :description="item.description"
                 :case-status="item.caseStatus" 
-                
                 />
           </div>
           <p class="flex items-center justify-center h-full" v-else> No hay parte diarios disponible </p>

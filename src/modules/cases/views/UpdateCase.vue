@@ -6,6 +6,7 @@
   import { downloadCasesExcelById, downloadExcelClosedCase } from "@/services/casesServices";
   import type { AxiosResponse } from 'axios';
   import { useMainStore } from '@/stores/mainStore';
+  import { toast } from 'vue3-toastify';
 
   const CaseDiary = defineAsyncComponent(()=> import('@/modules/cases/components/CaseDiary.vue'));
   const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseForm.vue'));
@@ -39,7 +40,7 @@
         // Limpiar
         URL.revokeObjectURL(url);
         document.body.removeChild(a);
-      }else alert("Error al Generar formato");
+      }else toast.warning('Error al Generar formato')
 
     } catch (error) {
         console.error('Error al descargar el archivo:', error);
@@ -68,7 +69,7 @@
         // Limpiar
         URL.revokeObjectURL(url);
         document.body.removeChild(a);
-      }else alert("Error al Generar formato");
+      }else  toast.warning('Error al Generar formato')
     } catch (error) {
         console.error('Error al descargar el archivo:', error);
     }
@@ -77,8 +78,10 @@
   const downLoadCaseSources = async () => {
     try {
       // Abrir el enlace en una nueva ventana
-      const fileUrl = `http://${caseStore.getCaseById.file}`; 
-      window.open(fileUrl, '_blank');
+      if(caseStore.getCaseById.file != undefined) {
+        const fileUrl = `http://${caseStore.getCaseById.file}`; 
+        window.open(fileUrl, '_blank');
+      }else toast.warning('No hay Archivo Guardado')
     } catch (error) {
       console.error('Error al abrir el enlace:', error);
     }

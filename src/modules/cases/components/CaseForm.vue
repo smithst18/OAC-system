@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { useRoute } from 'vue-router';
+  import { useRoute,useRouter } from 'vue-router';
   import { useMainStore } from '@/stores/mainStore';
   import { useCaseStore } from "@/modules/cases/store/caseStore";
   import { useToast } from '@/composables/useToast';
@@ -21,9 +21,11 @@
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const SubmitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+  const FileInput = defineAsyncComponent(() => import('@/components/commons/FileInput.vue'));
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
+      subId: yup.number().required('subId es requerido'),
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
       cedulaSolicitante: yup .string().required('cedula del Solicitante es requerido').trim(),
@@ -51,9 +53,10 @@
   const caseStore = useCaseStore();
   const toast = useToast();
   const rout =  useRoute();
+  const router = useRouter();
   const caseId = computed(() => rout.params.id.toString());
-  const caseIdShort = computed(() => caseId.value.substring(caseId.value.length - 5).toUpperCase());
   
+  const [subId,subIdAttrs] = defineField('subId');
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
   const [cedulaSolicitante,cedulaSolicitanteAttrs] = defineField('cedulaSolicitante');
@@ -85,6 +88,7 @@
   const parroquiaList = ref<Entity[]>([]);
   const subCategoriesList = ref<subCategory[]>([]);
   const typesList = ref<subCategory[]>([]);
+  const file = ref<File | null>(null);
 
   watch(
     () => values.estado,
@@ -119,17 +123,31 @@
         }
       }
   });
-  
+
   const onSubmit = handleSubmit(async (values) => {
+
+    let fileToSend = undefined;
+    
+    if(file.value != undefined) fileToSend = file.value;
+    
     let formulary = {
       ...values,
-      caseSubId:caseId.value,
       userId:mainStore.logedUser.id,
+      caseSubId:props.caseById.subId,
+      updatedCasoPdf:fileToSend
     }
 
     const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
+      // Verificar si el subId cambió
+      const newSubId = subId;
+      if (props.caseById.subId !== subId.value) {
+        router.replace({ 
+          name: 'update-case', // Nombre de la ruta si usas nombres en el enrutador
+          params: { id: subId.value.toString() }
+        });
+      }
       toast.successToast("Caso guardado de manera correcta");
     }
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
@@ -149,6 +167,9 @@
         analistaId:props.caseById.analistaId.name,
       }
     });
+
+    //if(props.caseById.casoPdf) file.name = props.caseById.casoPdf;
+
     const { subcategories } = await getSubCategoriesService();
 
     if(subcategories) subCategoriesList.value = subcategories;
@@ -167,8 +188,23 @@
 <template>
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-md shadow-md bg-white overflow-auto" v-if="props.caseById">
-            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseIdShort }} </h1>
+            <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseId }} </h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
+
+              <!--SUB ID MOMENTANEO-->
+              <div class="relative z-0 w-full mb-10 capitalize">
+                <input
+                  required
+                  type="text"
+                  name="subId"
+                  placeholder=""
+                  autocomplete="subId"
+                  v-model="subId" 
+                  v-bind="subIdAttrs"
+                />
+                <ErrorMessage :err="errors.subId"/>
+                <label for="subId" class="origin-0">ID</label>
+              </div>
 
               <!--FECHA ULTIMA ACTUALIZACION-->
               <div class="relative z-0 w-full mb-10 capitalize">
@@ -180,7 +216,6 @@
                   autocomplete="createdAt"
                   v-model="createdAt" 
                   v-bind="createdAtAttrs"
-                  readonly
                 />
                 <ErrorMessage :err="errors.createdAt"/>
                 <label for="createdAt" class="origin-0">Fecha de apertura</label>
@@ -213,7 +248,7 @@
                   v-bind="enteRedireccionadoAttrs"
                 />
                 <ErrorMessage :err="errors.enteRedireccionado"/>
-                <label for="enteRedireccionado" class="origin-0">Ente Redireccionado / N folio</label>
+                <label for="enteRedireccionado" class="origin-0">Ente Redirec / N folio</label>
               </div>
 
               <!--VIA DE RESOLUTION-->
@@ -226,11 +261,11 @@
                   v-bind="viaResolucionAttrs"
                   >
                   <option disabled value="" selected>seleccionar via de resolucion</option>
-                  <option value="administrativa">administrativa</option>
-                  <option value="Servicio desconcentrado fondo negro primero">Servicio desconcentrado fondo negro primero</option>
-                  <option value="remitido">remitido</option>
-                  <option value="recursos propios">recursos propios</option>
-                  <option value="no procede">no procede</option>
+                  <option value="administrativa">Tramitado</option>
+                  <option value="Servicio desconcentrado fondo negro primero">Servicio Desconcentrado “Fondo Negro Primero”.</option>
+                  <option value="remitido">Remitido al ente con competencia por la naturaleza del caso</option>
+                  <option value="recursos propios">Resuelto por el solicitante. </option>
+                  <option value="no procede">No conforme.</option>
                 </select>
                 <label for="viaResolucion" class="origin-0">via de resolucion</label>
                 <ErrorMessage :err="errors.viaResolucion"/>
@@ -635,12 +670,16 @@
                 <label for="prioridad" class="origin-0">prioridad</label>
                 <ErrorMessage :err="errors.prioridad"/>
               </div>
+              <!-- FILE INPUT -->
+
+              <FileInput :title="file?.name || props.caseById.file?.split('/').pop() || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
+                @send-file="(event:File) => file= event"/>
 
               <!--DESCRIPCION-->
               <div class="relative z-0 w-full mb-10">
                 <textarea
                   required
-                  rows="1" cols="5"
+                  rows="1"
                   name="descripcion"
                   placeholder=""
                   autocomplete="descripcion"
@@ -650,8 +689,10 @@
                 >
                 </textarea>
                 <ErrorMessage :err="errors.descripcion"/>
-                <label for="nombreSolicitante" class="origin-0">descripcion</label>
+                <label for="nombreSolicitante" class="origin-0 capitalize">descripcion</label>
               </div>
+
+
               <SubmitButton 
                 v-if="(mainStore.logedUser.id == caseById.analistaId._id && mainStore.logedUser.rol != 'auditor')|| mainStore.logedUser.rol == 'auditor'"
                 :full-size="true" 
@@ -660,14 +701,20 @@
                 :is-disabled="mainStore.logedUser.rol == 'normal' && caseById.status == 'cerrado'">
                 <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
               </SubmitButton>
+
+              <div class="w-full h-12 col-span-3">
+              </div>
             </form>
         </div>
   </div>
 </template>
  
 <style scoped lang="scss">
+  /* Deshabilita el redimensionamiento */
   .textarea-custom {
-    resize: none; /* Deshabilita el redimensionamiento */
+    resize: vertical; /* Permite el redimensionamiento vertical */
+    max-height: 150px; /* Establece la altura máxima en píxeles */
+    overflow-y: auto; /* Agrega una barra de desplazamiento si el contenido excede la altura máxima */
   }
   input,select,textarea {
     @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
