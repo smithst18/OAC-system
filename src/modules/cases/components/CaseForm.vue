@@ -136,6 +136,7 @@
       caseSubId:props.caseById.subId,
       updatedCasoPdf:fileToSend
     }
+    console.log(formulary)
 
     const resp = await caseStore.updateCase(formulary);
 
