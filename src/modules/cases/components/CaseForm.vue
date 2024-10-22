@@ -26,6 +26,7 @@
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       subId: yup.number().required('subId es requerido'),
+      openingDate: yup.date().required('fecha de apertura es requerido'),
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
       cedulaSolicitante: yup .string().required('cedula del Solicitante es requerido').trim(),
@@ -80,7 +81,7 @@
 
   const [status,statusAttrs] = defineField('status');
   const [enteRedireccionado,enteRedireccionadoAttrs] = defineField('enteRedireccionado');
-  const [createdAt,createdAtAttrs] = defineField('createdAt');
+  const [openingDate,openingDateAttrs] = defineField('openingDate');
   const [updatedAt,updatedAtAttrs] = defineField('updatedAt');
 
   const estadoList = ref<Entity[]>([]);
@@ -207,21 +208,21 @@
                 <label for="subId" class="origin-0">ID</label>
               </div>
 
-              <!--FECHA ULTIMA ACTUALIZACION-->
+              <!--FECHA ULTIMA APERTURA-->
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
                   type="text"
-                  name="createdAt"
+                  name="openingDate"
                   placeholder=""
-                  autocomplete="createdAt"
-                  v-model="createdAt" 
-                  v-bind="createdAtAttrs"
+                  autocomplete="openingDate"
+                  v-model="openingDate" 
+                  v-bind="openingDateAttrs"
                 />
-                <ErrorMessage :err="errors.createdAt"/>
-                <label for="createdAt" class="origin-0">Fecha de apertura</label>
+                <ErrorMessage :err="errors.openingDate"/>
+                <label for="openingDate" class="origin-0">Fecha de apertura</label>
               </div>
-              <!--FECHA APERTURA-->
+              <!--FECHA ACTUALIZACION-->
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
@@ -234,7 +235,7 @@
                   readonly
                 />
                 <ErrorMessage :err="errors.updatedAt"/>
-                <label for="createdAt" class="origin-0">Fecha de Ultima actualizacion</label>
+                <label for="updatedAt" class="origin-0">Fecha de Ultima actualizacion</label>
               </div>
 
               <!--ENTE REDIRECIONADO-->
@@ -459,7 +460,7 @@
                   v-bind="edadAttrs"
                 />
                 <ErrorMessage :err="errors.edad"/>
-                <label for="cedulaBeneficiario" class="origin-0">Edad</label>
+                <label for="edad" class="origin-0">Edad</label>
               </div>
 
               <!--GENERO-->
@@ -541,7 +542,7 @@
                   v-bind="parroquiaAttrs"
                 />
                 <ErrorMessage :err="errors.parroquia"/>
-                <label for="sector" class="origin-0">parroquia</label>
+                <label for="parroquia" class="origin-0">parroquia</label>
               </div>
 
               <!--SECTOR-->
@@ -649,7 +650,7 @@
                       {{ type.name}}
                   </option>
                 </select>
-                <label for="categoria" class="origin-0">tipo</label>
+                <label for="tipo" class="origin-0">tipo</label>
                 <ErrorMessage :err="errors.tipoId"/>
               </div>
 
@@ -690,7 +691,7 @@
                 >
                 </textarea>
                 <ErrorMessage :err="errors.descripcion"/>
-                <label for="nombreSolicitante" class="origin-0 capitalize">descripcion</label>
+                <label for="descripcion" class="origin-0 capitalize">descripcion</label>
               </div>
 
 

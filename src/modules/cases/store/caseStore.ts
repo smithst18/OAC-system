@@ -50,6 +50,7 @@ export const useCaseStore = defineStore('case', () => {
     diario:"",
     descripcion:"",
     file:"",
+    openingDate:"",
     createdAt:"",
     updatedAt:"",
   });
@@ -258,6 +259,7 @@ export const useCaseStore = defineStore('case', () => {
       diario:"",
       descripcion:"",
       file:"",
+      openingDate:"",
       createdAt:"",
       updatedAt:"",
     };
@@ -279,6 +281,7 @@ export const useCaseStore = defineStore('case', () => {
     };
     caseDiaryList.value = [];
   }
+
   // =======================> GETTERS
   const getCaseList = computed(() => {
     let cases = caseActualList.value.map(( elm:Case ) => {
@@ -294,11 +297,12 @@ export const useCaseStore = defineStore('case', () => {
   });
 
   const getCaseById = computed(() => {
+    const userLocale = navigator.language;
     
     let caseData: Case =  {
       ...caseById.value,
-      createdAt: new Date(caseById.value.createdAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
-      updatedAt:new Date(caseById.value.updatedAt).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).toString(),
+      openingDate: new Date(caseById.value.openingDate).toLocaleString(userLocale, { year: 'numeric', month: '2-digit', day: '2-digit'}).toString(),
+      updatedAt:new Date(caseById.value.updatedAt).toLocaleString(userLocale, { year: 'numeric', month: '2-digit', day: '2-digit',}).toString(),
       subCategoriaId:caseById.value.subCategoriaId._id,
       tipoId:caseById.value.tipoId._id
     }

@@ -19,7 +19,7 @@
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       subId: yup.number().required('ID es requerido').positive('debe ser positivo').integer('debe ser un entero'),
-      createdAt: yup .string().required('fecha de apertura es requerido').trim(),
+      openingDate: yup .date().required('fecha de apertura es requerido'),
       remitente: yup.string().required('Remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('Nombre del Solicitante es requerido').trim(),
       cedulaSolicitante: yup .string().required('Cedula del Solicitante es requerido').trim(),
@@ -46,7 +46,7 @@
   const toast = useToast();
 
   const [subId,subIdAttrs] = defineField('subId');
-  const [createdAt,createdAtAttrs] = defineField('createdAt');
+  const [openingDate,openingDateAttrs] = defineField('openingDate');
   const [remitente,remitenteAttrs] = defineField('remitente');
   const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
   const [cedulaSolicitante,cedulaSolicitanteAttrs] = defineField('cedulaSolicitante');
@@ -171,14 +171,14 @@
                 <input
                   required
                   type="date"
-                  name="createdAt"
+                  name="openingDate"
                   placeholder=""
-                  autocomplete="createdAt"
-                  v-model="createdAt" 
-                  v-bind="createdAtAttrs"
+                  autocomplete="openingDate"
+                  v-model="openingDate" 
+                  v-bind="openingDateAttrs"
                 />
-                <ErrorMessage :err="errors.createdAt"/>
-                <label for="createdAt" class="origin-0">Fecha de apertura</label>
+                <ErrorMessage :err="errors.openingDate"/>
+                <label for="openingDate" class="origin-0">Fecha de apertura</label>
               </div>
               
               <!--REMITENTE-->          
