@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { useRoute,useRouter } from 'vue-router';
+  import { useRoute } from 'vue-router';
   import { useMainStore } from '@/stores/mainStore';
   import { useCaseStore } from "@/modules/cases/store/caseStore";
   import { useToast } from '@/composables/useToast';
@@ -26,7 +26,7 @@
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       subId: yup.number().required('subId es requerido'),
-      openingDate: yup.date().required('fecha de apertura es requerido'),
+      fechaDeApertura: yup.date().required('fecha de apertura es requerido'),
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
       cedulaSolicitante: yup .string().required('cedula del Solicitante es requerido').trim(),
@@ -53,9 +53,7 @@
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
   const toast = useToast();
-  const rout =  useRoute();
-  const router = useRouter();
-  const caseId = computed(() => rout.params.id.toString());
+  const caseId = computed(() => props.caseById.subId?.toString());
   
   const [subId,subIdAttrs] = defineField('subId');
   const [remitente,remitenteAttrs] = defineField('remitente');
@@ -81,7 +79,7 @@
 
   const [status,statusAttrs] = defineField('status');
   const [enteRedireccionado,enteRedireccionadoAttrs] = defineField('enteRedireccionado');
-  const [openingDate,openingDateAttrs] = defineField('openingDate');
+  const [fechaDeApertura,fechaDeAperturaAttrs] = defineField('fechaDeApertura');
   const [updatedAt,updatedAtAttrs] = defineField('updatedAt');
 
   const estadoList = ref<Entity[]>([]);
@@ -134,7 +132,7 @@
     let formulary = {
       ...values,
       userId:mainStore.logedUser.id,
-      caseSubId:props.caseById.subId,
+      caseId:props.caseById._id,
       updatedCasoPdf:fileToSend
     }
     console.log(formulary)
@@ -142,14 +140,6 @@
     const resp = await caseStore.updateCase(formulary);
 
     if(resp == '200') {
-      // Verificar si el subId cambió
-      const newSubId = subId;
-      if (props.caseById.subId !== subId.value) {
-        router.replace({ 
-          name: 'update-case', // Nombre de la ruta si usas nombres en el enrutador
-          params: { id: subId.value.toString() }
-        });
-      }
       toast.successToast("Caso guardado de manera correcta");
     }
     else if(resp == "403") toast.errorToast("Error al guardar caso verifique info");
@@ -161,7 +151,9 @@
     const { geonames } = await listEstados();
     if(geonames) estadoList.value = geonames;
     else console.log("error al setear estados"); 
-  
+
+    console.log(props.caseById.fechaDeApertura)
+
     //seteamos el form con los valores del caso
     resetForm({
       values:{
@@ -212,21 +204,21 @@
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
-                  type="text"
-                  name="openingDate"
+                  type="date"
+                  name="fechaDeApertura"
                   placeholder=""
                   autocomplete="openingDate"
-                  v-model="openingDate" 
-                  v-bind="openingDateAttrs"
+                  v-model="fechaDeApertura" 
+                  v-bind="fechaDeAperturaAttrs"
                 />
-                <ErrorMessage :err="errors.openingDate"/>
-                <label for="openingDate" class="origin-0">Fecha de apertura</label>
+                <ErrorMessage :err="errors.fechaDeApertura"/>
+                <label for="fechaDeApertura" class="origin-0">Fecha de apertura</label>
               </div>
               <!--FECHA ACTUALIZACION-->
               <div class="relative z-0 w-full mb-10 capitalize">
                 <input
                   required
-                  type="text"
+                  type="date"
                   name="updatedAt"
                   placeholder=""
                   autocomplete="updatedAt"

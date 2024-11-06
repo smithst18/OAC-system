@@ -101,7 +101,7 @@
                   <tr v-for="(elm) in data" :key="elm._id">
                       <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
                           v-for="(property, propertyName, index) in elm" :key="index" 
-                          @click="emit('pickedElement', elm.id)">
+                          @click="emit('pickedElement', elm._id)">
                           <p class="p-8">
                               {{ property }}
                           </p>

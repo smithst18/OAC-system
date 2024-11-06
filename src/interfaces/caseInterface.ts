@@ -26,7 +26,7 @@ export interface Case {
   diario:any,
   descripcion:string,
   file:string,
-  openingDate:string,
+  fechaDeApertura:string,
   createdAt: string;
   updatedAt: string;
 }

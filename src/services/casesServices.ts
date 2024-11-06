@@ -30,17 +30,19 @@ export const getCasesService = async ( page : String, userId:string, search? : s
   }
 }
 
-export const getSpecificCaseService = async ( caseSubId : String ) =>{
-  try{
-    
-    const response = await AxiosInstance.get(`/cases/getcaseById/${caseSubId}`);
-    return response.data;
-    
-  }catch(e){
-    return e
-    
+export const getSpecificCaseService = async (caseId: string) => {
+  try {
+    if (caseId) {
+      const response = await AxiosInstance.get(`/cases/getcaseById/${caseId}`);
+      return response.data;
+    } else {
+      throw new Error("Debe proporcionar 'caseSubId' o 'id' para obtener un caso específico.");
+    }
+  } catch (e) {
+    console.error("Error en getSpecificCaseService:", e);
+    throw e; // Re-lanzamos el error para manejarlo desde el lugar donde se llama la función
   }
-}
+};
 
 export const updateCaseService = async ( form : object ) =>{
   try{

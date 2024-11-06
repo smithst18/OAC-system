@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { 
   saveCaseService,
   getCasesService, 
-  getSpecificCaseService, 
+  getSpecificCaseService,
   updateCaseService, 
   StatisticsService,
   getCasesByReport
@@ -50,7 +50,7 @@ export const useCaseStore = defineStore('case', () => {
     diario:"",
     descripcion:"",
     file:"",
-    openingDate:"",
+    fechaDeApertura:"",
     createdAt:"",
     updatedAt:"",
   });
@@ -155,8 +155,10 @@ export const useCaseStore = defineStore('case', () => {
     };
   }
 
-  const setCaseById = async (id : string) =>{
+  const setCaseById = async (id: string) =>{
+
     const { foundCase } = await getSpecificCaseService(id);
+    
 
     if(foundCase){
       
@@ -259,7 +261,7 @@ export const useCaseStore = defineStore('case', () => {
       diario:"",
       descripcion:"",
       file:"",
-      openingDate:"",
+      fechaDeApertura:"",
       createdAt:"",
       updatedAt:"",
     };
@@ -286,7 +288,8 @@ export const useCaseStore = defineStore('case', () => {
   const getCaseList = computed(() => {
     let cases = caseActualList.value.map(( elm:Case ) => {
       return {
-        id:elm.subId,
+        _id:elm._id,
+        //id:elm.subId,
         cedula:elm.cedulaBeneficiario,
         estatus:elm.status,
         entidad:elm.estado,
@@ -301,8 +304,8 @@ export const useCaseStore = defineStore('case', () => {
     
     let caseData: Case =  {
       ...caseById.value,
-      openingDate: new Date(caseById.value.openingDate).toLocaleString(userLocale, { year: 'numeric', month: '2-digit', day: '2-digit'}).toString(),
-      updatedAt:new Date(caseById.value.updatedAt).toLocaleString(userLocale, { year: 'numeric', month: '2-digit', day: '2-digit',}).toString(),
+      fechaDeApertura: caseById.value.fechaDeApertura ? new Date(caseById.value.fechaDeApertura).toISOString().split('T')[0] : '',
+      updatedAt: caseById.value.updatedAt ? new Date(caseById.value.updatedAt).toISOString().split('T')[0] : '',
       subCategoriaId:caseById.value.subCategoriaId._id,
       tipoId:caseById.value.tipoId._id
     }
