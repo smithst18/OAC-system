@@ -85,10 +85,10 @@ export const downloadCasesExcel = async () =>{
   }
 }
 
-export const downloadCasesExcelById = async (caseSubId:string) =>{
+export const downloadCasesExcelById = async (caseId:string) =>{
   try{
     
-    const response = await AxiosInstance.get(`/cases/generateExcelOneCase/${caseSubId}`, { responseType: 'arraybuffer' });
+    const response = await AxiosInstance.get(`/cases/generateExcelOneCase/${caseId}`, { responseType: 'arraybuffer' });
     return response;
     
   }catch(e){
@@ -97,10 +97,10 @@ export const downloadCasesExcelById = async (caseSubId:string) =>{
   }
 }
 
-export const downloadExcelClosedCase = async (caseSubId:string) =>{
+export const downloadExcelClosedCase = async (caseId:string) =>{
   try{
     
-    const response = await AxiosInstance.get(`/cases/generateExcelClosedCase/${caseSubId}`, { responseType: 'arraybuffer' });
+    const response = await AxiosInstance.get(`/cases/generateExcelClosedCase/${caseId}`, { responseType: 'arraybuffer' });
     return response;
     
   }catch(e){
