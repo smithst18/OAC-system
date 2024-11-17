@@ -29,7 +29,7 @@
 <template>
   <div class="flex items-center w-full h-10">
     <div>
-      <span class="ml-2 text-white">
+      <span class="ml-2 text-primary">
         mostrando 
         {{ props.elementsPerPage }} 
         elementos 

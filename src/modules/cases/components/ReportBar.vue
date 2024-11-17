@@ -67,7 +67,7 @@
 </script>
 
 <template>
-  <div class="w-full h-20 bg-third rounded-2xl flex items-center justify-center">
+  <div class="w-full h-20 bg-cyan-50 border border-cyan-500 rounded-2xl flex items-center justify-center">
     <form class="w-full h-[90%] grid grid-cols-5 gap-x-9 p-5" novalidate @submit="onSubmit">
 
       <!-- CAMPO A VALIDAD-->

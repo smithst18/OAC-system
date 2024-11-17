@@ -14,8 +14,18 @@
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
   
+  const titles : Array < string > = [
+    "id",
+    "cedula",  
+    "estatus",
+    "entidad",
+    "tipo de solicitud",
+  ]
+
   const handleFilter = async (form:FilterI) => {
     const resp = await caseStore.setCaseListReport(form);
+    console.log(form);
+    console.log(resp);
     if(resp == '200') toast.successToast("Reporte generado correctamente");
     else if(resp == '404') toast.warnToast("No se han encontrado reportes");
     else if(resp == '500') toast.errorToast("Error al procesar, Error de servidor");
@@ -32,7 +42,7 @@
 
 <template>
   <div class="w-full h-full">
-    <div class="bg-third w-full h-[8%] mb-[2%] rounded-xl bg-red">
+    <div class="bg-cyan-50 border border-cyan-500 w-full h-[8%] mb-[2%] rounded-xl bg-red">
       <InfoBar class="text-gray-400"/>
     </div>
     <div class="h-[90%]">
@@ -42,7 +52,7 @@
         <tableReport
           :data="caseStore.getCaseList"
           :elements-per-page="mainStore.getPerPages"
-          :titles="['id','remitente','Beneficiario','prioridad','status','analista encargado']"
+          :titles="titles"
           :total-pages="mainStore.getTotalPages"
           :show-search-bar="false"
           @picked-element="on_picked_element"

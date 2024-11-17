@@ -112,6 +112,7 @@ export const useCaseStore = defineStore('case', () => {
       mainStore.getPage.toString());
       
     if(response.paginatedData && response.paginatedData.cases.length > 0){
+      console.log(response)
       if(!response.paginatedData.paginator) mainStore.showPagination = false;
       else{
         mainStore.showPagination = true;
@@ -119,10 +120,10 @@ export const useCaseStore = defineStore('case', () => {
         mainStore.setPerPages(response.paginatedData.paginator.perPage);
         mainStore.setTotalPages(response.paginatedData.paginator.totalPages);
         mainStore.setTotalresults(response.paginatedData.paginator.totalDocs);
+        
+        caseActualList.value = response.paginatedData.cases;
+        return "200"
       }
-
-      caseActualList.value = response.paginatedData.cases;
-      return "200"
     }else if(response.response) return "404";
     else return "500";
   }
@@ -286,7 +287,7 @@ export const useCaseStore = defineStore('case', () => {
 
   // =======================> GETTERS
   const getCaseList = computed(() => {
-    let cases = caseActualList.value.map(( elm:Case ) => {
+    const cases = caseActualList.value.map(( elm:Case ) => {
       return {
         _id:elm._id,
         //id:elm.subId,
@@ -302,7 +303,7 @@ export const useCaseStore = defineStore('case', () => {
   const getCaseById = computed(() => {
     const userLocale = navigator.language;
     
-    let caseData: Case =  {
+    const caseData: Case =  {
       ...caseById.value,
       fechaDeApertura: caseById.value.fechaDeApertura ? new Date(caseById.value.fechaDeApertura).toISOString().split('T')[0] : '',
       updatedAt: caseById.value.updatedAt ? new Date(caseById.value.updatedAt).toISOString().split('T')[0] : '',
@@ -324,7 +325,7 @@ export const useCaseStore = defineStore('case', () => {
   });
 
   const getCaseDiaryList = computed(() => {
-    let data = caseDiaryList.value.map((elm: Diary) => {
+    const data = caseDiaryList.value.map((elm: Diary) => {
       return { 
         ...elm,
         createdAt: elm.createdAt ? 

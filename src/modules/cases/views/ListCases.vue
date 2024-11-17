@@ -78,7 +78,7 @@
 <template>
     <div class="w-full h-full">
 
-        <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
+        <div class="bg-cyan-50 border border-cyan-500 shadow-md rounded-2xl w-full h-[8%]">
             <InforBar class="text-gray-400"/>
         </div>
 

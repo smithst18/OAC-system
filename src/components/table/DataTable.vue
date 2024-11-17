@@ -86,7 +86,7 @@
 
       <!-- Table body with scroll -->
       <div class="w-full flex-grow overflow-auto">
-          <table class="table-fixed w-full text-sm border-collapse relative border-2 border-t-0 border-primary-light zebra-stripe">
+          <table class="table-fixed w-full text-sm border-collapse relative border-2 border-t-0 border-third zebra-stripe">
               <!-- TITLES FOR TABLE DATA -->
               <thead class="sticky top-0 drop-shadow-sm">
                   <tr>
@@ -143,7 +143,7 @@ td::-webkit-scrollbar{
     @apply hidden
 }
 .zebra-stripe tbody tr:nth-child(odd) {
-    @apply bg-primary-light bg-opacity-50 text-third hover:text-primary cursor-pointer
+    @apply bg-primary text-third hover:text-primary cursor-pointer
 }
 
 /* Estilo para filas pares */

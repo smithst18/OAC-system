@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <div class="text-center bg-third shadow-lg rounded-2xl p-12 mt-8 flex flex-col items-center justify-center">
+  <div class="text-center bg-cyan-50 border border-cyan-500 shadow-lg rounded-2xl p-12 mt-8 flex flex-col items-center justify-center">
     <span class="material-symbols-outlined text-6xl text-gray-400 mx-auto mb-4">
       content_paste
     </span>

@@ -23,16 +23,7 @@
       {
         label: 'Casos por mes',
         data: props.data,
-        backgroundColor: (ctx: any) => {
-          const canvas = ctx.chart.ctx;
-          const gradient = canvas.createLinearGradient(0, 0, 0, canvas.canvas.height); // Adjust for vertical gradient
-
-          gradient.addColorStop(0, 'rgba(21, 22, 100, 1)'); // Start color
-          gradient.addColorStop(0.14, 'rgba(125, 5, 109, 1)'); // Middle color
-          gradient.addColorStop(1, 'rgba(0, 212, 255, 1)'); // End color
-
-          return gradient;
-        },
+        backgroundColor: "#0B2D4E",
         borderWidth: 1,
         borderRadius: 20,
       }

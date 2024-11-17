@@ -147,7 +147,7 @@
 
 <template>
   <div class="w-full h-full flex items-center justify-center">
-        <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-white overflow-auto">
+        <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-cyan-50 border border-cyan-500 overflow-auto">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar nuevo caso</h1>
             <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
                
@@ -345,13 +345,14 @@
                   >
                   <option disabled value="" selected v-if="estadoList.length >= 1">Seleccionar Estado</option>
                   <option disabled value="" selected v-if="estadoList.length < 1">Cargando Entidades ...</option>
-                  <option 
-                    v-for="estado in estadoList" 
-                    :key="estado.geonameId" 
-                    :value="estado.toponymName"
-                    v-if="estadoList.length > 0">
-                      {{ estado.toponymName }}
-                  </option>
+                  <div v-if="estadoList.length > 0">
+                    <option 
+                      v-for="estado in estadoList" 
+                      :key="estado.geonameId" 
+                      :value="estado.toponymName">
+                        {{ estado.toponymName }}
+                    </option>
+                  </div>
                 </select>
                 <label for="estado" class="origin-0">estado</label>
                 <ErrorMessage :err="errors.estado"/>
@@ -368,13 +369,14 @@
                   >
                   <option disabled value="" selected v-if="municipioList.length >= 1">Seleccionar Municipio</option>
                   <option disabled value="" selected v-if="municipioList.length < 1">Cargando Municipios</option>
-                  <option 
-                    v-for="municipio in municipioList" 
-                    :key="municipio.geonameId" 
-                    :value="municipio.toponymName"
-                    v-if="municipioList.length > 0">
-                      {{ municipio.toponymName }}
-                  </option>
+                  <div v-if="municipioList.length > 0">
+                    <option 
+                      v-for="municipio in municipioList" 
+                      :key="municipio.geonameId" 
+                      :value="municipio.toponymName">
+                        {{ municipio.toponymName }}
+                    </option>
+                  </div>
                 </select>
                 <ErrorMessage :err="errors.municipio"/>
                 <label for="municipio" class="origin-0">municipio</label>
@@ -468,13 +470,14 @@
                   v-model="subCategoriaId" 
                   v-bind="subCategoriaAttrs">
                   <option disabled value="" selected>seleccionar subcategoria</option>
-                  <option 
-                    v-for="subCategoria in subCategoriesList" 
-                    :key="subCategoria._id" 
-                    :value="subCategoria._id"
-                    v-if="subCategoriesList.length > 0">
-                      {{ subCategoria.name}}
-                  </option>
+                  <div v-if="subCategoriesList.length > 0">
+                    <option 
+                      v-for="subCategoria in subCategoriesList" 
+                      :key="subCategoria._id" 
+                      :value="subCategoria._id">
+                        {{ subCategoria.name}}
+                    </option>
+                  </div>
                 </select>
                 <label for="subCategoria" class="origin-0">subCategoria</label>
                 <ErrorMessage :err="errors.subCategoriaId"/>
@@ -491,13 +494,14 @@
                   >
                   <option disabled value="" selected v-if="typesList.length < 1">Cargando Tipo...</option>
                   <option disabled value="" selected v-else>seleccionar tipo</option>
-                  <option
+                  <div v-if="typesList.length > 0">
+                    <option
                     v-for="type in typesList" 
                     :key="type._id" 
-                    :value="type._id"
-                    v-if="typesList.length > 0" >
+                    :value="type._id">
                       {{ type.name}}
                   </option>
+                  </div>
                 </select>
                 <label for="categoria" class="origin-0">tipo</label>
                 <ErrorMessage :err="errors.tipoId"/>
