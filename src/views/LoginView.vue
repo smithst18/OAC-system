@@ -95,14 +95,14 @@
         <span class="text-sm text-green-400 text-opacity-90 text-center mb-3" v-if="mainStore.logedUser.id != ''">Sesion Iniciada</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="error">Usuario o contraseña invalidos</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="apiServerError">Error en la Conexion con Servidor</span>
-        <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit"> 
+        <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit" class="h-12 mt-10"> 
           <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/><!-- this fix center the spinner with the text in parent component-->
         </SubmitButton>
-        <button 
+        <!-- <button 
           type="button"
           class=" text-primary text-base mt-5">
           recuperar Contraseña
-        </button>
+        </button> -->
       </form>
     </div> 
   </div>
