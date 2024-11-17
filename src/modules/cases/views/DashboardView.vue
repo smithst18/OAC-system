@@ -30,19 +30,19 @@
 
 <template>
     <div class="w-full h-full">
-      <div class="bg-white shadow-md rounded-2xl w-full h-[8%]">
-        <InfoBar class="text-gray-400"/>
+      <div class="bg-cyan-50 border border-cyan-500 shadow-md rounded-2xl w-full h-[8%]">
+        <InfoBar class="text-gray-600"/>
       </div>
       <UserBar/>
 
-      <div class=" w-full h-[30%] flex justify-around items-center border bg-white shadow-md  rounded-2xl p-5">
+      <div class=" w-full h-[30%] flex justify-around items-center bg-cyan-50 border border-cyan-500 shadow-md  rounded-2xl p-5">
 
         <div class="w-[40%] h-full mr-10">
           <Doughnut title="Cantidad de casos por categoria" :data="caseStore.getquantityPerCategory.counts" :labels="caseStore.getquantityPerCategory.labels" v-if="caseStore.getquantityPerCategory.counts.length > 0"/>
-          <p v-else class="text-center"> Casos Insuficientes ...</p>
+          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
         </div>
 
-        <div class="w-[40%] h-full py-1 text-gray-500 text-sm flex items-center flex-col text-justify">
+        <div class="w-[40%] h-full py-1 text-gray-600 text-sm flex items-center flex-col text-justify">
           <p>
             Las siguientes gráficas entregan valores al dia mes y año  {{ fecha }}.
             <span>Entregando un total de : <span class="font-bold text-green-500" v-if="caseStore.getTotalCases >= 0">{{ caseStore.getTotalCases }}</span>  casos totales, a la fecha en curso del dia de hoy.</span>
@@ -58,19 +58,19 @@
       </div>
 
       <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+        <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos Cerrados" :labels="caseStore.getClosedCasesChart.labels" :data="caseStore.getClosedCasesChart.counts" v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Casos Insuficientes ...</p>
+          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+        <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos Abiertos" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Casos Insuficientes ...</p>
+          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-md py-5 px-5"> 
+        <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos En Proceso" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
-          <p v-else class="text-center"> Casos Insuficientes ...</p>
+          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@
       error.value = false;
       if(mainStore.logedUser.rol == "admin"){
         router.push({ name:'management' });
-      } 
+      }
       else{
         router.push({ name:'home' });
       } 
@@ -38,8 +38,10 @@
 </script>
 
 <template>
-  <div class="h-screen w-screen flex justify-end" id="login"> 
-    <div class="w-1/2 h-full flex flex-col items-center bg-third rounded-bl-md rounded-tl-[18%] px-28 py-20">
+  <div class="h-screen w-screen flex justify-end"> 
+    <div class="w-1/2 h-full flex flex-col items-center login">
+    </div> 
+    <div class="w-1/2 h-full flex flex-col items-center bg-third  px-28 py-20">
       <p class="w-full text-3xl text-primary">
         ¡Hola!<br>
         <span class="text-5xl">Bienvenido</span>
@@ -95,14 +97,14 @@
         <span class="text-sm text-green-400 text-opacity-90 text-center mb-3" v-if="mainStore.logedUser.id != ''">Sesion Iniciada</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="error">Usuario o contraseña invalidos</span>
         <span class="text-sm text-red-400 text-opacity-90 text-center" v-if="apiServerError">Error en la Conexion con Servidor</span>
-        <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit"> 
+        <SubmitButton :full-size="true" title="Iniciar Sesion" @click="onSubmit" class="mt-10 h-12"> 
           <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/><!-- this fix center the spinner with the text in parent component-->
         </SubmitButton>
-        <button 
+        <!-- <button 
           type="button"
           class=" text-primary text-base mt-5">
           recuperar Contraseña
-        </button>
+        </button> -->
       </form>
     </div> 
   </div>
@@ -120,8 +122,8 @@
 
 
 /**/
-#login {
-  background-image: url("../assets/imgs/fondologin.svg");
+.login {
+  background-image: url("../assets/imgs/login.svg");
   background-repeat:no-repeat;
   background-position: center;
   background-size:cover ;

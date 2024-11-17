@@ -41,7 +41,7 @@
 
 <template>
   <aside :class="{ is_spanded:is_spanded }">
-
+    <img src="@/assets/imgs/logosidebar.svg" alt="" class="logosidebar">
     <!-- Toggle button -->
     <button 
       id="toggle-wrap"  
@@ -90,11 +90,7 @@
 
 <style lang="scss">
 aside{
-  background-image: url("../../assets/imgs/fondosidebar.svg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  opacity: 0.8;
-  @apply flex flex-col relative p-[1rem] text-secondary ;//aca se controla el color de texto base de toda la barra
+  @apply flex flex-col relative p-[1rem] text-secondary bg-blue-950 rounded-tr-3xl;//aca se controla el color de texto base de toda la barra
   width: calc(4rem + 30px);
   transition: 0.3s ease-out;
   
@@ -138,12 +134,17 @@ aside{
 
   &.is_spanded {
     width: var(--sidebar-width);
-    @apply text-secondary;
+    @apply text-secondary ;
+
+    .logosidebar{
+      @apply w-48 h-48 mx-auto;
+      transition: 0.5s ease-out;
+    }
     .menu::-webkit-scrollbar{
       display: block;
     }
     .menu{
-      @apply mt-60;
+      @apply mt-24;
     }
     #toggle-wrap {
       transform: rotate(-180deg);
