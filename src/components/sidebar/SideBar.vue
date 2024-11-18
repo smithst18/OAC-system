@@ -156,7 +156,7 @@ aside{
     .menu-item {
       @apply rounded-md;
       &:hover {
-        @apply text-white bg-secondary rounded-md
+        @apply text-primary bg-secondary rounded-md
       }
     }
     .material-symbols-sharp { 

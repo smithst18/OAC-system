@@ -28,7 +28,7 @@
 
 <template>
   <div @click="emit('inFocus')" class="pb-2 cursor-pointer">
-    <div class="menu-item" @click="toggleList" :class="{'text-white bg-secondary': isActive}"> <!--:class="{'bg-primary text-secondary': list_is_spanded}"-->
+    <div class="menu-item" @click="toggleList" :class="{'text-primary bg-secondary': isActive}"> <!--:class="{'bg-primary text-secondary': list_is_spanded}"-->
       <span class="material-symbols-sharp">{{ props.icon }}</span>
       <span class="menu-text capitalize">{{ props.title }}</span>
       <span 
@@ -42,7 +42,7 @@
           <router-link
             :to="{ name:link.to }"
             v-slot="{ isActive }">
-            <div class="flex items-center rounded-md my-2 mx-5 px-6 hover:text-white hover:bg-secondary" :class="{'text-white bg-secondary ': isActive}">
+            <div class="flex items-center rounded-md my-2 mx-5 px-6 hover:text-primary hover:bg-secondary" :class="{'text-primary bg-secondary ': isActive}">
               <p class="material-symbols-outlined mr-3 text-lg">{{ link.icon }}</p>
               <p> {{ link.name }} </p>
               <!-- <p class="ml-auto text-xs"> 2 </p> -->
