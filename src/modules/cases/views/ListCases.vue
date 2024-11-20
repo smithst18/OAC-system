@@ -82,7 +82,7 @@
             <InforBar class="text-gray-400"/>
         </div>
 
-        <h1 class="text-3xl text-white uppercase my-10">
+        <h1 class="text-3xl text-primary uppercase my-10">
             Casos Generales
         </h1>
 

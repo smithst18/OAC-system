@@ -45,7 +45,7 @@
     <!-- Toggle button -->
     <button 
       id="toggle-wrap"  
-      class="absolute w-6 h-6 -right-2 top-20 z-100 shadow-md rounded-full material-symbols-outlined text-[18px] transition duration-700 ease-out hover:-translate-x-1 bg-primary text-secondary" 
+      class="absolute w-6 h-6 -right-2 top-20 z-100 shadow-md rounded-full material-symbols-outlined text-[18px] transition duration-700 ease-out hover:-translate-x-1 bg-secondary text-primary" 
      
       @click="toggleMenu">
       chevron_right

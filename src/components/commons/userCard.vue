@@ -22,7 +22,7 @@
             { 'h-8'  : !props.is_spanded   },
 
         ]">
-            <span class="material-symbols-outlined text-white object-cover flex m-auto rounded-full">
+            <span class="material-symbols-outlined text-primary object-cover flex m-auto rounded-full">
               person
             </span>
             <!-- <img src="#" alt="" class="object-cover flex m-auto rounded-full" :class="[

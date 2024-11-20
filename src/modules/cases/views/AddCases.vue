@@ -26,7 +26,7 @@
       nombreBeneficiario: yup .string().required('Nombre del Beneficiario es requerido').trim(),
       cedulaBeneficiario: yup .string().required('Cedula del Beneficiario es requerido').trim(),
       telefonoBeneficiario: yup .string().required('Telefono del Beneficiario es requerido').trim(),
-      edad:yup.number().required('Edad es requerido').max(100,"No debe exceder los 110"),
+      edad: yup.number().required('Edad es requerido').max(110, "No debe exceder los 110"),
       genero:yup.string().required('Genero es requerido').trim(),
       estado:yup.string().required('Estado es requerido').trim(),
       municipio:yup.string().required('Municipio es requerido').trim(),
@@ -37,7 +37,7 @@
       subCategoriaId: yup .string().required('subcategoria es requerido').trim(),
       tipoId: yup .string().required('Tipo es requerido').trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
-      descripcion: yup .string().trim().max(300,"max 300 caracteres").required('descripcion es requerido'),
+      descripcion: yup.string().trim().max(300, "Máximo 300 caracteres").required('Descripción es requerida'),
     }),
   });
 
@@ -72,32 +72,21 @@
   const parroquiaList = ref<Entity[]>([]);
   const subCategoriesList = ref<subCategory[]>([]);
   const typesList = ref<subCategory[]>([]);
-  //watcher para setear las sub categorias
+  //watcher para setear las sub categorias / y municipios
 
-  watch(
-    () => values.estado,
-    async (estado) => {
-      if (estado && estadoList.value.length > 0) {
-      
-        municipioList.value = [];
-        parroquiaList.value = [];
-      
-        let estadoId = estadoList.value.find((elm) => {
-          return elm.toponymName === estado;
-        })?.geonameId || 0;
-      
-        const { geonames } = await listMunicipios(estadoId);
-      
-        if (geonames && geonames.length >= 1) {
-          municipioList.value = geonames;
-        } else console.log('No se pudieron setear los municipios');
-      
-      }
-  });
+  const updateMunicipios = async (estado: string) => {
+    if (!estado || !estadoList.value.length) return;
 
-  watch(
-    () => values.subCategoriaId,
-    async (subCategoriaId) => {
+    const estadoId = estadoList.value.find(elm => elm.toponymName === estado)?.geonameId || 0;
+    const { geonames } = await listMunicipios(estadoId);
+
+    municipioList.value = geonames || [];
+    parroquiaList.value = [];
+  };
+
+  watch(() => values.estado, updateMunicipios);
+  
+  const updateSubcategory = async (subCategoriaId : string) => {
       if(subCategoriaId && subCategoriesList.value.length > 0){
         const  { typesByCategory } = await getTypesService(subCategoriaId);
         if(typesByCategory) typesList.value = typesByCategory;
@@ -105,7 +94,9 @@
           console.log("error seteando los tipos revizar respuesta");
         }
       }
-  });
+    }
+    
+  watch( () => values.subCategoriaId,updateSubcategory);
 
   const onSubmit = handleSubmit(async (values) => {
     let fileToSend = undefined;
@@ -130,18 +121,20 @@
   });
   
 
-  onMounted(async() =>{
-    //setear estados
-    const { geonames } = await listEstados();
-    if(geonames) estadoList.value = geonames;
-    else console.log("error al setear estados"); 
-    
-    // set subcategories
-    const { subcategories } = await getSubCategoriesService();
+  onMounted(async () => {
+    try {
+      const { geonames } = await listEstados();
+      estadoList.value = geonames || [];
+    } catch (error) {
+      toast.errorToast("Error al cargar los estados");
+    }
 
-    if(subcategories && subcategories.length > 0){
-      subCategoriesList.value = subcategories;
-    }else console.log("Error recibiendo la data revizar respuesta");
+    try {
+      const { subcategories } = await getSubCategoriesService();
+      subCategoriesList.value = subcategories || [];
+    } catch (error) {
+      toast.errorToast("Error al cargar las subcategorías");
+    }
   });
 </script>
 
@@ -368,7 +361,7 @@
                   v-bind="municipioAttrs"
                   >
                   <option disabled value="" selected v-if="municipioList.length >= 1">Seleccionar Municipio</option>
-                  <option disabled value="" selected v-if="municipioList.length < 1">Cargando Municipios</option>
+                  <option disabled value="" selected v-if="municipioList.length < 1">Cargando Municipios ...</option>
                   <div v-if="municipioList.length > 0">
                     <option 
                       v-for="municipio in municipioList" 
@@ -469,7 +462,7 @@
                   name="subCategoria"
                   v-model="subCategoriaId" 
                   v-bind="subCategoriaAttrs">
-                  <option disabled value="" selected>seleccionar subcategoria</option>
+                  <option disabled value="" selected v-if="subCategoriesList.length > 0">seleccionar subcategoria</option>
                   <div v-if="subCategoriesList.length > 0">
                     <option 
                       v-for="subCategoria in subCategoriesList" 
@@ -477,7 +470,9 @@
                       :value="subCategoria._id">
                         {{ subCategoria.name}}
                     </option>
+                    
                   </div>
+                  <option disabled value="" selected v-else>Cargando subcategorias ...</option>
                 </select>
                 <label for="subCategoria" class="origin-0">subCategoria</label>
                 <ErrorMessage :err="errors.subCategoriaId"/>
@@ -492,16 +487,13 @@
                   v-model="tipoId" 
                   v-bind="tipoAttrs"
                   >
-                  <option disabled value="" selected v-if="typesList.length < 1">Cargando Tipo...</option>
-                  <option disabled value="" selected v-else>seleccionar tipo</option>
+                  <option disabled value="" selected v-if="typesList.length > 1"> seleccionar tipo </option>
                   <div v-if="typesList.length > 0">
-                    <option
-                    v-for="type in typesList" 
-                    :key="type._id" 
-                    :value="type._id">
+                    <option v-for="type in typesList" :key="type._id" :value="type._id">
                       {{ type.name}}
-                  </option>
+                    </option>
                   </div>
+                  <option disabled value="" selected v-else>Cargando Tipo ...</option>
                 </select>
                 <label for="categoria" class="origin-0">tipo</label>
                 <ErrorMessage :err="errors.tipoId"/>
@@ -560,6 +552,7 @@
 </template>
  
 <style scoped lang="scss">
+
 .textarea-custom {
   resize: none; /* Deshabilita el redimensionamiento */
 }

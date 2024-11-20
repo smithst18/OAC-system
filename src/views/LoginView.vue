@@ -39,15 +39,19 @@
 
 <template>
   <div class="h-screen w-screen flex justify-end"> 
+    <p class="absolute text-white text-xl bottom-0 left-1/2">V.1.1.0</p>
     <div class="w-1/2 h-full flex flex-col items-center login">
     </div> 
     <div class="w-1/2 h-full flex flex-col items-center bg-third  px-28 py-20">
-      <p class="w-full text-3xl text-primary">
-        ¡Hola!<br>
-        <span class="text-5xl">Bienvenido</span>
-      </p>
+      <div class="flex w-full items-center">
+        <p class="w-full text-3xl text-primary">
+          ¡Hola!<br>
+          <span class="text-5xl">Bienvenido</span>
+        </p>
+        <img src="@/assets/imgs/banderalogo.svg" alt="" class="h-36 mr-auto">
+      </div>
       <!-- fORMULARIO -->
-      <form  id="form" class="w-full h-[70%] mt-20 p-10 bg-white flex flex-col"
+      <form  id="form" class="w-full h-[70%] mt-20 p-16 bg-white flex flex-col rounded-md"
       @keypress.enter="onSubmit"
       @submit.prevent="onSubmit">
         <p class="text-center text-2xl text-primary my-8">Inicia sesión en tu cuenta </p>
