@@ -10,12 +10,17 @@
   import { getTypesService } from "@/services/typesServices"; 
   import type { subCategory } from "@/interfaces/categoryInterface";
   import type { Entity } from "@/interfaces/Entity";
+  import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
 
+  
+  const MainForm = defineAsyncComponent(() => import('@/components/Form/MainForm.vue'));
+  const InputField = defineAsyncComponent(() => import('@/components/Form/InputField.vue'));
+  const SelectField = defineAsyncComponent(() => import('@/components/Form/SelectField.vue'));
+  const TextareaField = defineAsyncComponent(() => import('@/components/Form/TextareaField.vue'));
+  const FileInput = defineAsyncComponent(() => import('@/components/commons/FileInput.vue'));
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
-  const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
-  const FileInput = defineAsyncComponent(() => import('@/components/commons/FileInput.vue'));
-
+  
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
       subId: yup.number().required('ID es requerido').positive('debe ser positivo').integer('debe ser un entero'),
@@ -40,56 +45,98 @@
       descripcion: yup.string().trim().max(300, "Máximo 300 caracteres").required('Descripción es requerida'),
     }),
   });
-
+  
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
-  const toast = useToast();
+  const { successToast, errorToast } = useToast();
 
-  const [subId,subIdAttrs] = defineField('subId');
-  const [fechaDeApertura,fechaDeAperturaAttrs] = defineField('fechaDeApertura');
-  const [remitente,remitenteAttrs] = defineField('remitente');
-  const [nombreSolicitante,nombreSolicitanteAttrs] = defineField('nombreSolicitante');
-  const [cedulaSolicitante,cedulaSolicitanteAttrs] = defineField('cedulaSolicitante');
-  const [nombreBeneficiario,nombreBeneficiarioAttrs] = defineField('nombreBeneficiario');
-  const [cedulaBeneficiario,cedulaBeneficiarioAttrs] = defineField('cedulaBeneficiario');
-  const [telefonoBeneficiario,telefonoBeneficiarioAttrs] = defineField('telefonoBeneficiario');
-  const [edad,edadAttrs] = defineField('edad');
-  const [genero,generoAttrs] = defineField('genero');
-  const [estado,estadoAttrs] = defineField('estado');
-  const [municipio,municipioAttrs] = defineField('municipio');
-  const [parroquia,parroquiaAttrs] = defineField('parroquia');
-  const [sector,sectorAttrs] = defineField('sector');
-  const [tipoBeneficiario,tipoBeneficiarioAttrs] = defineField('tipoBeneficiario');
-  const [categoria,categoriaAttrs] = defineField('categoria');
-  const [subCategoriaId,subCategoriaAttrs] = defineField('subCategoriaId');
-  const [tipoId,tipoAttrs] = defineField('tipoId');
-  const [prioridad,prioridadAttrs] = defineField('prioridad');
-  const [descripcion,descripcionAttrs] = defineField('descripcion');
+  const [subId] = defineField('subId');
+  const [fechaDeApertura] = defineField('fechaDeApertura');
+  const [remitente] = defineField('remitente');
+  const [nombreSolicitante] = defineField('nombreSolicitante');
+  const [cedulaSolicitante] = defineField('cedulaSolicitante');
+  const [nombreBeneficiario] = defineField('nombreBeneficiario');
+  const [cedulaBeneficiario] = defineField('cedulaBeneficiario');
+  const [telefonoBeneficiario] = defineField('telefonoBeneficiario');
+  const [edad] = defineField('edad');
+  const [genero] = defineField('genero');
+  const [estado] = defineField('estado');
+  const [municipio] = defineField('municipio');
+  const [parroquia] = defineField('parroquia');
+  const [sector] = defineField('sector');
+  const [tipoBeneficiario] = defineField('tipoBeneficiario');
+  const [categoria] = defineField('categoria');
+  const [subCategoriaId] = defineField('subCategoriaId');
+  const [tipoId] = defineField('tipoId');
+  const [prioridad] = defineField('prioridad');
+  const [descripcion] = defineField('descripcion');
 
   const file = ref<File | null>(null);
-  const estadoList = ref<Entity[]>([]);
-  const municipioList = ref<Entity[]>([]);
-  const parroquiaList = ref<Entity[]>([]);
-  const subCategoriesList = ref<subCategory[]>([]);
-  const typesList = ref<subCategory[]>([]);
+  const estados = ref<Entity[]>([]);
+  const estadosSelectList = ref<SelectFieldI[]>([]);
+  const municipioList = ref<SelectFieldI[]>([]);
+  const subCategoriesSelectList = ref<SelectFieldI[]>([]);
+  const typesList = ref<SelectFieldI[]>([]);
+
+  //LIST FOR DESPLEGABLESA
+  const remitenteListOptions = [
+    {label:"oficina de atencion al ciudadano",value:"O.A.C"},
+    {label:"ministro",value:"ministro"},
+    {label:"viceministerios",value:"viceministerios"},
+    {label:"sala situacional",value:"sala situacional"},
+    {label:"entes adscritos",value:"entes adscritos"},
+    {label:"gabinete ministerial",value:"gabinete ministerial"},
+    {label:"abordaje territorial",value:"abordaje territorial"},
+    {label:"venapp",value:"venapp"},
+    {label:"institucion",value:"institucion"},
+  ];
+
+  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"M"}];
+
+  const tipoBeneficiarioListOptions = [
+    {label:"conppa",value:"CONPPA"},
+    {label:"pescador",value:"pescador"},
+    {label:"acuicultor",value:"acuicultor"},
+    {label:"particular",value:"particular"},
+    {label:"institucional",value:"institucional"},
+  ];
+
+  const categoriaListOptions = [
+    {label:"peticion",value:"peticion"},
+    {label:"quejas",value:"quejas"},
+    {label:"reclamo",value:"reclamo"},
+    {label:"sugerencia",value:"sugerencia"},
+    {label:"denuncia",value:"denuncia"},
+  ];
+
+  const prioridadListOptions = [
+    {label:"urgente-importante",value:"urgente-importante"},
+    {label:"urgente-no Importante",value:"urgente-noImportante"},
+    {label:"no urgente-importante",value:"noUrgente-importante"},
+    {label:"no Urgente-no Importante",value:"noUrgente-noImportante"},
+  ];
+
   //watcher para setear las sub categorias / y municipios
 
   const updateMunicipios = async (estado: string) => {
-    if (!estado || !estadoList.value.length) return;
+    if (!estado || !estados.value.length) return;
 
-    const estadoId = estadoList.value.find(elm => elm.toponymName === estado)?.geonameId || 0;
+    const estadoId = estados.value.find(elm => elm.toponymName === estado)?.geonameId || 0;
     const { geonames } = await listMunicipios(estadoId);
 
-    municipioList.value = geonames || [];
-    parroquiaList.value = [];
+    municipioList.value = geonames.map((elm: Entity) => ({ label: elm.toponymName, value: elm.toponymName }));
+    parroquia.value = '';
   };
 
   watch(() => values.estado, updateMunicipios);
   
   const updateSubcategory = async (subCategoriaId : string) => {
-      if(subCategoriaId && subCategoriesList.value.length > 0){
+      if(subCategoriaId && subCategoriesSelectList.value.length > 0){
+        
         const  { typesByCategory } = await getTypesService(subCategoriaId);
-        if(typesByCategory) typesList.value = typesByCategory;
+
+        if(typesByCategory) typesList.value = typesByCategory.map((elm: subCategory) => ({ label: elm.name, value: elm._id }));
+        
         else{
           console.log("error seteando los tipos revizar respuesta");
         }
@@ -108,33 +155,47 @@
       analistaId: mainStore.logedUser.id,
       casoPdf:fileToSend
     } 
+
     const resp = await caseStore.saveCase(formulary);
     
     if(resp == '200') {
-      toast.successToast("Caso guardado de manera correcta");
+      successToast("Caso guardado de manera correcta");
       resetForm();
       file.value = null;
     }
-    else if(resp == '400') toast.errorToast("Ya existe un caso con el Id elegido")
-    else if(resp == '403') toast.errorToast("Error al guardar caso verifique info")
-    else toast.errorToast("Error de servidor");
+    else if(resp == '400') errorToast("Ya existe un caso con el Id elegido")
+    else if(resp == '403') errorToast("Error al guardar caso verifique info")
+    else errorToast("Error de servidor");
   });
   
 
   onMounted(async () => {
-    try {
-      const { geonames } = await listEstados();
-      estadoList.value = geonames || [];
+   try {
+      const response = await listEstados();
+      if (response && response.geonames && Array.isArray(response.geonames)) {
+        estados.value = response.geonames;
+        estadosSelectList.value = response.geonames.map((elm: Entity) => ({ label: elm.toponymName, value: elm.toponymName }));
+      } else {
+        throw new Error("Formato de datos inválido");
+      }
     } catch (error) {
-      toast.errorToast("Error al cargar los estados");
-    }
+      errorToast("Error al cargar los estados");
+      console.error(error);
+    };
 
-    try {
-      const { subcategories } = await getSubCategoriesService();
-      subCategoriesList.value = subcategories || [];
+   try {
+      const response = await getSubCategoriesService();
+      if (response && response.subcategories && Array.isArray(response.subcategories)) {
+
+        subCategoriesSelectList.value = response.subcategories.map((elm: subCategory) => ({ label: elm.name, value: elm._id }));
+
+      } else {
+        throw new Error("Formato de datos inválido");
+      }
     } catch (error) {
-      toast.errorToast("Error al cargar las subcategorías");
-    }
+      errorToast("Error al cargar los estados");
+      console.error(error);
+    };
   });
 </script>
 
@@ -142,472 +203,37 @@
   <div class="w-full h-full flex items-center justify-center">
         <div class="w-full h-full  px-10 py-5 rounded-2xl shadow-md bg-cyan-50 border border-cyan-500 overflow-auto">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Agregar nuevo caso</h1>
-            <form class="p-5 grid grid-cols-3 gap-x-9 w-full h-[90%]" novalidate @submit="onSubmit">
-               
-              <!-- subId MOMENTANEO BORRAR A FUTURO-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="subId"
-                  placeholder=""
-                  autocomplete="subId"
-                  v-model="subId" 
-                  v-bind="subIdAttrs"
-                />
-                <ErrorMessage :err="errors.subId"/>
-                <label for="subId" class="origin-0">ID</label>
-              </div>
-               
-              <!-- createdAt MOMENTANEO BORRAR A FUTURO-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="date"
-                  name="fechaDeApertura"
-                  placeholder=""
-                  autocomplete="openingDate"
-                  v-model="fechaDeApertura" 
-                  v-bind="fechaDeAperturaAttrs"
-                />
-                <ErrorMessage :err="errors.fechaDeApertura"/>
-                <label for="fechaDeApertura" class="origin-0">Fecha de apertura</label>
-              </div>
-              
-              <!--REMITENTE-->          
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="remitente"
-                  v-model="remitente" 
-                  v-bind="remitenteAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar remitente</option>
-                  <option  value="O.A.C">
-                    oficina de atencion al ciudadano
-                  </option>
-                  <option  value="ministro">
-                    ministro
-                  </option>
-                  <option  value="viceministerios">
-                    viceministerios
-                  </option>
-                  <option  value="sala situacional">
-                    sala situacional
-                  </option>
-                  <option  value="entes adscritos">
-                    entes adscritos
-                  </option>
-                  <option  value="gabinete ministerial">
-                    gabinete ministerial
-                  </option>
-                  <option  value="abordaje territorial">
-                    abordaje territorial
-                  </option>
-                  <option  value="venapp">
-                    venapp
-                  </option>
-                  <option  value="institucion">
-                    institucion
-                  </option>
-                </select>
-                <label for="remitente" class="origin-0">remitente</label>
-                <ErrorMessage :err="errors.remitente"/>
-              </div>
-
-              <!-- NOMBRE COMPLETO SOLICITANTE-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="nombreSolicitante"
-                  placeholder=""
-                  autocomplete="nombreSolicitante"
-                  v-model="nombreSolicitante" 
-                  v-bind="nombreSolicitanteAttrs"
-                />
-                <ErrorMessage :err="errors.nombreSolicitante"/>
-                <label for="nombreSolicitante" class="origin-0">Nombre completo del solicitante</label>
-              </div>
-
-              <!-- CEDULA SOLICITANTE-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="cedulaSolicitante"
-                  placeholder=""
-                  autocomplete="cedulaSolicitante"
-                  v-model="cedulaSolicitante" 
-                  v-bind="cedulaSolicitanteAttrs"
-                />
-                <ErrorMessage :err="errors.cedulaSolicitante"/>
-                <label for="cedulaSolicitante" class="origin-0">Cedula del solicitante</label>
-              </div>
-
-              <!-- NOMBRE COMPLETO BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="nombreBeneficiario"
-                  placeholder=""
-                  autocomplete="nombreBeneficiario"
-                  v-model="nombreBeneficiario" 
-                  v-bind="nombreBeneficiarioAttrs"
-                />
-                <ErrorMessage :err="errors.nombreBeneficiario"/>
-                <label for="nombreBeneficiario" class="origin-0">Nombre completo del Beneficiario</label>
-              </div>
-
-              <!-- CEDULA BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="cedulaBeneficiario"
-                  placeholder=""
-                  autocomplete="cedulaBeneficiario"
-                  v-model="cedulaBeneficiario" 
-                  v-bind="cedulaBeneficiarioAttrs"
-                />
-                <ErrorMessage :err="errors.cedulaBeneficiario"/>
-                <label for="cedulaBeneficiario" class="origin-0">Cedula del Beneficiario</label>
-              </div>
-
-              <!-- TELEFONO BENEFICIARIO -->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="text"
-                  name="telefonoBeneficiario"
-                  placeholder=""
-                  autocomplete="telefonoBeneficiario"
-                  v-model="telefonoBeneficiario" 
-                  v-bind="telefonoBeneficiarioAttrs"
-                />
-                <ErrorMessage :err="errors.telefonoBeneficiario"/>
-                <label for="telefonoBeneficiario" class="origin-0">telefono del Beneficiario</label>
-              </div>
-
-              <!-- EDAD -->
-              <div class="relative z-0 w-full mb-10">
-                <input
-                  required
-                  type="number"
-                  name="edad"
-                  placeholder=""
-                  autocomplete="edad"
-                  v-model="edad" 
-                  v-bind="edadAttrs"
-                />
-                <ErrorMessage :err="errors.edad"/>
-                <label for="cedulaBeneficiario" class="origin-0">Edad</label>
-              </div>
-
-              <!--GENERO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="genero"
-                  v-model="genero" 
-                  v-bind="generoAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar genero</option>
-                  <option  value="M">
-                    masculino
-                  </option>
-                  <option  value="F">
-                    femenino
-                  </option>
-                </select>
-                <label for="genero" class="origin-0">genero</label>
-                <ErrorMessage :err="errors.genero"/>
-              </div>
-
-              <!--ESTADO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                  class="capitalize"
-                  required
-                  name="estado"
-                  v-model="estado" 
-                  v-bind="estadoAttrs"
-                  >
-                  <option disabled value="" selected v-if="estadoList.length >= 1">Seleccionar Estado</option>
-                  <option disabled value="" selected v-if="estadoList.length < 1">Cargando Entidades ...</option>
-                  <div v-if="estadoList.length > 0">
-                    <option 
-                      v-for="estado in estadoList" 
-                      :key="estado.geonameId" 
-                      :value="estado.toponymName">
-                        {{ estado.toponymName }}
-                    </option>
-                  </div>
-                </select>
-                <label for="estado" class="origin-0">estado</label>
-                <ErrorMessage :err="errors.estado"/>
-              </div>
-
-              <!--MUNICIPIOS-->
-              <div class="relative z-0 w-full mb-10 capitalize">
-                <select 
-                  class="capitalize"
-                  required
-                  name="municipio"
-                  v-model="municipio" 
-                  v-bind="municipioAttrs"
-                  >
-                  <option disabled value="" selected v-if="municipioList.length >= 1">Seleccionar Municipio</option>
-                  <option disabled value="" selected v-if="municipioList.length < 1">Cargando Municipios ...</option>
-                  <div v-if="municipioList.length > 0">
-                    <option 
-                      v-for="municipio in municipioList" 
-                      :key="municipio.geonameId" 
-                      :value="municipio.toponymName">
-                        {{ municipio.toponymName }}
-                    </option>
-                  </div>
-                </select>
-                <ErrorMessage :err="errors.municipio"/>
-                <label for="municipio" class="origin-0">municipio</label>
-              </div>
-
-              <div class="relative z-0 w-full mb-10 capitalize">
-                <input
-                  required
-                  type="text"
-                  name="parroquia"
-                  placeholder=""
-                  autocomplete="parroquia"
-                  v-model="parroquia" 
-                  v-bind="parroquiaAttrs"
-                />
-                <ErrorMessage :err="errors.parroquia"/>
-                <label for="sector" class="origin-0">parroquia</label>
-              </div>
-
-              <!--SECTOR-->
-              <div class="relative z-0 w-full mb-10 capitalize">
-                <input
-                  required
-                  type="text"
-                  name="sector"
-                  placeholder=""
-                  autocomplete="sector"
-                  v-model="sector" 
-                  v-bind="sectorAttrs"
-                />
-                <ErrorMessage :err="errors.sector"/>
-                <label for="sector" class="origin-0">sector</label>
-              </div>
-
-              <!--TIPO DE BENEFICIARIO-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="tipoBeneficiario"
-                  v-model="tipoBeneficiario" 
-                  v-bind="tipoBeneficiarioAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar tipo de beneficiario</option>
-                  <option value="CONPPA" class="uppercase">conppa</option>
-                  <option value="pescador">pescador</option>
-                  <option value="acuicultor">acuicultor</option>
-                  <option value="particular">particular</option>
-                  <option value="institucional">institucional</option>
-                </select>
-                <label for="tipoBeneficiario" class="origin-0">tipo de beneficiario</label>
-                <ErrorMessage :err="errors.tipoBeneficiario"/>
-              </div>
-
-              <!-- CATEGORIA -->          
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="categoria"
-                  v-model="categoria" 
-                  v-bind="categoriaAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar categoria</option>
-                  <option  value="peticion">
-                    peticion
-                  </option>
-                  <option  value="quejas">
-                    quejas
-                  </option>
-                  <option  value="reclamo">
-                    reclamo
-                  </option>
-                  <option  value="sugerencia">
-                    sugerencia
-                  </option>
-                  <option  value="denuncia">
-                    denuncia
-                  </option>
-                </select>
-                <label for="categoria" class="origin-0">categoria</label>
-                <ErrorMessage :err="errors.categoria"/>
-              </div>
-
-              <!--SUB CATEGORIA-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="subCategoria"
-                  v-model="subCategoriaId" 
-                  v-bind="subCategoriaAttrs">
-                  <option disabled value="" selected v-if="subCategoriesList.length > 0">seleccionar subcategoria</option>
-                  <div v-if="subCategoriesList.length > 0">
-                    <option 
-                      v-for="subCategoria in subCategoriesList" 
-                      :key="subCategoria._id" 
-                      :value="subCategoria._id">
-                        {{ subCategoria.name}}
-                    </option>
-                    
-                  </div>
-                  <option disabled value="" selected v-else>Cargando subcategorias ...</option>
-                </select>
-                <label for="subCategoria" class="origin-0">subCategoria</label>
-                <ErrorMessage :err="errors.subCategoriaId"/>
-              </div>
-
-              <!--TIPO -->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="tipo"
-                  v-model="tipoId" 
-                  v-bind="tipoAttrs"
-                  >
-                  <option disabled value="" selected v-if="typesList.length > 1"> seleccionar tipo </option>
-                  <div v-if="typesList.length > 0">
-                    <option v-for="type in typesList" :key="type._id" :value="type._id">
-                      {{ type.name}}
-                    </option>
-                  </div>
-                  <option disabled value="" selected v-else>Cargando Tipo ...</option>
-                </select>
-                <label for="categoria" class="origin-0">tipo</label>
-                <ErrorMessage :err="errors.tipoId"/>
-              </div>
-
-              <!--PRIORIDAD-->
-              <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
-                <select 
-                class="capitalize"
-                  required
-                  name="prioridad"
-                  v-model="prioridad" 
-                  v-bind="prioridadAttrs"
-                  >
-                  <option disabled value="" selected>seleccionar prioridad</option>
-                  <option value="urgente-importante">urgente-importante</option>
-                  <option value="urgente-noImportante">urgente-no Importante</option>
-                  <option value="noUrgente-importante">no urgente-importante</option>
-                  <option value="noUrgente-noImportante">no Urgente-no Importante</option>
-                </select>
-                <label for="prioridad" class="origin-0">prioridad</label>
-                <ErrorMessage :err="errors.prioridad"/>
-              </div>
-
-              <!-- DOCUMENT-->
-              <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" 
-                @send-file="(event:File) => file= event"/>
-
-               <!--DESCRIPCION-->
-              <div class="relative z-0 w-full mb-10 capitalize">
-                <textarea
-                  required
-                  rows="1" cols="5"
-                  name="descripcion"
-                  placeholder=""
-                  autocomplete="descripcion"
-                  v-model="descripcion" 
-                  v-bind="descripcionAttrs"
-                  class="textarea-custom"
-                >
-                </textarea>
-                <ErrorMessage :err="errors.descripcion"/>
-                <label for="nombreSolicitante" class="origin-0">descripcion</label>
-              </div>
-
-
-              <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-10 mb-auto">
-                <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
-              </submitButton>
-              <!-- EMPTY BOX TO FIX CSS MB-AUTO-->
-              <div class="w-12 h-12 col-span-3">
-              </div>
-            </Form>
+            <MainForm @submit="onSubmit" :cols="3" class="!h-[90%]">
+              <template v-slot:content>
+                <InputField v-model="subId"  type="number" name="subId" autocomplete="subId"  label="ID" :error="errors.subId"/>
+                <InputField v-model="fechaDeApertura"  type="date" name="fechaDeApertura" autocomplete="fechaDeApertura"  label="fecha De Apertura" :error="errors.fechaDeApertura"/>
+                <SelectField v-model="remitente" name="remitente"  label="remitente" :error="errors.remitente" :options="remitenteListOptions" />
+                <InputField v-model="nombreSolicitante"  type="text" name="nombreSolicitante" autocomplete="nombreSolicitante"  label="nombre del solicitante" :error="errors.nombreSolicitante"/>
+                <InputField v-model="cedulaSolicitante"  type="text" name="cedulaSolicitante" autocomplete="cedulaSolicitante"  label="cedula del solicitante" :error="errors.cedulaSolicitante"/>
+                <InputField v-model="nombreBeneficiario"  type="text" name="nombreBeneficiario" autocomplete="nombreBeneficiario"  label="nombre del beneficiario" :error="errors.nombreBeneficiario"/>
+                <InputField v-model="cedulaBeneficiario"  type="text" name="cedulaBeneficiario" autocomplete="cedulaBeneficiario"  label="cedula del beneficiario" :error="errors.cedulaBeneficiario"/>
+                <InputField v-model="telefonoBeneficiario"  type="text" name="telefonoBeneficiario" autocomplete="telefonoBeneficiario"  label="telefono del beneficiario" :error="errors.telefonoBeneficiario"/>
+                <InputField v-model="edad"  type="number" name="edad" autocomplete="edad"  label="edad" :error="errors.edad"/>
+                <SelectField v-model="genero" name="genero"  label="genero" :error="errors.genero" :options="generoListOptions"/>
+                <SelectField v-model="estado" name="estado"  label="Estado" :error="errors.estado" :options="estadosSelectList" />
+                <SelectField v-model="municipio" name="municipio"  label="municipio" :error="errors.municipio" :options="municipioList" />
+                <InputField v-model="parroquia"  type="text" name="parroquia" autocomplete="parroquia"  label="parroquia" :error="errors.parroquia"/>
+                <InputField v-model="sector"  type="text" name="sector" autocomplete="sector"  label="sector" :error="errors.sector"/>
+                <SelectField v-model="tipoBeneficiario" name="tipoBeneficiario"  label="tipo de beneficiario" :error="errors.tipoBeneficiario" :options="tipoBeneficiarioListOptions" />
+                <SelectField v-model="categoria" name="categoria"  label="categoria" :error="errors.categoria" :options="categoriaListOptions" />
+                <SelectField v-model="subCategoriaId" name="subCategoriaId"  label="subcategoria" :error="errors.subCategoriaId" :options="subCategoriesSelectList" />
+                <SelectField v-model="tipoId" name="tipoId"  label="tipo" :error="errors.tipoId" :options="typesList" />
+                <SelectField v-model="prioridad" name="prioridad"  label="prioridad" :error="errors.prioridad" :options="prioridadListOptions" />
+                <TextareaField v-model="descripcion" name="descripcion"  label="descripcion" autocomplete="descripcion" :rows="1" :cols="5" :error="errors.descripcion" />
+                <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" @send-file="(event:File) => file= event"/>
+                <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto !p-3">
+                  <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
+                </submitButton>
+              </template>
+            </MainForm>
         </div>
   </div>
 </template>
  
 <style scoped lang="scss">
-
-.textarea-custom {
-  resize: none; /* Deshabilita el redimensionamiento */
-}
-
-input, select, textarea {
-  @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300;
-}
-
-label {
-  @apply absolute duration-300 top-3 -z-1 text-gray-500;
-}
-
-.hidden {
-  display: none;
-}
-input {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-}
-
-.-z-1 {
-  z-index: -1;
-}
-
-.origin-0 {
-  transform-origin: 0%;
-}
-
-/* Estilos para la animación de etiqueta flotante */
-input:focus ~ label,
-input:not(:placeholder-shown) ~ label,
-textarea:focus ~ label,
-textarea:not(:placeholder-shown) ~ label,
-select:focus ~ label,
-select:not([value='']):valid ~ label {
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  --tw-skew-x: 0;
-  --tw-skew-y: 0;
-  transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(0.75) scaleY(0.75);
-  --tw-translate-y: -1.5rem;
-}
-
-input:focus ~ label,
-select:focus ~ label {
-  --tw-text-opacity: 1;
-  color: rgba(0, 0, 0, var(--tw-text-opacity));
-  left: 0px;
-}
-.textarea-custom {
-    resize: vertical; /* Permite el redimensionamiento vertical */
-    max-height: 150px; /* Establece la altura máxima en píxeles */
-    overflow-y: auto; /* Agrega una barra de desplazamiento si el contenido excede la altura máxima */
-  }
 </style>

@@ -1,14 +1,23 @@
 <script setup lang='ts'>
-  import { defineAsyncComponent } from 'vue';
+  import { defineAsyncComponent, onMounted, ref } from 'vue';
   import * as yup from 'yup';
   import { useForm } from 'vee-validate';   
   import { useMainStore } from '@/stores/mainStore';
   import { useToast } from '@/composables/useToast';
+  import { listEstados } from "@/services/DTPservices";
+  import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
+
+  const MainForm = defineAsyncComponent(() => import('@/components/Form/MainForm.vue'));
+  const InputField = defineAsyncComponent(() => import('@/components/Form/InputField.vue'));
+  const SelectField = defineAsyncComponent(() => import('@/components/Form/SelectField.vue'));
   const MainSpiner = defineAsyncComponent(()=> import('@/components/commons/MainSpinner.vue'));
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
-  const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
+
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
+  import type { Entity } from "@/interfaces/Entity";
+
   const mainStore = useMainStore();
+
   const { successToast, errorToast } = useToast();
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
@@ -16,7 +25,7 @@
       .string().required('Nombre es requerido').trim(),
 
       ci: yup
-      .string().required('Cedula es requerida'),
+      .string().required('Cedula es requerida').trim(),
       
       password: yup
       .string().required('Contraseña es requerida').min(6,'Minimo 6 caracteres'),
@@ -35,18 +44,29 @@
       .string()
       .default('')
       .required('Seleccione un rol')
+      .trim(),
+
+      state: yup
+      .string()
+      .default('')
+      .required('Seleccione un estado')
       .trim()
     }),
   });
 
-  const [name,nameAttrs] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
-  const [ci,ciAttrs] = defineField('ci')
-  const [password,passwordAttrs] = defineField('password')
-  const [repassword,repasswordAttrs] = defineField('repassword')
-  const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber')
-  const [rol,rolAttrs] = defineField('rol')
+  const [name] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
+  const [ci] = defineField('ci');
+  const [password] = defineField('password');
+  const [repassword] = defineField('repassword');
+  const [phoneNumber] = defineField('phoneNumber');
+  const [state] = defineField('state');
+  const [rol] = defineField('rol');
+
+  const estadoList = ref<SelectFieldI[]>([]);
+
 
   const onSubmit = handleSubmit(async (values) => {
+    console.log(values);
     const resp = await mainStore.signUp(values);
     if(resp === '200'){
       successToast('Usuario creado correctamente');
@@ -56,6 +76,19 @@
     else errorToast('Server Error')
   });
 
+  onMounted(async () => {
+    try {
+      const response = await listEstados();
+      if (response && response.geonames && Array.isArray(response.geonames)) {
+        estadoList.value = response.geonames.map((elm: Entity) => ({ label: elm.toponymName, value: elm.toponymName }));
+      } else {
+        throw new Error("Formato de datos inválido");
+      }
+    } catch (error) {
+      errorToast("Error al cargar los estados");
+      console.error(error);
+    }
+});
 </script>
 
 <template>
@@ -63,9 +96,30 @@
         <div class="bg-white shadow-md rounded-2xl w-full h-[8%] mb-10 border">
           <InfoBar class="text-gray-400"/>
         </div>
-        <div class="w-full p-5 rounded-2xl shadow-md bg-white">
+        <div class="w-1/2 p-5 rounded-2xl shadow-md bg-white">
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70">Nuevo usuario</h1>
-            <form class="p-16 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
+
+            <MainForm @submit="onSubmit" :cols="2">
+              <template v-slot:content>
+                <InputField v-model="name"  type="text" name="name" autocomplete="name"  label="Nombre" :error="errors.name"/>
+                <InputField v-model="ci"  type="text" name="ci" autocomplete="ci"  label="Cedula" :error="errors.ci"/>
+                <InputField v-model="password"  type="text" name="password" autocomplete="password"  label="Contrasena" :error="errors.password"/>
+                <InputField v-model="repassword"  type="text" name="repassword" autocomplete="repassword"  label="Repetir Contrasena" :error="errors.repassword"/>
+                <InputField v-model="phoneNumber"  type="text" name="phoneNumber" autocomplete="phoneNumber"  label="Telefono" :error="errors.phoneNumber"/>
+                <SelectField v-model="state" name="state"  label="Estado" :error="errors.state" :options="estadoList" />
+                <SelectField v-model="rol" name="rol"  label="tipo de usuario" :error="errors.rol"
+                :options="[
+                  { label: 'Administrador', value: 'admin' },
+                  { label: 'Auditor', value: 'auditor' },
+                  { label: 'User', value: 'normal' },
+                ]"/>
+                <submitButton :full-size="true" title="Agregar" class="col-span-2 text-center my-5">
+                  <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
+                </submitButton>
+              </template>
+            </MainForm>
+
+            <!-- <form class="p-16 grid grid-cols-2 gap-x-9 w-full" novalidate @submit="onSubmit">
                 <div class="relative z-0 w-full mb-10">
                   <input
                       required
@@ -131,6 +185,22 @@
                     <ErrorMessage :err="errors.phoneNumber"/>
                     <label for="phoneNumber" class="origin-0">Telefono</label>
                 </div>  
+
+                <div class="relative z-0 w-full mb-10 text-gray-500 capitalize">
+                  <select v-model="state" class="capitalize" name="estado" required>
+
+                    <option disabled value="" selected v-if="estadoList.length === 0">Cargando lista ...</option>
+
+                    <option v-else v-for="option in estadoList" :value="option.toponymName" :key="option.geonameId">
+                      {{ option.toponymName }}
+                    </option>
+
+                  </select>
+                  
+                  <label for="state" class="origin-0">Estado</label>
+                  <ErrorMessage :err="errors.state"/>
+                </div>
+
                 <div class="relative z-0 w-full mb-10 text-gray-500">
                   <select 
                     required
@@ -154,55 +224,11 @@
                 <submitButton :full-size="true" title="Agregar" class="col-span-2 text-center my-5">
                   <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
                 </submitButton>
-            </Form>
+            </form> -->
         </div>
     </div>
 </template>
 
 <style scoped lang='scss'>
-    input,select {
-      @apply pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-primary border-gray-300
-    }
-    label{
-        @apply absolute duration-300 top-3 -z-1 text-gray-500
-    }
-    /* estilos para evitar errores en ela utocompletar de el formulario */ 
-    input {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        -webkit-background-clip: text !important;
-        background-clip:  text !important;
-    }
 
-    .-z-1 {
-        z-index: -1;
-    }
-      .origin-0 {
-        transform-origin: 0%;
-    }
-    input:focus ~ label,
-    input:not(:placeholder-shown) ~ label,
-    textarea:focus ~ label,
-    textarea:not(:placeholder-shown) ~ label,
-    select:focus ~ label,
-    select:not([value='']):valid ~ label {
-      /* @apply transform; scale-75; -translate-y-6; */
-      --tw-translate-x: 0;
-      --tw-translate-y: 0;
-      --tw-rotate: 0;
-      --tw-skew-x: 0;
-      --tw-skew-y: 0;
-      transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate))
-        skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-      --tw-scale-x: 0.75;
-      --tw-scale-y: 0.75;
-      --tw-translate-y: -1.5rem;
-    }
-    input:focus ~ label,
-    select:focus ~ label {
-      /* @apply text-black; left-0; */
-      --tw-text-opacity: 1;
-      color: rgba(0, 0, 0, var(--tw-text-opacity));
-      left: 0px;
-    }
 </style>
