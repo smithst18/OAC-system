@@ -3,9 +3,11 @@
   import * as yup from 'yup';
   import { useForm } from 'vee-validate';   
   import { useMainStore } from '@/stores/mainStore';
+  import { useUserStore } from '@/modules/users/store/userStore';
   import { useToast } from '@/composables/useToast';
   import { listEstados } from "@/services/DTPservices";
   import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
+  import type { Entity } from "@/interfaces/Entity";
 
   const MainForm = defineAsyncComponent(() => import('@/components/Form/MainForm.vue'));
   const InputField = defineAsyncComponent(() => import('@/components/Form/InputField.vue'));
@@ -14,9 +16,9 @@
   const submitButton = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
 
   const InfoBar = defineAsyncComponent(() => import("@/components/commons/InfoBar.vue"));
-  import type { Entity } from "@/interfaces/Entity";
 
   const mainStore = useMainStore();
+  const userStore = useUserStore(); 
 
   const { successToast, errorToast } = useToast();
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
@@ -67,7 +69,7 @@
 
   const onSubmit = handleSubmit(async (values) => {
     console.log(values);
-    const resp = await mainStore.signUp(values);
+    const resp = await userStore.signUp(values);
     if(resp === '200'){
       successToast('Usuario creado correctamente');
       resetForm();
@@ -88,7 +90,7 @@
       errorToast("Error al cargar los estados");
       console.error(error);
     }
-});
+  });
 </script>
 
 <template>

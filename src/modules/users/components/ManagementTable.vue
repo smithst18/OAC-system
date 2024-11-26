@@ -49,7 +49,7 @@
 <template>
     <div class="w-full h-full">
         <!--INFORMATION INDEX FOR USER TABLE-->
-        <div class="w-full h-[15%] grid grid-cols-4">
+        <div class="w-full h-[15%] grid grid-cols-5">
             <div class="col-span-1 border">
 
                 <p class="flex items-center justify-center h-full">
@@ -83,12 +83,23 @@
                     Numero
                 </p>
             </div>
+            <div class="col-span-1 border">
+                <p class="flex items-center justify-center h-full">
+                    <span class="material-symbols-outlined text-3xl mr-2">
+                        schedule
+                    </span>
+                    Estado
+                </p>
+            </div>
         </div>
         <!-- LOOP FOR USERS DATA-->
         <div class="w-full h-[70%] overflow-y-auto scrollbar-hidden"> 
-            <div v-for="elm in userStore.getUserList" :key="elm['_id']" v-if="userStore.getUserList.length >= 1">
-                <ManagUserCard :rol="elm['rol']" :name="elm['name']"  :phoneNumber="elm['phoneNumber']" class="hover:bg-primary-light hover:bg-opacity-10 hover:cursor-pointer" @click="handleUserUpdate(elm)"/>
-            </div>
+          <div v-if="userStore.getUserList.length < 1">
+            <p class="text-green-500">Cargando data</p>
+          </div>
+          <div v-for="elm in userStore.getUserList" :key="elm['_id']" v-else>
+              <ManagUserCard :rol="elm['rol']" :name="elm['name']"  :phoneNumber="elm['phoneNumber']" :state="elm['state']" class="hover:bg-primary-light hover:bg-opacity-10 hover:cursor-pointer" @click="handleUserUpdate(elm)"/>
+          </div>
             
         </div>
         <div class="h-[15%] w-full bg-primary-light bg-opacity-80">
@@ -96,7 +107,7 @@
                 class="w-full h-full border px-2"
                 :totalpages="mainStore.getTotalPages" 
                 :visible-pages="mainStore.getTotalPages"
-                :elementsPerPage="10"
+                :elementsPerPage="30"
                 :results="props.data.length"
                 :active-index="activeIndex"
                 @dataPagination="setDataPaginations($event)"

@@ -1,20 +1,29 @@
 <script setup lang="ts">
   import type { User } from '@/interfaces/userInterfaces';
-  import { defineAsyncComponent, ref, onUpdated } from 'vue';
+  import { defineAsyncComponent, ref, onUpdated, onMounted } from 'vue';
   import * as yup from 'yup';
   import { useForm } from 'vee-validate';  
   import { useMainStore } from '@/stores/mainStore';
   import MainSpinner from '@/components/commons/MainSpinner.vue';
   import { useUserStore } from '../store/userStore';
   import { useToast } from '@/composables/useToast';
+  import { listEstados } from "@/services/DTPservices";
+  import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
+  import type { Entity } from "@/interfaces/Entity";
 
-  const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const GenericModal = defineAsyncComponent(() => import('@/components/commons/GenericModal.vue'));
+  const MainForm = defineAsyncComponent(() => import('@/components/Form/MainForm.vue'));
+  const InputField = defineAsyncComponent(() => import('@/components/Form/InputField.vue'));
+  const SelectField = defineAsyncComponent(() => import('@/components/Form/SelectField.vue'));
+
   const props =  defineProps<{
     showModal:boolean,
     userToupdate:User,
   }>();
+
+  const { errorToast, successToast } = useToast();
+  
   const emit = defineEmits<{
     (event: "close-modal"): void;
   }>();
@@ -49,16 +58,20 @@
       .trim()
     }),
   });
+
   const showModal2 = ref(false);
   const mainStore = useMainStore();
   const userStore = useUserStore();
   const Toast = useToast();
-  const [name,nameAttrs] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
-  const [ci,ciAttrs] = defineField('ci');
-  const [password,passwordAttrs] = defineField('password');
-  const [repassword,repasswordAttrs] = defineField('repassword');
-  const [phoneNumber,phoneNumberAttrs] = defineField('phoneNumber');
-  const [rol,rolAttrs] = defineField('rol');
+  const [name] = defineField('name', /*{validateOnModelUpdate: false, //this options allow the validation in real time default true }*/);
+  const [ci] = defineField('ci');
+  const [password] = defineField('password');
+  const [repassword] = defineField('repassword');
+  const [phoneNumber] = defineField('phoneNumber');
+  const [state] = defineField('state');
+  const [rol] = defineField('rol');
+
+  const estadoList = ref<SelectFieldI[]>([]);
   const modification_Confirm = ref(false);
 
   const toggleModal1 = () => {
@@ -66,6 +79,7 @@
     modification_Confirm.value = false; 
     resetForm();
   }
+
   const toggleModal2 = () => {
     showModal2.value = !showModal2.value ;
   }
@@ -80,10 +94,10 @@
     
     const response = await userStore.updateUser(update);
     if(response == '200'){
-      Toast.successToast("Usuario actualizado Correctamente");
+      successToast("Usuario actualizado Correctamente");
     }else if(response == '403'){ 
       Toast.errorToast("Error al actualizar Usuario");
-    }else Toast.errorToast("Error de Servidor");
+    }else errorToast("Error de Servidor");
 
   });
 
@@ -100,7 +114,22 @@
 
   onUpdated(() =>{
     resetForm({values:props.userToupdate});
-  })
+  });
+
+  onMounted(async () => {
+    try {
+      const response = await listEstados();
+      if (response && response.geonames && Array.isArray(response.geonames)) {
+        estadoList.value = response.geonames.map((elm: Entity) => ({ label: elm.toponymName, value: elm.toponymName }));
+      } else {
+        throw new Error("Formato de datos inválido");
+      }
+    } catch (error) {
+      errorToast("Error al cargar los estados");
+      console.error(error);
+    }
+  });
+
 </script>
 
 <template>
@@ -111,101 +140,32 @@
             <h3>Modificar Usuario</h3>
         </template>
         <template #body>
-          <form class="p-5 grid grid-cols-2 gap-x-9 w-full" id="updateForm" novalidate @submit="updateUser">
-                <div class="relative z-0 w-full mb-10">
-                  <input
-                      required
-                      type="text"
-                      name="name"
-                      placeholder=""
-                      autocomplete="name"
-                      v-model="name" 
-                      v-bind="nameAttrs"
-                    />
-                    <ErrorMessage :err="errors.name"/>
-                    <label for="name" class="origin-0">Nombre Completo</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
-                      type="text"
-                      name="ci"
-                      placeholder=""
-                      autocomplete="off"
-                      v-model="ci" 
-                      v-bind="ciAttrs"
-                    />
-                    <ErrorMessage :err="errors.ci"/>
-                    <label for="ci" class="origin-0">Cedula</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
-                      type="password"
-                      name="password"
-                      placeholder=""
-                      autocomplete="new-password"
-                      v-model="password" 
-                      v-bind="passwordAttrs"
-                    />
-                    <ErrorMessage :err="errors.password"/>
-                    <label for="password" class="origin-0">Contraseña</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
-                      type="password"
-                      name="repassword"
-                      placeholder=""
-                      autocomplete="new-password"
-                      v-model="repassword" 
-                      v-bind="repasswordAttrs"
-                    />
-                    <ErrorMessage :err="errors.repassword"/>
-                    <label for="repassword" class="origin-0">Repetir contraseña</label>
-                </div>
-                <div class="relative z-0 w-full mb-10">
-                    <input
-                      required
-                      type="text"
-                      name="phoneNumber"
-                      placeholder=""
-                      autocomplete="tel"
-                      v-model="phoneNumber" 
-                      v-bind="phoneNumberAttrs"
-                    />
-                    <ErrorMessage :err="errors.phoneNumber"/>
-                    <label for="phoneNumber" class="origin-0">Telefono</label>
-                </div>  
-                <div class="relative z-0 w-full mb-10 text-gray-500">
-                  <select 
-                    required
-                    name="rol"
-                    v-model="rol" 
-                    v-bind="rolAttrs">
-                    <option disabled value="" selected>Selecionar permisos</option>
-                    <option  value="admin">
-                      Administrador
-                    </option>
-                    <option  value="auditor">
-                      Auditor
-                    </option>
-                    <option  value="normal">
-                      Normal
-                    </option>
-                  </select>
-                  <label for="rol" class="origin-0">Permisos</label>
-                  <ErrorMessage :err="errors.rol"/>
-                </div>
-                <!--delete user button-->
-                <div class="w-full mb-10 border-b-red-300 border-0 border-b-2">
-                  <p class="flex items-center justify-center text-red-400 text-line cursor-pointer hover:text-red-300 w-full h-full" @click="toggleModal2"> 
-                    Borrar usuario
-                    <span class="material-symbols-outlined text-red-500 ml-3 text-base">
-                      delete
-                    </span></p>
-                </div> 
-            </Form>
+
+          <MainForm @submit="updateUser" :cols="2" id="updateForm">
+            <template v-slot:content>
+
+              <InputField v-model="name"  type="text" name="name" autocomplete="name"  label="Nombre" :error="errors.name"/>
+              <InputField v-model="ci"  type="text" name="ci" autocomplete="ci"  label="Cedula" :error="errors.ci"/>
+              <InputField v-model="password"  type="text" name="password" autocomplete="password"  label="Contrasena" :error="errors.password"/>
+              <InputField v-model="repassword"  type="text" name="repassword" autocomplete="repassword"  label="Repetir Contrasena" :error="errors.repassword"/>
+              <InputField v-model="phoneNumber"  type="text" name="phoneNumber" autocomplete="phoneNumber"  label="Telefono" :error="errors.phoneNumber"/>
+              <SelectField v-model="state" name="state"  label="Estado" :error="errors.state" :options="estadoList" />
+              <SelectField v-model="rol" name="rol"  label="tipo de usuario" :error="errors.rol"
+              :options="[
+                { label: 'Administrador', value: 'admin' },
+                { label: 'Auditor', value: 'auditor' },
+                { label: 'User', value: 'normal' },
+              ]"/>
+              <div class="w-full mb-10 border-b-red-300 border-0 border-b-2">
+                <p class="flex items-center justify-center text-red-400 text-line cursor-pointer hover:text-red-300 w-full h-full" @click="toggleModal2"> 
+                  Borrar usuario
+                  <span class="material-symbols-outlined text-red-500 ml-3 text-base">
+                    delete
+                  </span></p>
+              </div> 
+            </template>
+          </MainForm>
+
         </template>
         <template #footer>
           <p class="text-red-500 flex-grow-1 text-center" v-if="modification_Confirm">ESTAS SEGURO DE MODIFICAR ESTE USUARIO ?</p>

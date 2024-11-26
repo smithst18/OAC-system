@@ -301,7 +301,7 @@ export const useCaseStore = defineStore('case', () => {
   });
 
   const getCaseById = computed(() => {
-    const userLocale = navigator.language;
+    // const userLocale = navigator.language;
     
     const caseData: Case =  {
       ...caseById.value,

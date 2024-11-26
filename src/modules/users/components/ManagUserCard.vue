@@ -4,11 +4,12 @@
       name:string,
       rol:string,
       phoneNumber:string,
+      state:string,
     }>();
 </script>
 
 <template>
-    <div class="grid grid-cols-4 capitalize"> 
+    <div class="grid grid-cols-5 capitalize"> 
         <div class="col-span-1 border flex">
             <div class="w-12 m-auto">
                 <userCard :is_spanded="false" class="cursor-pointer w-12"/>
@@ -33,6 +34,9 @@
         </div>
         <div class="col-span-1 border">
             <p class="text-center mt-2">{{props.phoneNumber}}</p>
+        </div>
+        <div class="col-span-1 border">
+            <p class="text-center mt-2">{{props.state}}</p>
         </div>
     </div>
 </template>

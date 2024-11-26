@@ -44,9 +44,9 @@
       <UserBar/>
       <SearchBar class="w-[20%] h-[5%] ml-auto" @on-search-data="searchData"/>
     </div>
-    <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5" v-if="mainStore.getTotalPages != 0">
-      <ManagementTable :data="userStore.getUserList" :perpage="mainStore.getPerPages" :pages="mainStore.getTotalPages" />
-      <p v-if="mainStore.getTotalPages < 1">Cargando data ...</p>
+    <div class="bg-white text-primary-light shadow-md  rounded-2xl w-full h-[80%] py-5 px-5">
+      <p v-if="userStore.getUserList.length < 1">Cargando data ...</p>
+      <ManagementTable :data="userStore.getUserList" :perpage="mainStore.getPerPages" :pages="mainStore.getTotalPages" v-else/>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { logInService,signUpService } from "@/services/userServices";
+import { logInService } from "@/services/userServices";
 import { useCookies } from "vue3-cookies";
 import type {  User } from '@/interfaces/userInterfaces';
 import { useRouter } from 'vue-router';
@@ -64,21 +64,6 @@ export const useMainStore = defineStore('main', () => {
     router.push({ name:'login' });
   }
 
-  const signUp = async (form:object) =>{
-
-    const data = await signUpService(form);
-    if(data.savedUser) return "200";
-    else if(data.response){ 
-      requestIsLoading.value = false
-      return "403"
-    }
-    else{
-      requestIsLoading.value = false
-      return "500";
-    };
-
-  }
-
   const changeRequestStatus  = (value:boolean) => {
     requestIsLoading.value = value;
   } 
@@ -92,6 +77,7 @@ export const useMainStore = defineStore('main', () => {
     totalPages.value = 0;//numero de paginas 
     perPage.value = 0;
   }
+
   const  $reset = () => {
     isLoged.value = false;
     logedUser.value = {
@@ -125,7 +111,7 @@ export const useMainStore = defineStore('main', () => {
     showPagination,
     logIn,
     logOut,
-    signUp, 
+    setRequestLoaderStatus: (value:boolean)=>  requestIsLoading.value = value,
     setPage: (value: number) => page.value = value, 
     setPerPages: (value: number) => perPage.value = value, 
     setTotalPages: (value: number) => totalPages.value = value, 

@@ -1,8 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { updateUserService, userListService, deleteUserService } from '@/services/userServices';
+import { updateUserService, userListService, deleteUserService, signUpService } from '@/services/userServices';
 import { useMainStore } from '@/stores/mainStore';
-
 export const useUserStore = defineStore('user', () => {
   const mainStore = useMainStore();
   // =======================> STATE
@@ -70,6 +69,20 @@ export const useUserStore = defineStore('user', () => {
     
   }
 
+  const signUp = async (form:object) =>{
+
+    const data = await signUpService(form);
+    if(data.savedUser) return "200";
+    else if(data.response){ 
+      mainStore.setRequestLoaderStatus(false)
+      return "403"
+    }
+    else{
+      mainStore.setRequestLoaderStatus(false);
+      return "500";
+    };
+
+  }
 
   const $reset = () => {
     userActualList.value = [];//lista de usuarios
@@ -82,6 +95,7 @@ export const useUserStore = defineStore('user', () => {
     setUserList,
     updateUser,
     deleteUser,
+    signUp,
     $reset,
     getUserList: computed(() => userActualList.value),
   }
