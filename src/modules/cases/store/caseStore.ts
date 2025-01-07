@@ -54,7 +54,56 @@ export const useCaseStore = defineStore('case', () => {
     createdAt:"",
     updatedAt:"",
   });
-  
+
+  const remitenteListOptions = [
+    {label:"oficina de atencion al ciudadano",value:"O.A.C"},
+    {label:"ministro",value:"ministro"},
+    {label:"viceministerios",value:"viceministerios"},
+    {label:"sala situacional",value:"sala situacional"},
+    {label:"entes adscritos",value:"entes adscritos"},
+    {label:"gabinete ministerial",value:"gabinete ministerial"},
+    {label:"abordaje territorial",value:"abordaje territorial"},
+    {label:"venapp",value:"venapp"},
+    {label:"institucion",value:"institucion"},
+  ];
+  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"M"}];
+  const tipoBeneficiarioListOptions = [
+    {label:"conppa",value:"CONPPA"},
+    {label:"pescador",value:"pescador"},
+    {label:"acuicultor",value:"acuicultor"},
+    {label:"particular",value:"particular"},
+    {label:"institucional",value:"institucional"},
+  ];
+  const categoriaListOptions = [
+    {label:"peticion",value:"peticion"},
+    {label:"quejas",value:"quejas"},
+    {label:"reclamo",value:"reclamo"},
+    {label:"sugerencia",value:"sugerencia"},
+    {label:"denuncia",value:"denuncia"},
+  ];
+  const prioridadListOptions = [
+    {label:"Alta", value:"alta"},
+    {label:"Media", value:"media"},
+    {label:"Baja", value:"baja"},
+  ];
+  const viaResolucionListOptions = [
+    {label:"Tramitado",value:"administrativa"},
+    {label:`Servicio Desconcentrado “Fondo Negro Primero”`,value:"Servicio desconcentrado fondo negro primero"},
+    {label:"partida de donacion a tercero",value:"partida de donacion a tercero"},
+    {label:"Remitido al ente con competencia por la naturaleza del caso",value:"remitido"},
+    {label:"recursos propios",value:"recursos propios"},
+    {label:"donacion",value:"donacion"},
+    {label:"no procede",value:"no procede"},
+  ];
+  const statusListOptions = [
+    {label:"contacto inicial",value:"contacto inicial"},
+    {label:"conformacion del expediente",value:"conformacion del expediente"},
+    {label:"proceso de analisis",value:"proceso de analisis"},
+    {label:"notificacion al solicitante",value:"notificacion al solicitante"},
+    {label:"proceso administrativo",value:"en proceso"},
+    {label:"seguimiento",value:"seguimiento"},
+    {label:"cerrado",value:"cerrado"},
+  ];
 
   const closedCasesChart =  ref<{ counts: number[]; labels: string[] }>({
     counts: [],
@@ -348,6 +397,13 @@ export const useCaseStore = defineStore('case', () => {
     caseById,
     closedCasesChart,
     caseDiaryList,
+    remitenteListOptions,
+    generoListOptions,
+    tipoBeneficiarioListOptions,
+    categoriaListOptions,
+    prioridadListOptions,
+    viaResolucionListOptions,
+    statusListOptions,
     setCaseList,
     setCaseById,
     saveCase,

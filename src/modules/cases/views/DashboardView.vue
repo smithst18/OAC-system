@@ -64,7 +64,7 @@
         </div>
 
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
-          <BarChart title="Casos Abiertos" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
+          <BarChart title="Casos Totales" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
           <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
         </div>
 

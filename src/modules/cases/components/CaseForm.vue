@@ -27,7 +27,6 @@
 
   const { values, errors, defineField, handleSubmit, resetForm } = useForm({
     validationSchema: yup.object({
-      subId: yup.number().required('subId es requerido'),
       fechaDeApertura: yup.date().required('fecha de apertura es requerido'),
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
@@ -57,8 +56,7 @@
   const {errorToast, successToast} = useToast();
 
   const caseId = computed(() => props.caseById.subId?.toString());
-  
-  const [subId] = defineField('subId');
+
   const [remitente] = defineField('remitente');
   const [nombreSolicitante] = defineField('nombreSolicitante');
   const [cedulaSolicitante] = defineField('cedulaSolicitante');
@@ -91,55 +89,6 @@
   const municipioList = ref<SelectFieldI[]>([]);
   const subCategoriesSelectList = ref<SelectFieldI[]>([]);
   const typesList = ref<SelectFieldI[]>([]);
-  
-  const remitenteListOptions = [
-    {label:"oficina de atencion al ciudadano",value:"O.A.C"},
-    {label:"ministro",value:"ministro"},
-    {label:"viceministerios",value:"viceministerios"},
-    {label:"sala situacional",value:"sala situacional"},
-    {label:"entes adscritos",value:"entes adscritos"},
-    {label:"gabinete ministerial",value:"gabinete ministerial"},
-    {label:"abordaje territorial",value:"abordaje territorial"},
-    {label:"venapp",value:"venapp"},
-    {label:"institucion",value:"institucion"},
-  ];
-  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"M"}];
-  const tipoBeneficiarioListOptions = [
-    {label:"conppa",value:"CONPPA"},
-    {label:"pescador",value:"pescador"},
-    {label:"acuicultor",value:"acuicultor"},
-    {label:"particular",value:"particular"},
-    {label:"institucional",value:"institucional"},
-  ];
-  const categoriaListOptions = [
-    {label:"peticion",value:"peticion"},
-    {label:"quejas",value:"quejas"},
-    {label:"reclamo",value:"reclamo"},
-    {label:"sugerencia",value:"sugerencia"},
-    {label:"denuncia",value:"denuncia"},
-  ];
-  const prioridadListOptions = [
-    {label:"urgente-importante",value:"urgente-importante"},
-    {label:"urgente-no Importante",value:"urgente-noImportante"},
-    {label:"no urgente-importante",value:"noUrgente-importante"},
-    {label:"no Urgente-no Importante",value:"noUrgente-noImportante"},
-  ];
-  const viaResolucionListOptions = [
-    {label:"Tramitado",value:"administrativa"},
-    {label:`Servicio Desconcentrado “Fondo Negro Primero”`,value:"Servicio desconcentrado fondo negro primero"},
-    {label:"Remitido al ente con competencia por la naturaleza del caso",value:"remitido"},
-    {label:"recursos propios",value:"recursos propios"},
-    {label:"no procede",value:"no procede"},
-  ];
-  const statusListOptions = [
-    {label:"contacto inicial",value:"contacto inicial"},
-    {label:"conformacion del expediente",value:"conformacion del expediente"},
-    {label:"proceso de analisis",value:"proceso de analisis"},
-    {label:"notificacion al solicitante",value:"notificacion al solicitante"},
-    {label:"proceso administrativo",value:"en proceso"},
-    {label:"seguimiento",value:"seguimiento"},
-    {label:"cerrado",value:"cerrado"},
-  ];
 
   const updateMunicipios = async (estado: string) => {
     if (!estado || !estados.value.length) return;
@@ -255,33 +204,32 @@
             <h1 class="text-2xl font-semibold text-center my-5 text-primary opacity-70"> Caso Numero : {{ caseId }} </h1>
             <MainForm @submit="onSubmit" :cols="3" class="!h-[90%]">
               <template v-slot:content>
-                <InputField v-model="subId"  type="number" name="subId" autocomplete="subId"  label="ID" :error="errors.subId"/>
-                <InputField v-model="fechaDeApertura"  type="date" name="fechaDeApertura" autocomplete="fechaDeApertura"  label="fecha De Apertura" :error="errors.fechaDeApertura"/>
+                <InputField v-model="fechaDeApertura"  type="date" name="fechaDeApertura" autocomplete="fechaDeApertura"  label="fecha De Apertura" :error="errors.fechaDeApertura" :readonly="true"/>
                 <InputField v-model="updatedAt"  type="date" name="updatedAt" autocomplete="updatedAt"  label="fecha De ultima actualizacion" :error="errors.updatedAt" :readonly="true"/>
                 <InputField v-model="enteRedireccionado"  type="text" name="enteRedireccionado" autocomplete="enteRedireccionado"  label="E. Redireccionado / n* folio" :error="errors.enteRedireccionado"/>
-                <SelectField v-model="viaResolucion" name="viaResolucion"  label="via de resolucion" :error="errors.viaResolucion" :options="viaResolucionListOptions" />
+                <SelectField v-model="viaResolucion" name="viaResolucion"  label="via de resolucion" :error="errors.viaResolucion" :options="caseStore.viaResolucionListOptions" />
                 <InputField v-model="analistaId"  type="text" name="analistaId" autocomplete="analistaId"  label="Analista a Cargo" :error="errors.analistaId" :readonly="true"/>
-                <SelectField v-model="status" name="status"  label="Estatus" :error="errors.status" :options="statusListOptions" />
-                <SelectField v-model="remitente" name="remitente"  label="remitente" :error="errors.remitente" :options="remitenteListOptions" />
+                <SelectField v-model="status" name="status"  label="Estatus" :error="errors.status" :options="caseStore.statusListOptions" />
+                <SelectField v-model="remitente" name="remitente"  label="remitente" :error="errors.remitente" :options="caseStore.remitenteListOptions" />
                 <InputField v-model="nombreSolicitante"  type="text" name="nombreSolicitante" autocomplete="nombreSolicitante"  label="nombre del solicitante" :error="errors.nombreSolicitante"/>
                 <InputField v-model="cedulaSolicitante"  type="text" name="cedulaSolicitante" autocomplete="cedulaSolicitante"  label="cedula del solicitante" :error="errors.cedulaSolicitante"/>
                 <InputField v-model="nombreBeneficiario"  type="text" name="nombreBeneficiario" autocomplete="nombreBeneficiario"  label="nombre del beneficiario" :error="errors.nombreBeneficiario"/>
                 <InputField v-model="cedulaBeneficiario"  type="text" name="cedulaBeneficiario" autocomplete="cedulaBeneficiario"  label="cedula del beneficiario" :error="errors.cedulaBeneficiario"/>
                 <InputField v-model="telefonoBeneficiario"  type="text" name="telefonoBeneficiario" autocomplete="telefonoBeneficiario"  label="telefono del beneficiario" :error="errors.telefonoBeneficiario"/>
                 <InputField v-model="edad"  type="number" name="edad" autocomplete="edad"  label="edad" :error="errors.edad"/>
-                <SelectField v-model="genero" name="genero"  label="genero" :error="errors.genero" :options="generoListOptions"/>
+                <SelectField v-model="genero" name="genero"  label="genero" :error="errors.genero" :options="caseStore.generoListOptions"/>
                 <SelectField v-model="estado" name="estado"  label="Estado" :error="errors.estado" :options="estadosSelectList" />
                 <SelectField v-model="municipio" name="municipio"  label="municipio" :error="errors.municipio" :options="municipioList" />
                 <InputField v-model="parroquia"  type="text" name="parroquia" autocomplete="parroquia"  label="parroquia" :error="errors.parroquia"/>
                 <InputField v-model="sector"  type="text" name="sector" autocomplete="sector"  label="sector" :error="errors.sector"/>
-                <SelectField v-model="tipoBeneficiario" name="tipoBeneficiario"  label="tipo de beneficiario" :error="errors.tipoBeneficiario" :options="tipoBeneficiarioListOptions" />
-                <SelectField v-model="categoria" name="categoria"  label="categoria" :error="errors.categoria" :options="categoriaListOptions" />
+                <SelectField v-model="tipoBeneficiario" name="tipoBeneficiario"  label="tipo de beneficiario" :error="errors.tipoBeneficiario" :options="caseStore.tipoBeneficiarioListOptions" />
+                <SelectField v-model="categoria" name="categoria"  label="categoria" :error="errors.categoria" :options="caseStore.categoriaListOptions" />
                 <SelectField v-model="subCategoriaId" name="subCategoriaId"  label="subcategoria" :error="errors.subCategoriaId" :options="subCategoriesSelectList" />
                 <SelectField v-model="tipoId" name="tipoId"  label="tipo" :error="errors.tipoId" :options="typesList" />
-                <SelectField v-model="prioridad" name="prioridad"  label="prioridad" :error="errors.prioridad" :options="prioridadListOptions" />
+                <SelectField v-model="prioridad" name="prioridad"  label="prioridad" :error="errors.prioridad" :options="caseStore.prioridadListOptions" />
                 <TextareaField v-model="descripcion" name="descripcion"  label="descripcion" autocomplete="descripcion" :rows="1" :cols="5" :error="errors.descripcion" />
                 <FileInput :title="file?.name || 'Ningún archivo seleccionado'" :allowed-extensions="['pdf']" @send-file="(event:File) => file= event"/>
-                <submitButton :full-size="true" title="Agregar" class="col-span-3 text-center my-5 mb-auto !p-3">
+                <submitButton :full-size="true" title="Guardar" class="col-span-3 text-center my-5 mb-auto !p-3">
                   <MainSpiner class="ml-[-15px]" v-if="mainStore.requestIsLoading"/>
                 </submitButton>
                 <div class="w-full h-12 col-span-3"></div>

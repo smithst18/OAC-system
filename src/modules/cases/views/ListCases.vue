@@ -105,7 +105,7 @@
             @click="DownloadFile"/>
         </div>
         <div class="w-full h-[80%] text-center flex items-center justify-center" v-else >
-          <p class="text-white font-semibold mr-3">Esperando nuevos casos ... </p>
+          <p class="text-primary font-semibold mr-3">No hay Casos para el año en curso ... </p>
           <Spinner class="mt-[-5px]"/>
         </div>
     </div>

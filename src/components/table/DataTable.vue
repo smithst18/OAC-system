@@ -143,11 +143,11 @@ td::-webkit-scrollbar{
     @apply hidden
 }
 .zebra-stripe tbody tr:nth-child(odd) {
-    @apply bg-primary text-third hover:text-primary cursor-pointer
+    @apply bg-primary text-third hover:text-secondary hover:font-bold hover:bg-opacity-95 cursor-pointer
 }
 
 /* Estilo para filas pares */
 .zebra-stripe tbody tr:nth-child(even) {
-    @apply bg-third bg-opacity-80 text-gray-700 hover:text-primary cursor-pointer
+    @apply bg-third bg-opacity-80 text-gray-700 hover:text-primary hover:font-bold cursor-pointer
 }
 </style>

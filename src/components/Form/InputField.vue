@@ -44,6 +44,8 @@
       :autocomplete="autocomplete"
       :readonly="readonly"
     />
+    <slot>
+    </slot>
     <ErrorMessage :err="error" />
     <label :for="name" class="origin-0">{{ label }}</label>
   </div>
