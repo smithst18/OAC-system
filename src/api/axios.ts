@@ -4,7 +4,11 @@ import { useMainStore } from '@/stores/mainStore';
 
 const AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
-  timeout: 1000,
+  withCredentials: false, // Incluye cookies y encabezados de autorización
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 3000,
 });
 
 // request interceptor //

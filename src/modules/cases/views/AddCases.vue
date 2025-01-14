@@ -153,7 +153,7 @@
         throw new Error("Formato de datos inválido");
       }
     } catch (error) {
-      errorToast("Error al cargar los estados");
+      errorToast("Error al cargar las subcategorias");
       console.error(error);
     };
   });
