@@ -60,13 +60,19 @@ export const useCaseStore = defineStore('case', () => {
     {label:"ministro",value:"ministro"},
     {label:"viceministerios",value:"viceministerios"},
     {label:"sala situacional",value:"sala situacional"},
-    {label:"entes adscritos",value:"entes adscritos"},
+    {label:"corpesca",value:"corpesca"},
+    {label:"insopesca",value:"insopesca"},
+    {label:"pescalba",value:"pescalba"},
+    {label:"cenipa",value:"cenipa"},
+    {label:"fonpesca",value:"fonpesca"},
+    {label:"conppa",value:"conppa"},
     {label:"gabinete ministerial",value:"gabinete ministerial"},
     {label:"abordaje territorial",value:"abordaje territorial"},
     {label:"venapp",value:"venapp"},
     {label:"institucion",value:"institucion"},
   ];
-  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"F"}];
+  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"F  "}];
+
   const tipoBeneficiarioListOptions = [
     {label:"conppa",value:"CONPPA"},
     {label:"pescador",value:"pescador"},
@@ -88,6 +94,7 @@ export const useCaseStore = defineStore('case', () => {
   ];
   const viaResolucionListOptions = [
     {label:"Tramitado",value:"administrativa"},
+    {label:"en espera",value:"en espera"},
     {label:`Servicio Desconcentrado “Fondo Negro Primero”`,value:"Servicio desconcentrado fondo negro primero"},
     {label:"partida de donacion a tercero",value:"partida de donacion a tercero"},
     {label:"Remitido al ente con competencia por la naturaleza del caso",value:"remitido"},
