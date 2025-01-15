@@ -59,18 +59,26 @@
 
       <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
-          <BarChart title="Casos Cerrados" :labels="caseStore.getClosedCasesChart.labels" :data="caseStore.getClosedCasesChart.counts" v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
-          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
+          <BarChart 
+            title="Casos Cerrados" 
+            :labels="caseStore.getClosedCasesChart.labels" 
+            :data="caseStore.getClosedCasesChart.counts"
+            v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
+          <p v-else class="text-center text-gray-600"> Casos Cerrados Insuficientes ...</p>
         </div>
 
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
-          <BarChart title="Casos Totales" :labels="caseStore.getOpenCasesChart.labels" :data="caseStore.getOpenCasesChart.counts" v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
-          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
+          <BarChart 
+            title="Casos Totales" 
+            :labels="caseStore.getOpenCasesChart.labels" 
+            :data="caseStore.getOpenCasesChart.counts" 
+            v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
+          <p v-else class="text-center text-gray-600"> Casos Totales Insuficientes ...</p>
         </div>
 
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart title="Casos En Proceso" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
-          <p v-else class="text-center text-gray-600"> Casos Insuficientes ...</p>
+          <p v-else class="text-center text-gray-600"> Casos En Proceso Insuficientes ...</p>
         </div>
       </div>
     </div>
