@@ -29,12 +29,12 @@
       cedulaSolicitante: yup.string()
       .required('cedula del Solicitante es requerido')
       .trim()
-      .matches(/^[V]-\d{6,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
+      .matches(/^[V]-\d{7,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
       nombreBeneficiario: yup .string().required('nombre del Beneficiario es requerido').trim(),
       cedulaBeneficiario: yup .string()
       .required('cedula del Beneficiario es requerido')
       .trim()
-      .matches(/^[V]-\d{6,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
+      .matches(/^[V]-\d{7,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
       telefonoBeneficiario: yup .string().required('Telefono del Beneficiario es requerido').trim(),
       edad: yup.number().required('Edad es requerido').max(110, "No debe exceder los 110"),
       genero:yup.string().required('Genero es requerido').trim(),
