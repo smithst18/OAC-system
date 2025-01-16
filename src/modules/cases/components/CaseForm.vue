@@ -30,9 +30,15 @@
       fechaDeApertura: yup.date().required('fecha de apertura es requerido'),
       remitente: yup.string().required('remitente es requerido').trim(),
       nombreSolicitante: yup .string().required('nombre del Solicitante es requerido').trim(),
-      cedulaSolicitante: yup .string().required('cedula del Solicitante es requerido').trim(),
+      cedulaSolicitante: yup.string()
+      .required('cedula del Solicitante es requerido')
+      .trim()
+      .matches(/^[V]-\d{5,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
       nombreBeneficiario: yup .string().required('nombre del Beneficiario es requerido').trim(),
-      cedulaBeneficiario: yup .string().required('cedula del Beneficiario es requerido').trim(),
+      cedulaBeneficiario: yup .string()
+      .required('cedula del Beneficiario es requerido')
+      .trim()
+      .matches(/^[V]-\d{5,8}$/, 'Formato de cédula inválido. Debe ser V-XXXXX o V-XXXXXXXX'),
       telefonoBeneficiario: yup .string().required('edad es requerido').trim(),
       edad:yup.string().required('edad es requerido').trim(),
       genero:yup.string().required('genero es requerido').trim(),
