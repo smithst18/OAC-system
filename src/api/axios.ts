@@ -4,7 +4,7 @@ import { useMainStore } from '@/stores/mainStore';
 
 const AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
-  withCredentials: true, // Incluye cookies y encabezados de autorización
+  withCredentials: false, // Incluye cookies y encabezados de autorización
   headers: {
     'Content-Type': 'application/json',
   },

@@ -44,10 +44,10 @@
       categoria: yup .string().required('categoria es requerido').trim(),
       subCategoriaId: yup .string().trim(),
       prioridad: yup .string().required('prioridad es requerido').trim(),
-      viaResolucion: yup .string().trim().required('prioridad es requerido'),
+      viaResolucion: yup .string().trim(),
       status: yup .string().required('status es requerido').trim(),
       enteRedireccionado: yup .string().trim(),
-      descripcion: yup .string().trim().max(300,"max 300 caracteres").required('descripcion es requerido'),
+      descripcion: yup .string().trim().max(300,"max 300 caracteres")
     }),
   });
   

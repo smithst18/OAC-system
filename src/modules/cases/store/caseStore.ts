@@ -71,7 +71,7 @@ export const useCaseStore = defineStore('case', () => {
     {label:"venapp",value:"venapp"},
     {label:"institucion",value:"institucion"},
   ];
-  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"F  "}];
+  const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"F"}];
 
   const tipoBeneficiarioListOptions = [
     {label:"conppa",value:"CONPPA"},
