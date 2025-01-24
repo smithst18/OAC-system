@@ -17,11 +17,11 @@
     validationSchema: yup.object({
       field: yup
         .string()
-        .required('Nombre del Solicitante es requerido')
+        .required('Campo es requerido')
         .trim(),
       parameter: yup
         .string()
-        .required('Nombre del Solicitante es requerido')
+        .required('Ingrese el valor del campo seleccionado')
         .trim(),
       fechaStart: yup
         .date()
