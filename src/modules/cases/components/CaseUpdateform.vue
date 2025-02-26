@@ -213,8 +213,8 @@
                 <InputField v-model="fechaDeApertura"  type="date" name="fechaDeApertura" autocomplete="fechaDeApertura"  label="fecha De Apertura" :error="errors.fechaDeApertura" :readonly="true"/>
                 <InputField v-model="updatedAt"  type="date" name="updatedAt" autocomplete="updatedAt"  label="fecha De ultima actualizacion" :error="errors.updatedAt" :readonly="true"/>
                 <InputField v-model="enteRedireccionado"  type="text" name="enteRedireccionado" autocomplete="enteRedireccionado"  label="E. Redireccionado / n* folio" :error="errors.enteRedireccionado"/>
-                <SelectField v-model="viaResolucion" name="viaResolucion"  label="via de resolucion" :error="errors.viaResolucion" :options="caseStore.viaResolucionListOptions" />
                 <InputField v-model="analistaId"  type="text" name="analistaId" autocomplete="analistaId"  label="Analista a Cargo" :error="errors.analistaId" :readonly="true"/>
+                <SelectField v-model="viaResolucion" name="viaResolucion"  label="via de resolucion" :error="errors.viaResolucion" :options="caseStore.viaResolucionListOptions" v-show="values.status == 'cerrado'"/>
                 <SelectField v-model="status" name="status"  label="Estatus" :error="errors.status" :options="caseStore.statusListOptions" />
                 <SelectField v-model="remitente" name="remitente"  label="remitente" :error="errors.remitente" :options="caseStore.remitenteListOptions" />
                 <InputField v-model="nombreSolicitante"  type="text" name="nombreSolicitante" autocomplete="nombreSolicitante"  label="nombre del solicitante" :error="errors.nombreSolicitante"/>

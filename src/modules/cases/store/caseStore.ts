@@ -223,12 +223,16 @@ export const useCaseStore = defineStore('case', () => {
     }else  return "500";
   }
 
-  const saveCase = async (form : object) => {
+  const saveCase = async (form : object) : Promise<any>=> {
 
     const data = await saveCaseService(form);
-
+    console.log(data)
     if(data.savedCase){
-      return "200";
+      return {
+        msg:"saved Case",
+        code:"200",
+        savedCase:data.savedCase
+      };
     }
     else if(data.response.data.code == 400) return "400"
     else if(data.response){ 

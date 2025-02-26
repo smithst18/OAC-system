@@ -10,11 +10,6 @@
   const caseStore = useCaseStore();
   const toast = useToast();
   const fecha = computed(() => new Date().toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit'}));
-
-  // const printHtml = () => {
-  //   console.log("hola")
-  // }
-
   onMounted( async () => {
     const resp = await caseStore.setGeneralStatistics();
     if(resp == "200"){
@@ -47,12 +42,6 @@
             Las siguientes gráficas entregan valores al dia mes y año  {{ fecha }}.
             <span>Entregando un total de : <span class="font-bold text-green-500" v-if="caseStore.getTotalCases >= 0">{{ caseStore.getTotalCases }}</span>  casos totales, a la fecha en curso del dia de hoy.</span>
           </p>
-
-          <!-- <Button
-            title="Imprimir Grafica" 
-            icon="download" :full-size="false"
-            class="flex items-center justify-center !w-48 h-8 mt-8 !text-primary opacity-75 text-center  cursor-pointer rounded-md bg-transparent bg-opacity-80 hover:bg-transparent hover:opacity-50 !text-base focus:ring-0"
-            @click="printHtml"/> -->
         </div>
 
       </div>
@@ -60,7 +49,7 @@
       <div class="w-full mt-10 mb-10 h-[40%] grid grid-cols-3 gap-20">
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart 
-            title="Casos Cerrados" 
+            title="Cerrados" 
             :labels="caseStore.getClosedCasesChart.labels" 
             :data="caseStore.getClosedCasesChart.counts"
             v-if="caseStore.getClosedCasesChart.counts.length > 0"/>
@@ -69,7 +58,7 @@
 
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
           <BarChart 
-            title="Casos Totales" 
+            title="Contacto inicial" 
             :labels="caseStore.getOpenCasesChart.labels" 
             :data="caseStore.getOpenCasesChart.counts" 
             v-if="caseStore.getOpenCasesChart.counts.length > 0"/>
@@ -77,7 +66,7 @@
         </div>
 
         <div class="bg-cyan-50 border border-cyan-500 rounded-2xl shadow-md py-5 px-5"> 
-          <BarChart title="Casos En Proceso" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
+          <BarChart title="En proceso administrativo" :labels="caseStore.getOnProcessCasesChart.labels" :data="caseStore.getOnProcessCasesChart.counts" v-if="caseStore.getOnProcessCasesChart.counts.length > 0"/>
           <p v-else class="text-center text-gray-600"> Casos En Proceso Insuficientes ...</p>
         </div>
       </div>

@@ -26,13 +26,11 @@
 
   const on_picked_element = (elm:string) => {
     //open page with all case information + diary book
-    console.log(elm);
     router.push({name:"update-case", params:{ id:elm }});
   }
 
   const SearchData = async (search :string) => {
     mainStore.search = search;
-    console.log(search)
     if(mainStore.getSearch.length >= 1) {
 
       const resp = await caseStore.setCaseList(mainStore.getSearch);

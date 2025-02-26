@@ -53,6 +53,7 @@
       casoId: props.case._id,
       userId: mainStore.logedUser.id,
     };
+    console.log(toSave)
     const response = await caseStore.saveDiary(toSave);
 
     if(response == '200'){

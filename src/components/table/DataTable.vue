@@ -51,7 +51,6 @@
   }
 
   const handleSearchData = (value:string) => {
-    console.log(value)
     //seteamos el index en el composable a 1 para que se vea reflejado y evitar erroes 
     setActiveIndex(1);
     //seteamos la pagina en el store tambien a 1 
@@ -100,7 +99,7 @@
               <tbody>
                   <tr v-for="(elm) in data" :key="elm._id">
                       <td class="text-sm capitalize text-left whitespace-nowrap overflow-x-auto"
-                          v-for="(property, propertyName, index) in elm" :key="index" 
+                          v-for="(property, index) in elm" :key="index" 
                           @click="emit('pickedElement', elm._id)">
                           <p class="p-8">
                               {{ property }}

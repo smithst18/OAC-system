@@ -8,6 +8,7 @@
   import { listEstados, listMunicipios } from "@/services/DTPservices";
   import { getSubCategoriesService } from "@/services/subCategoryServices"; 
   import { getTypesService } from "@/services/typesServices"; 
+  import { useRouter } from "vue-router"
   import type { subCategory } from "@/interfaces/categoryInterface";
   import type { Entity } from "@/interfaces/Entity";
   import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
@@ -53,6 +54,7 @@
   
   const mainStore = useMainStore();
   const caseStore = useCaseStore();
+  const router = useRouter()
   const { successToast, errorToast } = useToast();
 
   const [fechaDeApertura] = defineField('fechaDeApertura');
@@ -123,11 +125,14 @@
     } 
 
     const resp = await caseStore.saveCase(formulary);
-    
-    if(resp == '200') {
+    console.log(resp)
+    if(resp.code == '200') {
       successToast("Caso guardado de manera correcta");
       resetForm();
       file.value = null;
+      setTimeout(() => {
+        router.push({name:"update-case", params:{ id: resp.savedCase._id  }});
+      }, 1000);
     }
     else if(resp == '400') errorToast("Ya existe un caso con el Id elegido")
     else if(resp == '403') errorToast("Error al guardar caso verifique info")

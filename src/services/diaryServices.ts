@@ -13,10 +13,10 @@ export const saveDiaryService = async ( form: object ) =>{
 }
 
 
-export const getDiariesService = async (id: string) =>{
+export const getDiariesService = async (caseId: string) =>{
   try{
 
-    const response = await AxiosInstance.get(`/diary/getByCaseId/${id}`);
+    const response = await AxiosInstance.get(`/diary/getByCaseId/${caseId}`);
     return response.data;
 
   }catch(e){
@@ -25,10 +25,10 @@ export const getDiariesService = async (id: string) =>{
   }
 }
 
-export const downloadCaseDiary = async (id:string) =>{
+export const downloadCaseDiary = async (caseId:string) =>{
   try{
 
-    const response = await AxiosInstance.get(`/diary/generateFileOneCase/${id}`, { responseType: 'arraybuffer' });
+    const response = await AxiosInstance.get(`/diary/generateFileOneCase/${caseId}`, { responseType: 'arraybuffer' });
     return response;
 
   }catch(e){
