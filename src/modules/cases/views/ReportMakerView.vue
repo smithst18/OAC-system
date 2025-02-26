@@ -8,7 +8,7 @@
   const InfoBar = defineAsyncComponent(() =>import('@/components/commons/InfoBar.vue'));
   const ReportBar = defineAsyncComponent(() =>import('@/modules/cases/components/ReportBar.vue'));
   const ReportCard = defineAsyncComponent(() => import("@/modules/cases/components/ReportCard.vue"));
-  const tableReport = defineAsyncComponent(() => import("@/components/table/DataTable.vue"));
+  const ReportList = defineAsyncComponent(() => import("@/modules/cases/components/ReportList.vue"));
   const router = useRouter();
   const toast = useToast();
   const mainStore = useMainStore();
@@ -24,16 +24,14 @@
 
   const handleFilter = async (form:FilterI) => {
     const resp = await caseStore.setCaseListReport(form);
-    console.log(form);
-    console.log(resp);
     if(resp == '200') toast.successToast("Reporte generado correctamente");
     else if(resp == '404') toast.warnToast("No se han encontrado reportes");
     else if(resp == '500') toast.errorToast("Error al procesar, Error de servidor");
   }
-  const on_picked_element = (elm:string) => {
-    //open page with all case information + diary book
-    router.push({name:"update-case", params:{ id:elm }});
-  }
+  // const on_picked_element = (elm:string) => {
+  //   //open page with all case information + diary book
+  //   router.push({name:"update-case", params:{ id:elm }});
+  // }
 
   onUnmounted(() => {
     caseStore.$reset();
@@ -49,15 +47,10 @@
       <ReportBar class="h-[18%] mb-[2%]" @send-filter="handleFilter"/>
       <ReportCard class="h-[77%]" v-if="caseStore.getCaseList.length < 1" msg="Rellenar los Campos de arriba y clickear 'Generar' para ver los reportes"/>
       <div class="h-[77%]" v-else>
-        <tableReport
+        <ReportList
           :data="caseStore.getCaseList"
-          :elements-per-page="mainStore.getPerPages"
-          :titles="titles"
-          :total-pages="mainStore.getTotalPages"
-          :show-search-bar="false"
-          @picked-element="on_picked_element"
           class="h-80%"
-          />
+        />
       </div>
     </div>
 

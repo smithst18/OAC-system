@@ -73,7 +73,7 @@
       </div>
       <!-- fORMULARIO -->
 
-      <MainForm @submit="onSubmit" :cols="1"  id="form" class="border border-white w-full h-[70%] mt-20 p-16 bg-white rounded-md">
+      <MainForm @submit="onSubmit" :cols="1"  id="form" class="w-full h-[70%] mt-20 p-20 text-lg bg-white rounded-md">
         <template v-slot:content>
           <p class="text-center text-2xl text-primary my-8">Inicia sesión en tu cuenta </p>
           <InputField v-model="ci"  type="text" name="ci" autocomplete="username"  label="Cedula" :error="errors.ci"/>

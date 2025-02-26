@@ -87,6 +87,7 @@
           <option value="prioridad">prioridad</option>
           <option value="genero">genero</option>
           <option value="edad">edad</option>
+          <option value="analista" v-show="mainStore.logedUser.rol =='auditor' || mainStore.logedUser.rol =='admin' ">analista</option>
         </select>
         <label for="field" class="origin-0">Campo</label>
         <ErrorMessage :err="errors.field"/>

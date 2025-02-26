@@ -109,10 +109,10 @@ export const downloadExcelClosedCase = async (caseId:string) =>{
   }
 }
 
-export const getCasesByReport = async ( form : FilterI, userId : string, page : string) =>{
+export const getCasesByReport = async ( form : FilterI, userId : string) =>{
   try{
     
-    const response = await AxiosInstance.get(`/cases/especificReport/${userId}/${form.field}/${form.fieldValue}/${form.startDate}/${form.endDate}/${page}`);
+    const response = await AxiosInstance.get(`/cases/especificReport/${userId}/${form.field}/${form.fieldValue}/${form.startDate}/${form.endDate}`);
     return response.data;
 
   }catch(e){

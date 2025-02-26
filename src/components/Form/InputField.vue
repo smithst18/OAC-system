@@ -47,7 +47,7 @@
     <slot>
     </slot>
     <ErrorMessage :err="error" />
-    <label :for="name" class="origin-0">{{ label }}</label>
+    <label :for="name" class="origin-0 ">{{ label }}</label>
   </div>
 </template>
 

@@ -164,21 +164,12 @@ export const useCaseStore = defineStore('case', () => {
         endDate:encodeURIComponent(form.endDate),
       },
       mainStore.logedUser.id,
-      mainStore.getPage.toString());
+    );
       
-    if(response.paginatedData && response.paginatedData.cases.length > 0){
-      console.log(response)
-      if(!response.paginatedData.paginator) mainStore.showPagination = false;
-      else{
-        mainStore.showPagination = true;
-        mainStore.setPage(response.paginatedData.paginator.currentPage);
-        mainStore.setPerPages(response.paginatedData.paginator.perPage);
-        mainStore.setTotalPages(response.paginatedData.paginator.totalPages);
-        mainStore.setTotalresults(response.paginatedData.paginator.totalDocs);
-        
-        caseActualList.value = response.paginatedData.cases;
-        return "200"
-      }
+    if(response.paginatedData && response.paginatedData.length > 0){
+      caseActualList.value = response.paginatedData;
+      return "200"
+      
     }else if(response.response) return "404";
     else return "500";
   }
@@ -349,11 +340,14 @@ export const useCaseStore = defineStore('case', () => {
     const cases = caseActualList.value.map(( elm:Case ) => {
       return {
         _id:elm._id,
-        //id:elm.subId,
-        cedula:elm.cedulaBeneficiario,
-        estatus:elm.status,
-        entidad:elm.estado,
-        tipoSolicitud:elm.categoria,
+        subId:elm.subId,
+        estado:elm.estado,
+        tipoBeneficiario:elm.tipoBeneficiario,
+        categoria:elm.categoria,
+        prioridad:elm.prioridad,
+        genero:elm.genero,
+        edad:elm.edad,
+        analista:elm.analistaId.name
       }
     })
     return cases
