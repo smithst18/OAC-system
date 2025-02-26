@@ -9,7 +9,7 @@
   import { toast } from 'vue3-toastify';
 
   const CaseDiary = defineAsyncComponent(()=> import('@/modules/cases/components/CaseDiary.vue'));
-  const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseForm.vue'));
+  const CaseForm =  defineAsyncComponent(() => import('@/modules/cases/components/CaseUpdateform.vue'));
   const MainSpinner = defineAsyncComponent(() => import('@/components/commons/MainSpinner.vue'));
   const Button = defineAsyncComponent(() => import('@/components/commons/MainButton.vue'));
   const ToolTip = defineAsyncComponent(() => import('@/components/commons/ToolTip.vue'));

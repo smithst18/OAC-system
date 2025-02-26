@@ -74,7 +74,7 @@ export const useCaseStore = defineStore('case', () => {
   const generoListOptions = [{label:"masculino",value:"M"}, {label:"femenino",value:"F"}];
 
   const tipoBeneficiarioListOptions = [
-    {label:"conppa",value:"CONPPA"},
+    {label:"CONPPA",value:"CONPPA"},
     {label:"pescador",value:"pescador"},
     {label:"acuicultor",value:"acuicultor"},
     {label:"particular",value:"particular"},
@@ -93,10 +93,10 @@ export const useCaseStore = defineStore('case', () => {
     {label:"Baja", value:"baja"},
   ];
   const viaResolucionListOptions = [
-    {label:"Tramitado",value:"administrativa"},
-    {label:`Servicio Desconcentrado “Fondo Negro Primero”`,value:"Servicio desconcentrado fondo negro primero"},
+    {label:"tramitado",value:"tramitado"},
+    {label:`servicio Desconcentrado “Fondo Negro Primero”`,value:"servicio desconcentrado fondo negro primero"},
     {label:"partida de donacion a tercero",value:"partida de donacion a tercero"},
-    {label:"Remitido al ente con competencia por la naturaleza del caso",value:"remitido"},
+    {label:"remitido al ente con competencia por la naturaleza del caso",value:"remitido al ente con competencia por la naturaleza del caso"},
     {label:"recursos propios",value:"recursos propios"},
     {label:"donacion",value:"donacion"},
     {label:"no procede",value:"no procede"},
@@ -106,7 +106,7 @@ export const useCaseStore = defineStore('case', () => {
     {label:"conformacion del expediente",value:"conformacion del expediente"},
     {label:"proceso de analisis",value:"proceso de analisis"},
     {label:"notificacion al solicitante",value:"notificacion al solicitante"},
-    {label:"proceso administrativo",value:"en proceso"},
+    {label:"proceso administrativo",value:"proceso administrativo"},
     {label:"seguimiento",value:"seguimiento"},
     {label:"cerrado",value:"cerrado"},
   ];
