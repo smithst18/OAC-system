@@ -347,11 +347,12 @@ export const useCaseStore = defineStore('case', () => {
   const getCaseList = computed(() => {
     const cases = caseActualList.value.map(( elm:Case ) => {
       return {
+        _id:elm._id,
         id:elm.subId,
-        cedulaBeneficiario:elm.cedulaBeneficiario,
-        status:elm.status,
-        estado:elm.estado,
-        cateogira:elm.categoria,
+        cedula:elm.cedulaBeneficiario,
+        estatus:elm.status,
+        entidad:elm.estado,
+        tipoSolicitud:elm.categoria,
       }
     })
     return cases

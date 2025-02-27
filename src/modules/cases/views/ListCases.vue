@@ -17,7 +17,8 @@
   const toast = useToast()
   
   const titles : Array < string > = [
-    "id",
+    "#",  
+    "Num",
     "cedula",  
     "estatus",
     "entidad",
