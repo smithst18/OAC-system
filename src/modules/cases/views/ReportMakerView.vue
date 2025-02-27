@@ -48,7 +48,7 @@
       <ReportCard class="h-[77%]" v-if="caseStore.getCaseList.length < 1" msg="Rellenar los Campos de arriba y clickear 'Generar' para ver los reportes"/>
       <div class="h-[77%]" v-else>
         <ReportList
-          :data="caseStore.getCaseList"
+          :data="caseStore.getReportCaseList"
           class="h-80%"
         />
       </div>

@@ -1,3 +1,4 @@
+import type { AnalistaI } from "./userInterfaces";
 export interface Case {
   _id:string
   subId:number,
@@ -22,7 +23,7 @@ export interface Case {
   fechaRedireccion:string,
   viaResolucion:string,
   enteRedireccionado:string,
-  analistaId:any,
+  analistaId:AnalistaI,
   diario:any,
   descripcion:string,
   file:string,

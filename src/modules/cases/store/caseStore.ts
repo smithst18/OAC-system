@@ -46,7 +46,11 @@ export const useCaseStore = defineStore('case', () => {
     fechaRedireccion:"",
     viaResolucion:"",
     enteRedireccionado:"",
-    analistaId:"",
+    analistaId: {
+      _id: "",     
+      ci: "",      
+      name: ""    
+    },
     diario:"",
     descripcion:"",
     file:"",
@@ -308,7 +312,11 @@ export const useCaseStore = defineStore('case', () => {
       fechaRedireccion:"",
       viaResolucion:"",
       enteRedireccionado:"",
-      analistaId:"",
+      analistaId: {
+        _id: "",     
+        ci: "",      
+        name: ""    
+      },
       diario:"",
       descripcion:"",
       file:"",
@@ -339,6 +347,19 @@ export const useCaseStore = defineStore('case', () => {
   const getCaseList = computed(() => {
     const cases = caseActualList.value.map(( elm:Case ) => {
       return {
+        id:elm.subId,
+        cedulaBeneficiario:elm.cedulaBeneficiario,
+        status:elm.status,
+        estado:elm.estado,
+        cateogira:elm.categoria,
+      }
+    })
+    return cases
+  });
+
+  const getReportCaseList = computed(() => {
+    const cases = caseActualList.value.map(( elm:Case ) => {
+      return {
         _id:elm._id,
         subId:elm.subId,
         estado:elm.estado,
@@ -347,7 +368,7 @@ export const useCaseStore = defineStore('case', () => {
         prioridad:elm.prioridad,
         genero:elm.genero,
         edad:elm.edad,
-        analista:elm.analistaId.name
+        analista:elm.analistaId?.name
       }
     })
     return cases
@@ -417,6 +438,7 @@ export const useCaseStore = defineStore('case', () => {
     saveDiary,
     setCaseListReport,
     getCaseList,
+    getReportCaseList,
     getClosedCasesChart:computed(() => closedCasesChart.value),
     getOpenCasesChart:computed(() => openCasesChart.value),
     getOnProcessCasesChart:computed(() => onProcessCasesChart.value),
