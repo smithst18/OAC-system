@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { defineAsyncComponent } from "vue";
+  import { defineAsyncComponent, watch } from "vue";
   import type { SelectFieldI } from "@/interfaces/selecFieldInterface";
   const ErrorMessage = defineAsyncComponent(() => import('@/components/commons/ErrorMsg.vue'));
   
@@ -10,12 +10,20 @@
       name: string;
       label: string;
       error?: string;
+      isDisabled?:boolean
     }>(),
     {
       modelValue: '', // Valor por defecto
+      isDisabled: false,
     }
   );
 
+  watch( 
+    () =>props.isDisabled,
+    () => {
+      if(props.isDisabled)  emit("update:modelValue", "");
+    }
+  )
 
   const emit = defineEmits<{
     (event: "update:modelValue", modelValue: string | number): void;
@@ -30,18 +38,19 @@
 <template>
   <div class="relative z-0 w-full mb-10 capitalize">
     <select
-      :value="modelValue"
-      required
-      :name="name"
-      class="w-full bg-transparent border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-primary appearance-none capitalize"
-      @change="updateValue($event)">
+    :value="modelValue"
+    required
+    :name="name"
+    class="w-full bg-transparent border-b-2 border-gray-300 focus:outline-none focus:ring-0 focus:border-primary appearance-none capitalize"
+    @change="updateValue($event)"
+    :disabled="isDisabled">
 
       <option v-if="options.length < 1">
-        Cargando lista ...
+        Cargando lista ... 
       </option>
 
       <option v-else v-for="option in props.options" :key="option.value" :value="option.value">
-        {{ option.label }}
+        {{ option.label }} {{ isDisabled }}
       </option>
       
     </select>
