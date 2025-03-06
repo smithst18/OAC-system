@@ -50,7 +50,7 @@
       </option>
 
       <option v-else v-for="option in props.options" :key="option.value" :value="option.value">
-        {{ option.label }} {{ isDisabled }}
+        {{ option.label }}
       </option>
       
     </select>
