@@ -97,7 +97,7 @@ export const useCaseStore = defineStore('case', () => {
     {label:"Baja", value:"baja"},
   ];
   const viaResolucionListOptions = [
-    {label:"tramitado",value:"tramitado"},
+    {label:"Articulacion Institucional",value:"tramitado"},
     {label:`servicio Desconcentrado “Fondo Negro Primero”`,value:"servicio desconcentrado fondo negro primero"},
     {label:"partida de donacion a tercero",value:"partida de donacion a tercero"},
     {label:"remitido al ente con competencia por la naturaleza del caso",value:"remitido al ente con competencia por la naturaleza del caso"},
