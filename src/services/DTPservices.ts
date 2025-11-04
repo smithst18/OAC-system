@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Configura tus credenciales de GeoNames
-const geoNamesUsername = "smithst";  // Usuario GeoNames
+const geoNamesUsername = "minpesca1";  // Usuario GeoNames
 const geoNamesBaseUrl = "https://api.geonames.org";  // URL base de GeoNames
 
 // 1. Función para listar los estados (que serían las "regiones" en GeoNames)
@@ -10,7 +10,8 @@ export const listEstados = async () => {
     const response = await axios.get(`${geoNamesBaseUrl}/childrenJSON`, {
       params: {
         geonameId: 3625428,  // GeonameId de Venezuela
-        username: geoNamesUsername
+        username: geoNamesUsername,
+        password: "0212"
       },
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
