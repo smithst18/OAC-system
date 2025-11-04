@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Configura tus credenciales de GeoNames
 const geoNamesUsername = "minpesca1";  // Usuario GeoNames
-const geoNamesBaseUrl = "https://api.geonames.org";  // URL base de GeoNames
+const geoNamesBaseUrl = "https://secure.geonames.org";  // URL base de GeoNames
 
 // 1. Función para listar los estados (que serían las "regiones" en GeoNames)
 export const listEstados = async () => {
