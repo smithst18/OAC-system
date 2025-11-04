@@ -11,7 +11,6 @@ export const listEstados = async () => {
       params: {
         geonameId: 3625428,  // GeonameId de Venezuela
         username: geoNamesUsername,
-        password: "0212"
       },
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
